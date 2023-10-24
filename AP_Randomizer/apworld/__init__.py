@@ -3,7 +3,7 @@ from BaseClasses import Region
 from .items import PseudoregaliaItem, item_table, item_frequencies, item_groups
 from .locations import PseudoregaliaLocation, location_table
 from .regions import region_table
-from .options import pseudoregalia_options
+from .options import PseudoregaliaOptions
 from .rules_normal import PseudoregaliaNormalRules
 from .rules_hard import PseudoregaliaHardRules
 from .rules_expert import PseudoregaliaExpertRules
@@ -21,7 +21,8 @@ class PseudoregaliaWorld(World):
     locked_locations = {name: data for name, data in location_table.items() if data.locked_item}
     item_name_groups = item_groups
 
-    option_definitions = pseudoregalia_options
+    options_dataclass = PseudoregaliaOptions
+    options: PseudoregaliaOptions
 
     def create_item(self, name: str) -> PseudoregaliaItem:
         data = item_table[name]
@@ -73,12 +74,12 @@ class PseudoregaliaWorld(World):
 
     def fill_slot_data(self) -> Dict[str, Any]:
         return {"slot_number": self.player,
-                "death_link": bool(self.multiworld.death_link[self.player]),
-                "logic_level": self.multiworld.logic_level[self.player].value,
-                "obscure_logic": bool(self.multiworld.obscure_logic[self.player]),
-                "progressive_breaker": bool(self.multiworld.progressive_breaker[self.player]),
-                "progressive_slide": bool(self.multiworld.progressive_slide[self.player]),
-                "split_sun_greaves": bool(self.multiworld.split_sun_greaves[self.player]), }
+                "death_link": bool(self.options.death_link),
+                "logic_level": self.options.logic_level.value,
+                "obscure_logic": bool(self.options.obscure_logic),
+                "progressive_breaker": bool(self.options.progressive_breaker),
+                "progressive_slide": bool(self.options.progressive_slide),
+                "split_sun_greaves": bool(self.options.split_sun_greaves), }
 
     def set_rules(self):
         difficulty = self.multiworld.logic_level[self.player]

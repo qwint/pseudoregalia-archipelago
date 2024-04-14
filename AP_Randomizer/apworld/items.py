@@ -146,4 +146,35 @@ item_groups: Dict[str, Set[str]] = {
     "pogo": {"Ascendant Light"},
     "floof": {"Professionalism"},
     "heliacal power": {"Air Kick"},
+    "aspects": {"Indignation",  # some nice to have groups when sorting local/non local items in yaml etc, does not include "Memento" aka new map powerup
+                "Aerial Finesse",
+                "Pilgrimage",
+                "Empathy",
+                "Martial Prowess",
+                "Clear Mind",
+                "Professionalism",
+                "Good Graces"},
+    "mobility": {"Sun Greaves",
+                 "Slide",
+                 "Solar Wind",
+                 "Ascendant Light",
+                 "Heliacal Power",
+                 "Progressive Slide",
+                 "Sunsetter",
+                 "Air Kick",
+                 "Cling Gem"},
+    "collectables": {"Health Piece",
+                     "Small Key"},
+    #"weapon": {"Dream Breaker",
+    #           "Progressive Dream Breaker",
+    #           "Strikebreak",
+    #           "Soul Cutter"},
+    #"attire": {"Professional", # Castle Sansa trial
+    #           "Soldier", # Empty Bailey trial
+    #           "Guardian", # Sansa Keep trial
+    #           "Sol Sister", # Dilapidated Dungeon trial
+    #           "Classy", # Twilight Theatre trial
+    #           "XIX", # Underbelly trial
+    #           "Sleepytime", # Listless Library trial
+    #           "Bleeding Heart}, # Tower Remains trial  
 }

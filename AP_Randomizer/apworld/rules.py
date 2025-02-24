@@ -146,16 +146,17 @@ class PseudoregaliaRulesHelpers:
         raise Exception("knows_obscure() was not set")
 
     def set_pseudoregalia_rules(self) -> None:
+        world = self.world
         multiworld = self.world.multiworld
-        split_kicks = bool(multiworld.split_sun_greaves[self.player])
-        if bool(multiworld.obscure_logic[self.player]):
+        split_kicks = bool(world.options.split_sun_greaves)
+        if bool(world.options.obscure_logic):
             self.knows_obscure = lambda state: True
             self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
         else:
             self.knows_obscure = lambda state: False
             self.can_attack = lambda state: self.has_breaker(state)
 
-        logic_level = multiworld.logic_level[self.player].value
+        logic_level = world.options.logic_level.value
         if logic_level == NORMAL:
             self.required_small_keys = 7
 

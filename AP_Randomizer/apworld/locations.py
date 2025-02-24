@@ -1,5 +1,8 @@
-from BaseClasses import Location, MultiWorld
-from typing import NamedTuple, Optional, Callable
+from BaseClasses import Location
+from typing import NamedTuple, Optional, Callable, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from . import PseudoregaliaWorld
 
 
 class PseudoregaliaLocation(Location):
@@ -9,7 +12,7 @@ class PseudoregaliaLocation(Location):
 class PseudoregaliaLocationData(NamedTuple):
     region: str
     code: int = None
-    can_create: Callable[[MultiWorld, int], bool] = lambda multiworld, player: True
+    can_create: "Callable[[PseudoregaliaWorld, int], bool]" = lambda world: True
     locked_item: Optional[str] = None
     show_in_spoiler: bool = True
 
@@ -103,7 +106,7 @@ location_table = {
     "Listless Library - Sun Greaves": PseudoregaliaLocationData(
         code=2365810026,
         region="Library Greaves",
-        can_create=lambda multiworld, player: not bool(multiworld.split_sun_greaves[player])),
+        can_create=lambda world: not bool(world.options.split_sun_greaves)),
     "Listless Library - Upper Back": PseudoregaliaLocationData(
         code=2365810027,
         region="Library Top",),
@@ -184,15 +187,15 @@ location_table = {
     "Listless Library - Sun Greaves 1": PseudoregaliaLocationData(
         code=2365810051,
         region="Library Greaves",
-        can_create=lambda multiworld, player: bool(multiworld.split_sun_greaves[player])),
+        can_create=lambda world: bool(world.options.split_sun_greaves)),
     "Listless Library - Sun Greaves 2": PseudoregaliaLocationData(
         code=2365810052,
         region="Library Greaves",
-        can_create=lambda multiworld, player: bool(multiworld.split_sun_greaves[player])),
+        can_create=lambda world: bool(world.options.split_sun_greaves)),
     "Listless Library - Sun Greaves 3": PseudoregaliaLocationData(
         code=2365810053,
         region="Library Greaves",
-        can_create=lambda multiworld, player: bool(multiworld.split_sun_greaves[player])),
+        can_create=lambda world: bool(world.options.split_sun_greaves)),
 
     "Dilapidated Dungeon - Unlock Door": PseudoregaliaLocationData(
         region="Dungeon Strong Eyes",

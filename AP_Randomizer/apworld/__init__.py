@@ -32,7 +32,7 @@ class PseudoregaliaWorld(World):
         for item_name, item_data in item_table.items():
             if (item_name == "Dream Breaker"):
                 continue  # Really skrunkled way of just adding the one locked breaker to the pool for now.
-            if (item_data.code and item_data.can_create(self.multiworld, self.player)):
+            if (item_data.code and item_data.can_create(self)):
                 item_count = 1
                 if (item_name in item_frequencies):
                     item_count = item_frequencies[item_name]
@@ -45,7 +45,7 @@ class PseudoregaliaWorld(World):
             self.multiworld.regions.append(Region(region_name, self.player, self.multiworld))
 
         for loc_name, loc_data in location_table.items():
-            if not loc_data.can_create(self.multiworld, self.player):
+            if not loc_data.can_create(self):
                 continue
             region = self.multiworld.get_region(loc_data.region, self.player)
             new_loc = PseudoregaliaLocation(self.player, loc_name, loc_data.code, region)
@@ -59,12 +59,12 @@ class PseudoregaliaWorld(World):
 
         # Place locked locations.
         for location_name, location_data in self.locked_locations.items():
-            if not location_data.can_create(self.multiworld, self.player):
+            if not location_data.can_create(self):
                 continue
 
             # Doing this really stupidly because breaker's locking will change after logic rework is done
             if location_name == "Dilapidated Dungeon - Dream Breaker":
-                if bool(self.multiworld.progressive_breaker[self.player]):
+                if bool(self.options.progressive_breaker):
                     locked_item = self.create_item("Progressive Dream Breaker")
                     self.multiworld.get_location(location_name, self.player).place_locked_item(locked_item)
                     continue
@@ -82,7 +82,7 @@ class PseudoregaliaWorld(World):
                 "split_sun_greaves": bool(self.options.split_sun_greaves), }
 
     def set_rules(self):
-        difficulty = self.multiworld.logic_level[self.player]
+        difficulty = self.options.logic_level
         if difficulty == NORMAL:
             PseudoregaliaNormalRules(self).set_pseudoregalia_rules()
         elif difficulty == HARD:

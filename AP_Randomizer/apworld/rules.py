@@ -25,7 +25,7 @@ class PseudoregaliaRulesHelpers:
             "Empty Bailey -> Theatre Pillar": lambda state: True,
             "Empty Bailey -> Tower Remains": lambda state:
                 self.has_gem(state)
-                or state.has_all({"Slide", "Sunsetter"}, self.player)
+                or self.has_slide(state) and self.has_plunge(state)
                 or self.get_kicks(state, 1),
             "Tower Remains -> Underbelly Little Guy": lambda state:
                 self.has_plunge(state),
@@ -52,7 +52,7 @@ class PseudoregaliaRulesHelpers:
                 self.has_slide(state),
             "Empty Bailey - Center Steeple": lambda state:
                 self.get_kicks(state, 3)
-                or state.has_all({"Sunsetter", "Slide"}, self.player),
+                or self.has_slide(state) and self.has_plunge(state),
             "Empty Bailey - Guarded Hand": lambda state:
                 self.has_plunge(state)
                 or self.has_gem(state)

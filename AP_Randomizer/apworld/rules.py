@@ -1,7 +1,7 @@
 from BaseClasses import CollectionState
 from typing import Dict, Callable, TYPE_CHECKING
 from worlds.generic.Rules import set_rule
-from .constants.difficulties import NORMAL
+from .constants.difficulties import NORMAL, EXPERT, LUNATIC
 
 if TYPE_CHECKING:
     from . import PseudoregaliaWorld
@@ -80,6 +80,17 @@ class PseudoregaliaRulesHelpers:
             "Tower Remains - Atop The Tower": lambda state: True,
         }
 
+        logic_level = world.options.logic_level.value
+        if logic_level == NORMAL:
+            self.required_small_keys = 7
+
+        if bool(world.options.obscure_logic) or logic_level in {EXPERT, LUNATIC}:
+            self.knows_obscure = lambda state: True
+            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
+        else:
+            self.knows_obscure = lambda state: False
+            self.can_attack = lambda state: self.has_breaker(state)
+
     def has_breaker(self, state) -> bool:
         return state.has_any({"Dream Breaker", "Progressive Dream Breaker"}, self.player)
 
@@ -149,16 +160,6 @@ class PseudoregaliaRulesHelpers:
         world = self.world
         multiworld = self.world.multiworld
         split_kicks = bool(world.options.split_sun_greaves)
-        if bool(world.options.obscure_logic):
-            self.knows_obscure = lambda state: True
-            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
-        else:
-            self.knows_obscure = lambda state: False
-            self.can_attack = lambda state: self.has_breaker(state)
-
-        logic_level = world.options.logic_level.value
-        if logic_level == NORMAL:
-            self.required_small_keys = 7
 
         for name, rule in self.region_rules.items():
             entrance = multiworld.get_entrance(name, self.player)

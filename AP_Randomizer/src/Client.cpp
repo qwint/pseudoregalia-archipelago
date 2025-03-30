@@ -33,10 +33,15 @@ namespace Client {
 
     // Private members
     namespace {
+        struct MessageInfo {
+            string markdown_text;
+            bool mentions_player;
+        };
+
         typedef nlohmann::json json;
         typedef APClient::State ConnectionStatus;
         void ReceiveItems(const list<APClient::NetworkItem>&);
-        string ProcessMessageText(const APClient::PrintJSONArgs&);
+        MessageInfo ProcessMessageText(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
@@ -130,14 +135,14 @@ namespace Client {
             ap->set_print_json_handler([](const APClient::PrintJSONArgs& args) {
                 using RC::Unreal::FText;
                 string plain_text = ap->render_json(args.data);
-                string markdown_text = ProcessMessageText(args);
+                MessageInfo info = ProcessMessageText(args);
                 Logger::PrintToConsole(
-                    StringOps::ToWide(markdown_text),
+                    StringOps::ToWide(info.markdown_text),
                     StringOps::ToWide(plain_text)
                 );
 
                 if (args.type == "ItemSend") {
-                    Log(plain_text, LogType::Popup);
+                    Log(plain_text, LogType::Popup, info.mentions_player);
                 }
                 else {
                     Log(plain_text, LogType::Console);
@@ -244,8 +249,8 @@ namespace Client {
 
     // Private functions
     namespace {
-        string ProcessMessageText(const APClient::PrintJSONArgs& args) {
-            string console_text;
+        MessageInfo ProcessMessageText(const APClient::PrintJSONArgs& args) {
+            MessageInfo info{ "", false };
 
             // This loop is basically the logic of APClient::render_json(), adapted to use RichTextBlock markdown.
             // Later on this will be stylized to consider the perspective of the player.
@@ -255,7 +260,10 @@ namespace Client {
                 case Hashes::player_id: {
                     int id = std::stoi(node.text);
                     string player_name = ap->get_player_alias(id);
-                    console_text += "<Player>" + player_name + "</>";
+                    info.markdown_text += "<Player>" + player_name + "</>";
+                    if (id == ap->get_player_number()) {
+                        info.mentions_player = true;
+                    }
                     break;
                 }
                 case Hashes::item_id: {
@@ -263,34 +271,34 @@ namespace Client {
                     string item_name = ap->get_item_name(id);
                     switch (node.flags) {
                     case APClient::FLAG_ADVANCEMENT:
-                        console_text += "<Progression";
+                        info.markdown_text += "<Progression";
                         break;
                     case APClient::FLAG_NEVER_EXCLUDE:
-                        console_text += "<Useful";
+                        info.markdown_text += "<Useful";
                         break;
                     case APClient::FLAG_TRAP:
-                        console_text += "<Trap";
+                        info.markdown_text += "<Trap";
                         break;
                     default:
-                        console_text += "<Filler";
+                        info.markdown_text += "<Filler";
                         break;
                     }
-                    console_text += "Item>" + item_name + "</>";
+                    info.markdown_text += "Item>" + item_name + "</>";
                     break;
                 }
                 case Hashes::location_id: {
                     int64_t id = std::stoll(node.text);
                     string location_name = ap->get_location_name(id);
-                    console_text += "<Location>" + location_name + "</>";
+                    info.markdown_text += "<Location>" + location_name + "</>";
                     break;
                 }
                 default:
-                    console_text += node.text;
+                    info.markdown_text += node.text;
                     break;
                 }
             }
 
-            return console_text;
+            return info;
         }
 
         void ReceiveDeathLink(const json& data) {

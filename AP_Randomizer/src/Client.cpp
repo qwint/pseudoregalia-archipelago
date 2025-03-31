@@ -250,7 +250,8 @@ namespace Client {
     // Private functions
     namespace {
         MessageInfo ProcessMessageText(const APClient::PrintJSONArgs& args) {
-            MessageInfo info{ "", false };
+            string console_text;
+            bool mentions_player = false;
 
             // This loop is basically the logic of APClient::render_json(), adapted to use RichTextBlock markdown.
             // Later on this will be stylized to consider the perspective of the player.
@@ -260,9 +261,9 @@ namespace Client {
                 case Hashes::player_id: {
                     int id = std::stoi(node.text);
                     string player_name = ap->get_player_alias(id);
-                    info.markdown_text += "<Player>" + player_name + "</>";
+                    console_text += "<Player>" + player_name + "</>";
                     if (id == ap->get_player_number()) {
-                        info.mentions_player = true;
+                        mentions_player = true;
                     }
                     break;
                 }
@@ -271,34 +272,34 @@ namespace Client {
                     string item_name = ap->get_item_name(id);
                     switch (node.flags) {
                     case APClient::FLAG_ADVANCEMENT:
-                        info.markdown_text += "<Progression";
+                        console_text += "<Progression";
                         break;
                     case APClient::FLAG_NEVER_EXCLUDE:
-                        info.markdown_text += "<Useful";
+                        console_text += "<Useful";
                         break;
                     case APClient::FLAG_TRAP:
-                        info.markdown_text += "<Trap";
+                        console_text += "<Trap";
                         break;
                     default:
-                        info.markdown_text += "<Filler";
+                        console_text += "<Filler";
                         break;
                     }
-                    info.markdown_text += "Item>" + item_name + "</>";
+                    console_text += "Item>" + item_name + "</>";
                     break;
                 }
                 case Hashes::location_id: {
                     int64_t id = std::stoll(node.text);
                     string location_name = ap->get_location_name(id);
-                    info.markdown_text += "<Location>" + location_name + "</>";
+                    console_text += "<Location>" + location_name + "</>";
                     break;
                 }
                 default:
-                    info.markdown_text += node.text;
+                    console_text += node.text;
                     break;
                 }
             }
 
-            return info;
+            return MessageInfo{ console_text, mentions_player };
         }
 
         void ReceiveDeathLink(const json& data) {

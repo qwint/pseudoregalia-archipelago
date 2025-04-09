@@ -16,7 +16,7 @@ class PseudoregaliaRulesHelpers:
     location_rules: dict[str, list[CollectionRule]]
     # Empty list or missing keys are True, any False rules need to be explicit, multiple rules are ORd together
     # Classes instantiated in difficulty order and append new clauses to rules,
-    # so apply them backwards as harder rules will shortcircuit easier rules
+    # add_rule applies them backwards meaning harder rules will shortcircuit easier rules
 
     required_small_keys: int = 6  # Set to 7 for Normal logic.
 
@@ -180,8 +180,11 @@ class PseudoregaliaRulesHelpers:
 
         for name, rules in self.region_rules.items():
             entrance = multiworld.get_entrance(name, self.player)
-            for rule in reversed(rules):
-                add_rule(entrance, rule, "or")
+            for index, rule in enumerate(rules):
+                if index == 0:
+                    set_rule(entrance, rule)
+                else:
+                    add_rule(entrance, rule, "or")
         for name, rules in self.location_rules.items():
             if name.startswith("Listless Library"):
                 if split_kicks and name.endswith("Greaves"):
@@ -189,8 +192,11 @@ class PseudoregaliaRulesHelpers:
                 if not split_kicks and name[-1].isdigit():
                     continue
             location = multiworld.get_location(name, self.player)
-            for rule in reversed(rules):
-                add_rule(location, rule, "or")
+            for index, rule in enumerate(rules):
+                if index == 0:
+                    set_rule(location, rule)
+                else:
+                    add_rule(location, rule, "or")
 
         set_rule(multiworld.get_location("D S T RT ED M M O   Y", self.player), lambda state:
                  state.has_all({

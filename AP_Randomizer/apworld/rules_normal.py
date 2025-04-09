@@ -38,8 +38,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Castle Main -> Keep Main": lambda state: True,
             # "Castle Main -> Empty Bailey": lambda state: True,
             "Castle Main -> Library Main": lambda state:
-                self.has_breaker(state)
-                or self.knows_obscure(state) and self.can_attack(state),
+                self.can_attack(state),
             "Castle Main -> Theatre Pillar": lambda state:
                 self.has_gem(state) and self.kick_or_plunge(state, 1)
                 or self.kick_or_plunge(state, 2),
@@ -164,7 +163,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     state.has("Ascendant Light", self.player)
                     or self.can_slidejump(state) and self.get_kicks(state, 3)
                     or self.has_gem(state) and self.get_kicks(state, 2)),
-            "Underbelly By Heliacal -> Underbelly Main Upper": lambda state:
+            "Underbelly By Heliacal -> Underbelly Main Upper": lambda state:  # TODO this feels wrong but i'm unsure
                 self.has_breaker(state)
                 or self.knows_obscure(state)
                 and (
@@ -252,19 +251,15 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.get_kicks(state, 4)
                 or self.get_kicks(state, 2) and self.has_plunge(state),
             "Listless Library - Sun Greaves": lambda state:
-                self.has_breaker(state)
-                or self.knows_obscure(state) and self.has_plunge(state),
+                self.can_attack(state),
             "Listless Library - Sun Greaves 1": lambda state:
-                self.has_breaker(state)
-                or self.knows_obscure(state) and self.has_plunge(state),
+                self.can_attack(state),
             "Listless Library - Sun Greaves 2": lambda state:
-                self.has_breaker(state)
-                or self.knows_obscure(state) and self.has_plunge(state),
+                self.can_attack(state),
             "Listless Library - Sun Greaves 3": lambda state:
-                self.has_breaker(state)
-                or self.knows_obscure(state) and self.has_plunge(state),
+                self.can_attack(state),
             "Listless Library - Upper Back": lambda state:
-                (self.has_breaker(state) or self.knows_obscure(state) and self.has_plunge(state))
+                (self.can_attack(state))
                 and (
                     self.has_gem(state) and self.kick_or_plunge(state, 1)
                     or self.kick_or_plunge(state, 2)),

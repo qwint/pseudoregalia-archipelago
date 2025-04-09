@@ -131,8 +131,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.has_gem(state)
                 or self.has_plunge(state) and self.can_slidejump(state),
             "Listless Library - Upper Back": lambda state:
-                (self.has_breaker(state) or self.knows_obscure(state) and self.has_plunge(state))
-                and self.has_gem(state),
+                self.can_attack(state) and self.has_gem(state),
             "Listless Library - Locked Door Across": lambda state:
                 self.kick_or_plunge(state, 1),
             "Listless Library - Locked Door Left": lambda state:

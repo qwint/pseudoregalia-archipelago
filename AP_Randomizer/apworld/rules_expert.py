@@ -10,8 +10,6 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Dungeon Escape Upper -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_slide(state),
-            "Castle Main -> Library Main": lambda state:
-                self.can_attack(state),
             "Castle Main -> Theatre Pillar": lambda state:
                 self.has_slide(state),
             "Castle Main -> Castle Spiral Climb": lambda state:
@@ -42,7 +40,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Keep Main -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_slide(state),
             "Underbelly => Dungeon -> Underbelly Ascendant Light": lambda state:
-                self.has_breaker(state)  # TODO double check
+                self.has_breaker(state)
                 or self.get_kicks(state, 1) and self.has_slide(state),
             "Underbelly Light Pillar -> Underbelly => Dungeon": lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 2),
@@ -128,17 +126,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Castle Sansa - High Climb From Courtyard": lambda state:
                 self.can_attack(state) and self.get_kicks(state, 1)
                 or self.has_slide(state),
-            "Listless Library - Sun Greaves": lambda state:
-                self.can_attack(state),
-            "Listless Library - Sun Greaves 1": lambda state:
-                self.can_attack(state),
-            "Listless Library - Sun Greaves 2": lambda state:
-                self.can_attack(state),
-            "Listless Library - Sun Greaves 3": lambda state:
-                self.can_attack(state),
             "Listless Library - Upper Back": lambda state:
-                (self.has_breaker(state) or self.knows_obscure(state) and self.has_plunge(state))
-                and self.has_slide(state),
+                self.can_attack(state) and self.has_slide(state),
             "Listless Library - Locked Door Across": lambda state:
                 self.has_slide(state),
             "Listless Library - Locked Door Left": lambda state:

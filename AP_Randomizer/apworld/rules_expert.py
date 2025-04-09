@@ -1,11 +1,11 @@
-from .rules import PseudoregaliaRulesHelpers
+from .rules_hard import PseudoregaliaHardRules
 
 
-class PseudoregaliaExpertRules(PseudoregaliaRulesHelpers):
+class PseudoregaliaExpertRules(PseudoregaliaHardRules):
     def __init__(self, world) -> None:
         super().__init__(world)
 
-        self.region_rules.update({
+        region_clauses = {
             "Dungeon Mirror -> Dungeon Slide": lambda state:
                 self.can_attack(state),
             "Dungeon Slide -> Dungeon Mirror": lambda state:
@@ -192,9 +192,9 @@ class PseudoregaliaExpertRules(PseudoregaliaRulesHelpers):
                 or self.has_slide(state),
             "Underbelly Hole -> Underbelly => Keep": lambda state:
                 self.has_slide(state),
-        })
+        }
 
-        self.location_rules.update({
+        location_clauses = {
             # "Dilapidated Dungeon - Dream Breaker": lambda state: True,
             # "Dilapidated Dungeon - Slide": lambda state: True,
             # "Dilapidated Dungeon - Alcove Near Mirror": lambda state: True,
@@ -345,7 +345,9 @@ class PseudoregaliaExpertRules(PseudoregaliaRulesHelpers):
                 )
                 or self.has_gem(state)
                 or self.has_slide(state) and self.get_kicks(state, 1),
-        })
+        }
+
+        self.apply_clauses(region_clauses, location_clauses)
 
     def set_pseudoregalia_rules(self) -> None:
         super().set_pseudoregalia_rules()

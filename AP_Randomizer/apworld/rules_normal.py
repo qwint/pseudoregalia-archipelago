@@ -162,7 +162,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     state.has("Ascendant Light", self.player)
                     or self.can_slidejump(state) and self.get_kicks(state, 3)
                     or self.has_gem(state) and self.get_kicks(state, 2)),
-            "Underbelly By Heliacal -> Underbelly Main Upper": lambda state:  # TODO this feels wrong but i'm unsure
+            "Underbelly By Heliacal -> Underbelly Main Upper": lambda state:
                 self.has_breaker(state) and self.has_plunge(state)
                 or self.knows_obscure(state) and self.has_plunge(state)
                 and (

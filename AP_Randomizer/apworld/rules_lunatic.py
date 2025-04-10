@@ -12,6 +12,8 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                 self.get_kicks(state, 3),
             "Castle By Scythe Corridor -> Castle => Theatre (Front)": lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 2),
+            "Library Main -> Library Top": lambda state:
+                self.get_kicks(state, 1),
             "Library Top -> Library Greaves": lambda state:
                 self.can_bounce(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Underbelly Main Lower -> Underbelly Main Upper": lambda state:

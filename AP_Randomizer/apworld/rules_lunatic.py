@@ -40,7 +40,8 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
             "Sansa Keep - Levers Room": lambda state: True,
             "Sansa Keep - Lonely Throne": lambda state:
                 self.has_breaker(state) and self.has_slide(state) and self.kick_or_plunge(state, 3)
-                or (self.has_slide(state)
+                or (
+                    self.has_slide(state)
                     and self.can_bounce(state)
                     and self.get_kicks(state, 1)
                     and self.has_plunge(state)

@@ -148,7 +148,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 or self.can_strikebreak(state) and self.has_plunge(state),
             "Sansa Keep - Lonely Throne": lambda state:
                 self.has_breaker(state)
-                and (self.has_gem(state)
+                and (
+                    self.has_gem(state)
                     or self.can_bounce(state) and self.kick_or_plunge(state, 3)
                     or self.has_slide(state) and self.get_kicks(state, 3)),
             "Sansa Keep - Near Theatre": lambda state:
@@ -165,7 +166,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "The Underbelly - Strikebreak Wall": lambda state:
                 self.can_strikebreak(state)
                 and (
-                   self.has_slide(state) and self.kick_or_plunge(state, 1)
+                    self.has_slide(state) and self.kick_or_plunge(state, 1)
                     or self.has_slide(state) and self.has_gem(state)),
             "The Underbelly - Surrounded By Holes": lambda state:
                 self.can_soulcutter(state) and self.has_slide(state)

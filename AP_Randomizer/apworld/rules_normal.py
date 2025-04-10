@@ -321,8 +321,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.can_soulcutter(state)
                 and (
                     self.can_bounce(state)
-                    or self.get_kicks(state, 2)
-                )
+                    or self.get_kicks(state, 2))
                 or self.can_slidejump(state) and self.has_gem(state) and self.get_kicks(state, 1),
         }
 

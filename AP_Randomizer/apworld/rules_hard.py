@@ -17,7 +17,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 or self.kick_or_plunge(state, 2)
                 or self.can_slidejump(state) and self.has_plunge(state),
             "Castle Spiral Climb -> Castle High Climb": lambda state:
-                self.kick_or_plunge(state, 3),
+                self.kick_or_plunge(state, 3)
+                or self.knows_obscure(state) and self.can_attack(state) and self.can_slidejump(state),
             "Castle By Scythe Corridor -> Castle Spiral Climb": lambda state:
                 self.get_kicks(state, 3),
             "Castle By Scythe Corridor -> Castle => Theatre (Front)": lambda state:

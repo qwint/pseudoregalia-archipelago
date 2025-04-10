@@ -1,7 +1,7 @@
 from BaseClasses import CollectionState
 from typing import Dict, Callable, TYPE_CHECKING
 from worlds.generic.Rules import add_rule, set_rule, CollectionRule
-from .constants.difficulties import NORMAL, EXPERT, LUNATIC
+from .constants.difficulties import NORMAL
 
 if TYPE_CHECKING:
     from . import PseudoregaliaWorld
@@ -89,7 +89,7 @@ class PseudoregaliaRulesHelpers:
         self.apply_clauses(region_clauses, location_clauses)
 
         logic_level = world.options.logic_level.value
-        if bool(world.options.obscure_logic) or logic_level in {EXPERT, LUNATIC}:
+        if bool(world.options.obscure_logic):
             self.knows_obscure = lambda state: True
             self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
         else:

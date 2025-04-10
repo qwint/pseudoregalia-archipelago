@@ -40,6 +40,11 @@ class PseudoregaliaWorld(World):
                     self.multiworld.itempool.append(
                         PseudoregaliaItem(item_name, item_data.classification, item_data.code, self.player))
 
+    def generate_early(self):
+        if self.options.logic_level in (EXPERT, LUNATIC):
+            # obscure is forced on for expert/lunatic difficulties
+            self.options.obscure_logic.value = 1
+
     def create_regions(self):
         for region_name in region_table.keys():
             self.multiworld.regions.append(Region(region_name, self.player, self.multiworld))

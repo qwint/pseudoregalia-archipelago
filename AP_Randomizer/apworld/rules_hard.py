@@ -129,8 +129,10 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Listless Library - Locked Door Left": lambda state:
                 self.get_kicks(state, 2),
             "Sansa Keep - Strikebreak": lambda state:
-                (self.has_breaker(state) and self.has_slide(state) or self.can_strikebreak(state))
-                and self.get_kicks(state, 1),
+                self.has_breaker(state) and self.get_kicks(state, 1)
+                and (
+                    self.has_slide(state)
+                    or self.can_strikebreak(state)),
             "Sansa Keep - Lonely Throne": lambda state:
                 self.has_breaker(state) and self.has_gem(state)
                 and (

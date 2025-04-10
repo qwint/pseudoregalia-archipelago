@@ -279,7 +279,10 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Sansa Keep - Sunsetter": lambda state:
                 self.can_attack(state),
             "Sansa Keep - Strikebreak": lambda state:
-                (self.has_breaker(state) and self.has_slide(state) or self.can_strikebreak(state))
+                self.has_breaker(state)
+                and (
+                    self.has_slide(state)
+                    or self.can_strikebreak(state))
                 and (
                     self.has_gem(state)
                     or self.has_plunge(state) and self.get_kicks(state, 1)

@@ -1,6 +1,6 @@
 from BaseClasses import CollectionState
 from typing import Dict, Callable, TYPE_CHECKING
-from worlds.generic.Rules import set_rule
+from worlds.generic.Rules import add_rule, set_rule, CollectionRule
 from .constants.difficulties import NORMAL
 
 if TYPE_CHECKING:
@@ -12,20 +12,26 @@ else:
 class PseudoregaliaRulesHelpers:
     world: PseudoregaliaWorld
     player: int
-    region_rules: Dict[str, Callable[[CollectionState], bool]]
-    location_rules: Dict[str, Callable[[CollectionState], bool]]
+    region_rules: dict[str, list[CollectionRule]]
+    location_rules: dict[str, list[CollectionRule]]
+    # Empty list or missing keys are True, any False rules need to be explicit, multiple rules are ORd together
+    # Classes instantiated in difficulty order and append new clauses to rules,
+    # add_rule applies them backwards meaning harder rules will shortcircuit easier rules
+
     required_small_keys: int = 6  # Set to 7 for Normal logic.
 
     def __init__(self, world: PseudoregaliaWorld) -> None:
         self.world = world
         self.player = world.player
+        self.region_rules = {}
+        self.location_rules = {}
 
-        self.region_rules = {
+        region_clauses = {
             "Empty Bailey -> Castle Main": lambda state: True,
             "Empty Bailey -> Theatre Pillar": lambda state: True,
             "Empty Bailey -> Tower Remains": lambda state:
                 self.has_gem(state)
-                or state.has_all({"Slide", "Sunsetter"}, self.player)
+                or self.has_slide(state) and self.has_plunge(state)
                 or self.get_kicks(state, 1),
             "Tower Remains -> Underbelly Little Guy": lambda state:
                 self.has_plunge(state),
@@ -41,7 +47,7 @@ class PseudoregaliaRulesHelpers:
                 or self.has_gem(state) and self.can_slidejump(state),
         }
 
-        self.location_rules = {
+        location_clauses = {
             "Empty Bailey - Solar Wind": lambda state:
                 self.has_slide(state),
             "Empty Bailey - Cheese Bell": lambda state:
@@ -52,7 +58,7 @@ class PseudoregaliaRulesHelpers:
                 self.has_slide(state),
             "Empty Bailey - Center Steeple": lambda state:
                 self.get_kicks(state, 3)
-                or state.has_all({"Sunsetter", "Slide"}, self.player),
+                or self.has_slide(state) and self.has_plunge(state),
             "Empty Bailey - Guarded Hand": lambda state:
                 self.has_plunge(state)
                 or self.has_gem(state)
@@ -79,6 +85,29 @@ class PseudoregaliaRulesHelpers:
                 self.get_kicks(state, 3),
             "Tower Remains - Atop The Tower": lambda state: True,
         }
+
+        self.apply_clauses(region_clauses, location_clauses)
+
+        logic_level = world.options.logic_level.value
+        if bool(world.options.obscure_logic):
+            self.knows_obscure = lambda state: True
+            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
+        else:
+            self.knows_obscure = lambda state: False
+            self.can_attack = lambda state: self.has_breaker(state)
+
+        if logic_level == NORMAL:
+            self.required_small_keys = 7
+
+    def apply_clauses(self, region_clauses, location_clauses):
+        for name, rule in region_clauses.items():
+            if name not in self.region_rules:
+                self.region_rules[name] = []
+            self.region_rules[name].append(rule)
+        for name, rule in location_clauses.items():
+            if name not in self.location_rules:
+                self.location_rules[name] = []
+            self.location_rules[name].append(rule)
 
     def has_breaker(self, state) -> bool:
         return state.has_any({"Dream Breaker", "Progressive Dream Breaker"}, self.player)
@@ -149,28 +178,26 @@ class PseudoregaliaRulesHelpers:
         world = self.world
         multiworld = self.world.multiworld
         split_kicks = bool(world.options.split_sun_greaves)
-        if bool(world.options.obscure_logic):
-            self.knows_obscure = lambda state: True
-            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
-        else:
-            self.knows_obscure = lambda state: False
-            self.can_attack = lambda state: self.has_breaker(state)
 
-        logic_level = world.options.logic_level.value
-        if logic_level == NORMAL:
-            self.required_small_keys = 7
-
-        for name, rule in self.region_rules.items():
+        for name, rules in self.region_rules.items():
             entrance = multiworld.get_entrance(name, self.player)
-            set_rule(entrance, rule)
-        for name, rule in self.location_rules.items():
+            for index, rule in enumerate(rules):
+                if index == 0:
+                    set_rule(entrance, rule)
+                else:
+                    add_rule(entrance, rule, "or")
+        for name, rules in self.location_rules.items():
             if name.startswith("Listless Library"):
                 if split_kicks and name.endswith("Greaves"):
                     continue
                 if not split_kicks and name[-1].isdigit():
                     continue
             location = multiworld.get_location(name, self.player)
-            set_rule(location, rule)
+            for index, rule in enumerate(rules):
+                if index == 0:
+                    set_rule(location, rule)
+                else:
+                    add_rule(location, rule, "or")
 
         set_rule(multiworld.get_location("D S T RT ED M M O   Y", self.player), lambda state:
                  state.has_all({

@@ -185,6 +185,10 @@ namespace Client {
         list<int64_t> id_list{ id };
         Log(L"Sending check with id " + std::to_wstring(id));
         ap->LocationChecks(id_list);
+
+        Log(L"Marking location " + std::to_wstring(id) + L" as checked");
+        GameData::CheckLocation(id);
+        Engine::DespawnCollectible(id);
     }
     
     // Sends game completion flag to Archipelago.
@@ -260,7 +264,7 @@ namespace Client {
                 }
                 case Hashes::item_id: {
                     int64_t id = std::stoll(node.text);
-                    string item_name = ap->get_item_name(id);
+                    string item_name = ap->get_item_name(id, "");
                     switch (node.flags) {
                     case APClient::FLAG_ADVANCEMENT:
                         console_text += "<Progression";
@@ -280,7 +284,7 @@ namespace Client {
                 }
                 case Hashes::location_id: {
                     int64_t id = std::stoll(node.text);
-                    string location_name = ap->get_location_name(id);
+                    string location_name = ap->get_location_name(id, "");
                     console_text += "<Location>" + location_name + "</>";
                     break;
                 }

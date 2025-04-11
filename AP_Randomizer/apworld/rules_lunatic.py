@@ -12,6 +12,8 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                 self.get_kicks(state, 3),
             "Castle By Scythe Corridor -> Castle => Theatre (Front)": lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 2),
+            "Library Main -> Library Top": lambda state:
+                self.get_kicks(state, 1),
             "Library Top -> Library Greaves": lambda state:
                 self.can_bounce(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Underbelly Main Lower -> Underbelly Main Upper": lambda state:
@@ -39,12 +41,15 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                 self.kick_or_plunge(state, 1),  # This never really matters and that makes me sad
             "Sansa Keep - Levers Room": lambda state: True,
             "Sansa Keep - Lonely Throne": lambda state:
-                self.has_slide(state) and self.kick_or_plunge(state, 3)
-                or (self.has_slide(state)
-                    and state.has("Ascendant Light", self.player)
+                self.has_breaker(state) and self.has_slide(state) and self.kick_or_plunge(state, 3)
+                or (
+                    self.has_slide(state)
+                    and self.can_bounce(state)
                     and self.get_kicks(state, 1)
                     and self.has_plunge(state)
                     and self.can_soulcutter(state)),
+            "Listless Library - Upper Back": lambda state:
+                self.has_plunge(state),
         }
 
         self.apply_clauses(region_clauses, location_clauses)

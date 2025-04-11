@@ -31,7 +31,7 @@ class PseudoregaliaRulesHelpers:
             "Empty Bailey -> Theatre Pillar": lambda state: True,
             "Empty Bailey -> Tower Remains": lambda state:
                 self.has_gem(state)
-                or state.has_all({"Slide", "Sunsetter"}, self.player)
+                or self.has_slide(state) and self.has_plunge(state)
                 or self.get_kicks(state, 1),
             "Tower Remains -> Underbelly Little Guy": lambda state:
                 self.has_plunge(state),
@@ -58,7 +58,7 @@ class PseudoregaliaRulesHelpers:
                 self.has_slide(state),
             "Empty Bailey - Center Steeple": lambda state:
                 self.get_kicks(state, 3)
-                or state.has_all({"Sunsetter", "Slide"}, self.player),
+                or self.has_slide(state) and self.has_plunge(state),
             "Empty Bailey - Guarded Hand": lambda state:
                 self.has_plunge(state)
                 or self.has_gem(state)
@@ -87,6 +87,17 @@ class PseudoregaliaRulesHelpers:
         }
 
         self.apply_clauses(region_clauses, location_clauses)
+
+        logic_level = world.options.logic_level.value
+        if bool(world.options.obscure_logic):
+            self.knows_obscure = lambda state: True
+            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
+        else:
+            self.knows_obscure = lambda state: False
+            self.can_attack = lambda state: self.has_breaker(state)
+
+        if logic_level == NORMAL:
+            self.required_small_keys = 7
 
     def apply_clauses(self, region_clauses, location_clauses):
         for name, rule in region_clauses.items():
@@ -167,16 +178,6 @@ class PseudoregaliaRulesHelpers:
         world = self.world
         multiworld = self.world.multiworld
         split_kicks = bool(world.options.split_sun_greaves)
-        if bool(world.options.obscure_logic):
-            self.knows_obscure = lambda state: True
-            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
-        else:
-            self.knows_obscure = lambda state: False
-            self.can_attack = lambda state: self.has_breaker(state)
-
-        logic_level = world.options.logic_level.value
-        if logic_level == NORMAL:
-            self.required_small_keys = 7
 
         for name, rules in self.region_rules.items():
             entrance = multiworld.get_entrance(name, self.player)

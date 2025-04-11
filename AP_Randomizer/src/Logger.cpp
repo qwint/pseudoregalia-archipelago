@@ -27,15 +27,17 @@ namespace Logger {
 	} // End private members
 
 
-	void Logger::Log(string text, LogType type) {
-		Log(StringOps::ToWide(text), type);
+	void Logger::Log(string text, LogType type, bool popup_is_relevant) {
+		Log(StringOps::ToWide(text), type, popup_is_relevant);
 	}
 
-	void Logger::Log(wstring text, LogType type) {
+	void Logger::Log(wstring text, LogType type, bool popup_is_relevant) {
 		switch (type) {
 		case LogType::Popup: {
 			send<LogLevel::Verbose>(L"[APRandomizer] Message: " + text + L"\n");
-			PrintToPlayer(text);
+			if (popup_is_relevant) {
+				PrintToPlayer(text);
+			}
 			break;
 		}
 

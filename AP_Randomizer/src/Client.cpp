@@ -33,10 +33,15 @@ namespace Client {
 
     // Private members
     namespace {
+        struct MessageInfo {
+            string markdown_text;
+            bool mentions_player;
+        };
+
         typedef nlohmann::json json;
         typedef APClient::State ConnectionStatus;
         void ReceiveItems(const list<APClient::NetworkItem>&);
-        string ProcessMessageText(const APClient::PrintJSONArgs&);
+        MessageInfo ProcessMessageText(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
@@ -130,14 +135,14 @@ namespace Client {
             ap->set_print_json_handler([](const APClient::PrintJSONArgs& args) {
                 using RC::Unreal::FText;
                 string plain_text = ap->render_json(args.data);
-                string markdown_text = ProcessMessageText(args);
+                MessageInfo info = ProcessMessageText(args);
                 Logger::PrintToConsole(
-                    StringOps::ToWide(markdown_text),
+                    StringOps::ToWide(info.markdown_text),
                     StringOps::ToWide(plain_text)
                 );
 
                 if (args.type == "ItemSend") {
-                    Log(plain_text, LogType::Popup);
+                    Log(plain_text, LogType::Popup, info.mentions_player);
                 }
                 else {
                     Log(plain_text, LogType::Console);
@@ -248,8 +253,9 @@ namespace Client {
 
     // Private functions
     namespace {
-        string ProcessMessageText(const APClient::PrintJSONArgs& args) {
+        MessageInfo ProcessMessageText(const APClient::PrintJSONArgs& args) {
             string console_text;
+            bool mentions_player = false;
 
             // This loop is basically the logic of APClient::render_json(), adapted to use RichTextBlock markdown.
             // Later on this will be stylized to consider the perspective of the player.
@@ -260,6 +266,9 @@ namespace Client {
                     int id = std::stoi(node.text);
                     string player_name = ap->get_player_alias(id);
                     console_text += "<Player>" + player_name + "</>";
+                    if (id == ap->get_player_number()) {
+                        mentions_player = true;
+                    }
                     break;
                 }
                 case Hashes::item_id: {
@@ -294,7 +303,7 @@ namespace Client {
                 }
             }
 
-            return console_text;
+            return MessageInfo{ console_text, mentions_player };
         }
 
         void ReceiveDeathLink(const json& data) {

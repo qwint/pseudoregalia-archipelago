@@ -8,83 +8,49 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
 
         region_clauses = {
             "Empty Bailey -> Upper Bailey": lambda state:
-                self.has_slide(state) and self.can_attack(state) and self.kick_or_plunge(state, 1)  # going through inside building to reach the tip
-                or self.get_kicks(state, 3)  # 2 is possible but a bit tight, 1 is possible with a funky jump
-                or self.has_slide(state)  # ultras
-                or self.has_plunge(state)
-                or self.has_gem(state)
-                or self.can_bounce(state),  # annoying projectile pogo
+                self.has_slide(state) and self.can_attack(state)  # going through inside building to reach the tip
+                or self.get_kicks(state, 2)
+                or self.get_kicks(state, 1) and self.knows_obscure(state),
             # "Empty Bailey -> Castle Main": lambda state: True,
             # "Empty Bailey -> Bailey => Theatre Pillar": lambda state: True,
             # "Upper Bailey -> Empty Bailey": lambda state: True,
             "Upper Bailey -> Tower Remains": lambda state:
-                (
-                    # get into the tower
-                    self.kick_or_plunge(state, 4)
-                    or self.has_slide(state))  # ultras, is a bit tight, consider adding a kick to make it easier?
+                self.kick_or_plunge(state, 4)
                 and (
-                # get onto the bridge
+                    # get onto the bridge
                     self.can_slidejump(state)
-                    or self.has_slide(state)  # ultras
-                    or self.get_kicks(state, 3)  # easiest
-                    or self.get_kicks(state, 2)  # pretty doable
-                    or self.get_kicks(state, 1)  # hard but possible
-                    or self.has_gem(state)  # lunatic behaviour that i'm not trying
-                    or self.has_plunge(state)),  # crouch backflip tech
+                    or self.has_plunge(state) and self.knows_obscure(state)),
             "Tower Remains -> Underbelly Little Guy": lambda state:
-                self.has_plunge(state),  # nothing better
+                self.has_plunge(state),
             "Tower Remains -> The Great Door": lambda state:
-                # get to top of tower
-                self.has_slide(state) # ultras from right tower directly to pole
-                and (
-                    self.has_gem(state)
-                    or self.kick_or_plunge(state, 2))  # double check 1 kick + plunge works, should be doable with 1 kick on lunatic?
-                or self.can_attack(state) and self.has_gem(state),  # open left tower and climb it, consider adding a kick or plunge to make the first left pole easier
-           
+                self.can_attack(state) and self.has_gem(state) and self.kick_or_plunge(state, 1),
             "Theatre Main -> Keep Main": lambda state:
                 self.has_gem(state),
             "Theatre Main -> Theatre Pillar": lambda state:
-                self.kick_or_plunge(state, 2)
-                or self.get_kicks(state, 1)  # technical
+                self.get_kicks(state, 2)
+                or self.get_kicks(state, 1) and self.has_plunge(state) and self.knows_obscure(state)
                 or self.has_gem(state),
             "Theatre Main -> Castle => Theatre (Front)": lambda state:
                 self.has_gem(state)
                 or self.get_kicks(state, 1)
-                or self.has_slide(state)  # ultrahops
                 or self.can_slidejump(state),
-            "Bailey => Theatre Pillar -> Theatre Pillar": lambda state: 
+            "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.has_plunge(state)
-                or self.has_slide(state)
                 or self.can_slidejump(state)
-                or self.get_kicks(state, 1)  # expert?
-                # or self.get_kicks(state, 3)  # dunno none of these feel easier than 1kick
                 or self.get_kicks(state, 1) and self.can_bounce(state),
-            "Bailey => Theatre Pillar -> Empty Bailey": lambda state: True,
+            # "Bailey => Theatre Pillar -> Empty Bailey": lambda state: True,
             "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.has_plunge(state)
-                or self.get_kicks(state, 1)  # expert?
-                or self.has_slide(state)
                 or self.can_slidejump(state),
-            "Castle => Theatre Pillar -> Castle Main": lambda state: 
-                True  # harder difficulties
-                or self.kick_or_plunge(state, 1)
-                or self.has_slide(state)
-                or self.can_slidejump(state)
-                or self.has_gem(state),
+            # "Castle => Theatre Pillar -> Castle Main": lambda state: True,
             "Theatre Pillar -> Theatre Main": lambda state:
-                (  # get up ledge
-                    self.has_gem(state)
-                    or self.has_slide(state) and self.kick_or_plunge(state, 3)
-                    or self.can_slidejump(state) and self.kick_or_plunge(state, 3)
-                    or self.has_plunge(state) and self.get_kicks(state, 3))
-                    # or whatever vanilla bubble use is
-                and ( # cross lava
-                    self.kick_or_plunge(state, 2)
-                    or self.get_kicks(state, 1)  # technical
-                    or self.has_gem(state)),
-            "Theatre Pillar -> Bailey => Theatre Pillar": lambda state: True,
-            "Theatre Pillar -> Castle => Theatre Pillar": lambda state: True,
-            "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:
+                self.has_gem(state) and self.kick_or_plunge(state, 1)
+                or self.has_gem(state) and self.can_bounce(state)
+                or self.can_slidejump(state) and self.kick_or_plunge(state, 3)
+                or self.has_plunge(state) and self.get_kicks(state, 3),
+            # "Theatre Pillar -> Bailey => Theatre Pillar": lambda state: True,
+            # "Theatre Pillar -> Castle => Theatre Pillar": lambda state: True,
+            "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:  # TODO see if there are more routes
                 self.has_gem(state) and self.get_kicks(state, 3)
                 or self.has_gem(state) and self.can_slidejump(state),
 
@@ -151,10 +117,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Castle => Theatre (Front) -> Castle Moon Room": lambda state:
                 self.has_gem(state)
                 or self.can_slidejump(state) and self.kick_or_plunge(state, 2),
-            "Castle => Theatre (Front) -> Theatre Main": lambda state:  # TODO make sure to difficulty split
-                self.has_gem(state)
-                or self.has_slide(state)  # ultra
-                or self.has_plunge(state) and self.get_kicks(state, 1)
+            "Castle => Theatre (Front) -> Theatre Main": lambda state:
+                self.has_plunge(state) and self.get_kicks(state, 1)
                 or self.get_kicks(state, 3),
             "Library Main -> Library Locked": lambda state:
                 self.has_small_keys(state),
@@ -255,11 +219,9 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     self.get_kicks(state, 1)
                     or self.has_gem(state)),
             # "Underbelly Little Guy -> Empty Bailey": lambda state: True,
-            "Underbelly Little Guy -> Upper Bailey": lambda state:  # TODO make sure to difficulty split
+            "Underbelly Little Guy -> Upper Bailey": lambda state:
                 self.knows_obscure(state)
                 or self.has_plunge(state) and self.get_kicks(state, 1)
-                or self.get_kicks(state, 3)
-                or self.has_slide(state)  # ultras
                 or self.can_slidejump(state),
             "Underbelly Little Guy -> Underbelly Main Lower": lambda state:
                 self.has_gem(state)
@@ -278,38 +240,24 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
         location_clauses = {
             "Empty Bailey - Solar Wind": lambda state:
                 self.has_slide(state),  # to consider: damage boosting w/ crouch
-            "Empty Bailey - Cheese Bell": lambda state:
-                ( # to get to ledge assuming top of bailey access
-                    self.can_slidejump(state)  # i'm just assuming here
-                    or self.has_plunge(state)  # crouch backflip tech
-                    or self.has_slide(state)  # ultras
-                    or self.get_kicks(state, 1))
-                    # or self.can_bounce(state)  # doable but you need one of the others to get across that one gap so who cares
-                and ( # to get from ledge to bell
-                    self.has_slide(state)  # ultras
-                    and (
-                        self.kick_or_plunge(state, 2)
-                        or self.has_gem(state))
-                    or self.can_slidejump(state)  # untested
-                    and (
-                        self.kick_or_plunge(state, 2)
-                        or self.has_gem(state))
-                    or self.has_gem(state)  # not that tight tbh but maybe annoying enough to remove from normal
-                    or self.get_kicks(state, 3)),  # not that tight but requires a backflip (which should be normal)
+            "Empty Bailey - Cheese Bell": lambda state:  # TODO consider to/from center steeple
+                self.can_slidejump(state)  # untested
+                and (
+                    self.kick_or_plunge(state, 2)
+                    or self.has_gem(state))
+                or self.get_kicks(state, 3),
             "Empty Bailey - Inside Building": lambda state:
-                self.has_slide(state),  # unchanged by difficulty
+                self.has_slide(state),
             "Empty Bailey - Center Steeple": lambda state:
-                self.has_plunge(state)  # a little tight but probably normal
-                or self.get_kicks(state, 3)  # 2 is possible but a bit tight, 1 is possible with the tables + a funky jump to get on top floor
-                or self.has_slide(state),  # ultras
+                self.has_plunge(state),
             "Empty Bailey - Guarded Hand": lambda state:
                 upper_bailey.can_reach(state)
                 and (
                     self.knows_obscure(state)
                     or self.has_gem(state)
-                    or self.get_kicks(state, 4))  # doable with kicks 0-4 tbh
-                or self.has_breaker(state)
-                and (   # do the fight
+                    or self.get_kicks(state, 3))
+                or self.has_breaker(state)   # do the fight
+                and (
                     self.has_plunge(state)
                     or self.get_kicks(state, 2)),
             "Twilight Theatre - Soul Cutter": lambda state:
@@ -318,52 +266,36 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     self.can_bounce(state)
                     or self.kick_or_plunge(state, 1)
                     or self.has_gem(state)
-                    or self.has_slide(state)  # ultras
                     or self.can_slidejump(state)),
             "Twilight Theatre - Corner Beam": lambda state:
                 self.has_gem(state)
                 and (
                     self.has_plunge(state)
-                    or self.get_kicks(state, 1)  # tight, 2 makes it pretty easy
                     or self.get_kicks(state, 2)
-                    or self.can_slidejump(state)
-                    or self.has_slide(state))  # ultras
-                or self.has_plunge(state) and get_kicks(state, 3)  # use crouch backflip
-                or self.get_kicks(state, 4)  # easy just slam kicks down
-                or self.has_slide(state) and self.kick_or_plunge(state, 2),  # ultra
+                    or self.can_slidejump(state))  # untested
+                or self.has_plunge(state) and self.get_kicks(state, 3) and self.knows_obscure(state)  # use crouch backflip
+                or self.get_kicks(state, 4),
             "Twilight Theatre - Locked Door": lambda state:
                 self.has_small_keys(state)
                 and (
-                    self.has_gem(state)
-                    or self.can_bounce(state)
+                    self.can_bounce(state)
                     or self.get_kicks(state, 3)
-                    or self.has_plunge(state) and self.get_kicks(state, 1)  # crouch backflip from doorway
-                    or self.has_slide(state)  # ultra
+                    or self.has_plunge(state) and self.get_kicks(state, 1) and self.knows_obscure(state)  # crouch backflip from doorway
                     or self.can_slidejump(state)  # probably, idk
                     ),
             "Twilight Theatre - Back Of Auditorium": lambda state:
-                self.has_plunge(state)  # annoying to get up and uses crouch backflips afterwards
-                or self.get_kicks(state, 1)  # babee route works
+                self.has_plunge(state) and self.knows_obscure(state)
+                or self.get_kicks(state, 1)
                 or self.has_gem(state)
-                or self.has_slide(state)  # super annoying ultrahops
                 or self.can_slidejump(state),  # shit maybe idk
-            "Twilight Theatre - Murderous Goat": lambda state: True,
-            "Twilight Theatre - Center Stage": lambda state:  # i don't feel super confident about this
-                self.can_soulcutter(state) and self.has_gem(state) and self.kick_or_plunge(state, 1) and self.can_slidejump(state),
-                # TODO
-                # leftside: soulcutter+(cling|3kickor)
-                # rightside: cling only technical but probably add some vertical for nicety, plus whatever the clingless lunatic route is
-                # middle: (getting to back area needs: cling, 5kickor, scythe entrance)
-                    # silly doorframe shit: cling
-                    # shortcut: ultra + 1kickor + cling
-                    # arena: breaker + (3kickor, cling)
+            # "Twilight Theatre - Murderous Goat": lambda state: True,
+            "Twilight Theatre - Center Stage": lambda state:
+                self.can_soulcutter(state) and self.has_gem(state)
+                and self.has_plunge(state) and self.can_slidejump(state),  # cross the gap on right side
+                # potentially more routes
             "Tower Remains - Cling Gem": lambda state:
-                # get to gem by crossing the gap
                 self.can_slidejump(state)  # pretty sure this is easy but can't test rn
-                or self.has_slide(state)  # ultras
-                or self.kick_or_plunge(state, 2)  # climb the right tower and cross
-                or self.has_gem(state), # ride from back of right tower to ledge, a little tight(?)
-
+                or self.kick_or_plunge(state, 2),  # climb the right tower and cross
             # "Tower Remains - Atop The Tower": lambda state: True,
 
             # "Dilapidated Dungeon - Dream Breaker": lambda state: True,
@@ -423,8 +355,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Castle Sansa - High Climb From Courtyard": lambda state:
                 self.get_kicks(state, 2)
                 or self.has_gem(state) and self.has_plunge(state)
-                or self.has_breaker(state) and self.get_kicks(state, 1)
-                or self.knows_obscure(state) and self.has_plunge(state) and self.get_kicks(state, 1),
+                or self.can_attack(state) and self.get_kicks(state, 1),
             "Castle Sansa - Alcove Near Scythe Corridor": lambda state:
                 self.has_gem(state) and self.get_kicks(state, 1) and self.has_plunge(state)
                 or self.kick_or_plunge(state, 4),

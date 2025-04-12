@@ -6,6 +6,20 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
         super().__init__(world)
 
         region_clauses = {
+            "Empty Bailey -> Upper Bailey": lambda state:
+                self.has_plunge(state)
+                or self.has_gem(state),
+            "Upper Bailey -> Tower Remains": lambda state:
+                self.kick_or_plunge(state, 3),
+            "Tower Remains -> The Great Door": lambda state:
+                self.can_attack(state) and self.has_gem(state),
+            "Theatre Main -> Theatre Pillar": lambda state:
+                self.get_kicks(state, 1),
+            "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
+                self.get_kicks(state, 1),
+            "Theatre Pillar -> Theatre Main": lambda state:
+                self.has_gem(state),
+
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 2),
@@ -28,6 +42,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 or self.get_kicks(state, 1) and self.has_plunge(state),
             "Castle => Theatre (Front) -> Castle Moon Room": lambda state:
                 self.get_kicks(state, 4),
+            "Castle => Theatre (Front) -> Theatre Main": lambda state:  # TODO double check for hard logic
+                self.has_gem(state),
             "Library Main -> Library Top": lambda state:
                 self.has_gem(state)
                 or self.knows_obscure(state) and self.kick_or_plunge(state, 2),
@@ -74,6 +90,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                     self.has_gem(state)
                     or self.has_plunge(state) and self.get_kicks(state, 3)
                     or self.can_slidejump(state) and self.get_kicks(state, 3)),
+            "Underbelly Little Guy -> Upper Bailey": lambda state:
+                self.get_kicks(state, 3),
             "Underbelly Little Guy -> Underbelly Main Lower": lambda state: True,
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
                 self.get_kicks(state, 1)
@@ -81,6 +99,27 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
         }
 
         location_clauses = {
+            "Empty Bailey - Cheese Bell": lambda state:
+                self.has_gem(state),
+            "Empty Bailey - Center Steeple": lambda state:
+                self.get_kicks(state, 2),
+            "Twilight Theatre - Corner Beam": lambda state:
+                self.has_gem(state) and self.get_kicks(state, 1),
+            "Twilight Theatre - Locked Door": lambda state:
+                self.has_small_keys(state) and self.has_gem(state),
+            "Twilight Theatre - Center Stage": lambda state:  # i don't feel super confident about this
+                self.can_soulcutter(state) and self.has_gem(state)
+                and self.kick_or_plunge(state, 1) and self.can_slidejump(state),
+                # TODO remove notes
+                # leftside: soulcutter+(cling|3kickor)
+                # rightside: cling only technical but probably add some vertical for nicety, plus whatever the clingless lunatic route is
+                # middle: (getting to back area needs: cling, 5kickor, scythe entrance)
+                    # silly doorframe shit: cling
+                    # shortcut: ultra + 1kickor + cling
+                    # arena: breaker + (3kickor, cling)
+            "Tower Remains - Cling Gem": lambda state:
+                self.has_gem(state),  # ride from back of right tower to ledge
+
             "Dilapidated Dungeon - Dark Orbs": lambda state:
                 self.has_gem(state)
                 or self.get_kicks(state, 1) and self.can_bounce(state)

@@ -6,6 +6,25 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
         super().__init__(world)
 
         region_clauses = {
+            "Empty Bailey -> Upper Bailey": lambda state:
+                self.has_slide(state),
+            "Upper Bailey -> Tower Remains": lambda state:
+                self.has_slide(state)  # is a bit tight, consider adding a kick to make it easier?
+                or self.kick_or_plunge(state, 3),  # maybe doesn't need to be here
+            "Tower Remains -> The Great Door": lambda state:
+                # get to top of tower
+                self.has_slide(state)  # ultras from right tower directly to pole
+                and (
+                    self.has_gem(state)
+                    or self.kick_or_plunge(state, 2)),  # double check 1 kick + plunge works, should be doable with 1 kick on lunatic?
+            "Theatre Main -> Castle => Theatre (Front)": lambda state:
+                self.has_slide(state),
+            "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
+                self.get_kicks(state, 1)
+                or self.has_slide(state),
+            "Theatre Pillar -> Theatre Main": lambda state:
+                self.has_slide(state) and self.kick_or_plunge(state, 3),
+
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Dungeon Escape Upper -> Theatre Outside Scythe Corridor": lambda state:
@@ -28,6 +47,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state)
                 or self.get_kicks(state, 3),
             "Castle => Theatre (Front) -> Castle Moon Room": lambda state:
+                self.has_slide(state),
+            "Castle => Theatre (Front) -> Theatre Main": lambda state:
                 self.has_slide(state),
             "Library Main -> Library Top": lambda state:
                 self.has_plunge(state)
@@ -89,11 +110,37 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.has_gem(state)
                     or self.get_kicks(state, 2)),
+            # "Underbelly Little Guy -> Upper Bailey": lambda state: True,  # technically already true because obscure
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
                 self.has_slide(state),
         }
 
         location_clauses = {
+            "Empty Bailey - Cheese Bell": lambda state:
+                self.has_slide(state)
+                and (
+                    self.kick_or_plunge(state, 2)
+                    or self.has_gem(state)),
+            "Empty Bailey - Center Steeple": lambda state:
+                self.get_kicks(state, 1)
+                or self.has_slide(state),
+            "Twilight Theatre - Soul Cutter": lambda state:
+                self.can_strikebreak(state) and self.has_slide(state),
+            "Twilight Theatre - Corner Beam": lambda state:
+                self.has_slide(state)
+                and (
+                    self.kick_or_plunge(state, 2)
+                    or self.has_gem(state)),
+            "Twilight Theatre - Locked Door": lambda state:
+                self.has_small_keys(state) and self.has_slide(state),
+            "Twilight Theatre - Back Of Auditorium": lambda state:
+                self.has_slide(state),  # super annoying ultrahops
+            "Twilight Theatre - Center Stage": lambda state:
+                self.can_soulcutter(state) and self.has_gem(state),  # TODO double check
+            "Tower Remains - Cling Gem": lambda state:
+                self.has_slide(state)
+                or self.has_gem(state),  # ride from back of right tower to ledge, a little tight(?)
+
             "Dilapidated Dungeon - Dark Orbs": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1)
                 or self.has_slide(state) and self.can_bounce(state),

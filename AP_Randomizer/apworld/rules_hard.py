@@ -9,7 +9,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 2),
-            "Castle Main -> Theatre Pillar": lambda state:
+            "Castle Main -> Castle => Theatre Pillar": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 1),
             "Castle Main -> Castle Spiral Climb": lambda state:

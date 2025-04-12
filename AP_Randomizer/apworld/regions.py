@@ -37,7 +37,7 @@ region_table: Dict[str, List[str]] = {
          "Keep Main",
          "Empty Bailey",
          "Library Main",
-         "Theatre Pillar",
+         "Castle => Theatre Pillar",
          "Castle Spiral Climb",],
     "Castle Spiral Climb":
         ["Castle Main",
@@ -81,9 +81,12 @@ region_table: Dict[str, List[str]] = {
          "Underbelly => Keep"],
 
     "Empty Bailey":
-        ["Castle Main",
-         "Tower Remains",
-         "Theatre Pillar",],
+        ["Upper Bailey",
+         "Castle Main",
+         "Bailey => Theatre Pillar",],
+    "Upper Bailey":
+        ["Empty Bailey",
+         "Tower Remains",],
     "Tower Remains":
         ["Underbelly Little Guy",
          "The Great Door",],
@@ -111,8 +114,9 @@ region_table: Dict[str, List[str]] = {
     "Underbelly By Heliacal":
         ["Underbelly Main Upper"],
     "Underbelly Little Guy":
-        ["Empty Bailey",
-         "Underbelly Main Lower"],
+        ["Upper Bailey",
+         "Empty Bailey",
+         "Underbelly Main Lower",],
     "Underbelly => Keep":
         ["Keep => Underbelly",
          "Underbelly Hole"],
@@ -121,9 +125,19 @@ region_table: Dict[str, List[str]] = {
          "Underbelly => Keep"],
 
     "Theatre Main":
-        ["Keep Main",],
+        ["Keep Main",
+         "Theatre Pillar",
+         "Castle => Theatre (Front)"],
+    "Bailey => Theatre Pillar":
+        ["Theatre Pillar",
+         "Empty Bailey"],
+    "Castle => Theatre Pillar":
+        ["Theatre Pillar",
+         "Castle Main"],
     "Theatre Pillar":
-        ["Theatre Main",],
+        ["Theatre Main",
+         "Bailey => Theatre Pillar",
+         "Castle => Theatre Pillar",],
     "Theatre Outside Scythe Corridor":
         ["Theatre Main"],
 

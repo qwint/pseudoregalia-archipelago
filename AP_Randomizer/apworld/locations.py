@@ -138,13 +138,13 @@ location_table = {
 
     "Empty Bailey - Solar Wind": PseudoregaliaLocationData(
         code=2365810036,
-        region="Empty Bailey",),
+        region="Upper Bailey",),
     "Empty Bailey - Center Steeple": PseudoregaliaLocationData(
         code=2365810037,
-        region="Empty Bailey",),
+        region="Upper Bailey",),
     "Empty Bailey - Cheese Bell": PseudoregaliaLocationData(
         code=2365810038,
-        region="Empty Bailey",),
+        region="Upper Bailey",),
     "Empty Bailey - Guarded Hand": PseudoregaliaLocationData(
         code=2365810039,
         region="Empty Bailey",),

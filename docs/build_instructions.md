@@ -24,7 +24,7 @@
 
     ```
     > cd pseudoregalia-archipelago
-    > cmake -B Output
+    > cmake -S . -B Output
     ```
 
     The solution file will be built to `Output\pseudoregalia-archipelago.sln`. You can open the solution in Visual Studio to make edits, but you will build with the build tools.
@@ -41,4 +41,4 @@
 
     AP_Randomizer.dll will be written to `pseudoregalia-archipelago\Output\AP_Randomizer\Game__Shipping__Win64`.
 
-1. You can test changes by renaming the file to `main.dll` and replacing `[pseudo-ap]\pseudoregalia\Binaries\Win64\Mods\AP_Randomizer\dlls\main.dll` with the one you just built.
+1. You can test changes by renaming the file to `main.dll` and replacing `pseudoregalia\Binaries\Win64\Mods\AP_Randomizer\dlls\main.dll` inside your Pseudoregalia Archipelago game installation.

@@ -117,10 +117,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
 
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:
-                self.has_slide(state)
-                and (
-                    self.get_kicks(state, 1)
-                    or self.has_gem(state)),
+                self.has_slide(state) and self.get_kicks(state, 1),
             "Empty Bailey - Center Steeple": lambda state:
                 self.get_kicks(state, 1)
                 or self.has_slide(state),

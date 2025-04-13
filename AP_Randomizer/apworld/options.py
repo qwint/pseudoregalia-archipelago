@@ -11,8 +11,6 @@ class LogicLevel(Choice):
     Hard: Requires some easier movement tricks such as cling climbing, and more nuanced movement like turning during an air kick.
     Expert: Requires more difficult movement tricks such as ultrahops and reverse wallkicks, and obscure knowledge.
     Lunatic: Requires extremely difficult jumps and creative thinking. No holds barred. You have been warned.
-
-    Currently applies to Castle, Dungeon, Library, Keep, and Underbelly.
     """
     display_name = "Logic Level"
     option_normal = NORMAL
@@ -26,8 +24,6 @@ class ObscureLogic(Toggle):
     """
     Enables logic for obscure knowledge and creative pathing that isn't difficult to execute but may not be obvious or commonly known.
     This option is forced on if logic level is set to Expert or Lunatic.
-
-    Currently applies to Castle, Dungeon, Library, Keep, and Underbelly.
     """
     display_name = "Obscure Logic"
 

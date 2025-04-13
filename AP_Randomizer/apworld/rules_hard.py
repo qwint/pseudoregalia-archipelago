@@ -101,8 +101,6 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:
                 self.has_gem(state),
-            "Empty Bailey - Center Steeple": lambda state:
-                self.get_kicks(state, 2),
             "Twilight Theatre - Corner Beam": lambda state:
                 self.has_gem(state) and self.get_kicks(state, 1),
             "Twilight Theatre - Locked Door": lambda state:

@@ -9,8 +9,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Empty Bailey -> Upper Bailey": lambda state:
                 self.has_slide(state),
             "Upper Bailey -> Tower Remains": lambda state:
-                self.has_slide(state)  # is a bit tight, consider adding a kick to make it easier?
-                or self.kick_or_plunge(state, 3),  # maybe doesn't need to be here
+                self.has_slide(state)
             "Tower Remains -> The Great Door": lambda state:
                 # get to top of tower
                 self.has_slide(state)  # ultras from right tower directly to pole

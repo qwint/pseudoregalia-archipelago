@@ -221,8 +221,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Underbelly Little Guy -> Empty Bailey": lambda state: True,
             "Underbelly Little Guy -> Upper Bailey": lambda state:
                 self.knows_obscure(state)
-                or self.has_plunge(state) and self.get_kicks(state, 1)
-                or self.can_slidejump(state),
+                or self.has_plunge(state) and self.get_kicks(state, 1),
             "Underbelly Little Guy -> Underbelly Main Lower": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 1),

@@ -134,8 +134,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Twilight Theatre - Center Stage": lambda state:
                 self.can_soulcutter(state) and self.has_gem(state),  # TODO double check
             "Tower Remains - Cling Gem": lambda state:
-                self.has_slide(state)
-                or self.has_gem(state),  # ride from back of right tower to ledge, a little tight(?)
+                self.has_slide(state),
 
             "Dilapidated Dungeon - Dark Orbs": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1)

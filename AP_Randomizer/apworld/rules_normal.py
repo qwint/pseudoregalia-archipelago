@@ -20,7 +20,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     # get onto the bridge
                     self.can_slidejump(state)
                     or self.has_plunge(state) and self.knows_obscure(state)),
-            "Tower Remains -> Underbelly Little Guy": lambda state:
+            "Upper Bailey -> Underbelly Little Guy": lambda state:
                 self.has_plunge(state),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.has_gem(state) and self.kick_or_plunge(state, 1),

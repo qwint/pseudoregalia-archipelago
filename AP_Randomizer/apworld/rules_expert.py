@@ -119,7 +119,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Empty Bailey - Cheese Bell": lambda state:
                 self.has_slide(state)
                 and (
-                    self.kick_or_plunge(state, 2)
+                    self.get_kicks(state, 1)
                     or self.has_gem(state)),
             "Empty Bailey - Center Steeple": lambda state:
                 self.get_kicks(state, 1)

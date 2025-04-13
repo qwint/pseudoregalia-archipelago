@@ -35,7 +35,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.get_kicks(state, 1)
                 or self.can_slidejump(state),
             "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
-                self.has_plunge(state)
+                self.has_plunge(state) and self.knows_obscure(state)
                 or self.can_slidejump(state)
                 or self.get_kicks(state, 1) and self.can_bounce(state),
             # "Bailey => Theatre Pillar -> Empty Bailey": lambda state: True,

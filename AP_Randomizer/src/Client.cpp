@@ -258,16 +258,18 @@ namespace Client {
             bool mentions_player = false;
 
             // This loop is basically the logic of APClient::render_json(), adapted to use RichTextBlock markdown.
-            // Later on this will be stylized to consider the perspective of the player.
             for (const auto& node : args.data) {
                 size_t type_hash = StringOps::HashNstring(node.type);
                 switch (type_hash) {
                 case Hashes::player_id: {
                     int id = std::stoi(node.text);
                     string player_name = ap->get_player_alias(id);
-                    console_text += "<Player>" + player_name + "</>";
                     if (id == ap->get_player_number()) {
                         mentions_player = true;
+                        console_text += "<Self>" + player_name + "</>";
+                    }
+                    else {
+                        console_text += "<Player>" + player_name + "</>";
                     }
                     break;
                 }

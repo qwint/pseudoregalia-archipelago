@@ -132,7 +132,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Twilight Theatre - Back Of Auditorium": lambda state:
                 self.has_slide(state),  # super annoying ultrahops
             "Twilight Theatre - Center Stage": lambda state:
-                self.can_soulcutter(state) and self.has_gem(state),  # TODO double check
+                self.can_soulcutter(state) and self.has_gem(state),
             "Tower Remains - Cling Gem": lambda state:
                 self.has_slide(state),
 

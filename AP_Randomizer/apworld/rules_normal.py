@@ -244,7 +244,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and (
                     self.kick_or_plunge(state, 2)
                     or self.has_gem(state))
-                or self.get_kicks(state, 3),
+                or self.get_kicks(state, 3)
+                or self.has_gem(state) and self.kick_or_plunge(state, 2),
             "Empty Bailey - Inside Building": lambda state:
                 self.has_slide(state),
             "Empty Bailey - Center Steeple": lambda state:

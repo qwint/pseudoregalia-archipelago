@@ -119,7 +119,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.can_slidejump(state) and self.kick_or_plunge(state, 2),
             "Castle => Theatre (Front) -> Theatre Main": lambda state:
                 self.has_plunge(state) and self.get_kicks(state, 1)
-                or self.get_kicks(state, 3),
+                or self.get_kicks(state, 2),
             "Library Main -> Library Locked": lambda state:
                 self.has_small_keys(state),
             "Library Main -> Library Greaves": lambda state:

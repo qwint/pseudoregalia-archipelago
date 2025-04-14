@@ -44,8 +44,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.can_slidejump(state),
             # "Castle => Theatre Pillar -> Castle Main": lambda state: True,
             "Theatre Pillar -> Theatre Main": lambda state:
-                self.has_gem(state) and self.kick_or_plunge(state, 1)
-                or self.has_gem(state) and self.can_bounce(state)
+                self.has_gem(state)
                 or self.can_slidejump(state) and self.kick_or_plunge(state, 3)
                 or self.has_plunge(state) and self.get_kicks(state, 3),
             # "Theatre Pillar -> Bailey => Theatre Pillar": lambda state: True,

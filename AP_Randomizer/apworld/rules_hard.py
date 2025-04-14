@@ -17,8 +17,6 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.get_kicks(state, 1),
             "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1),
-            "Theatre Pillar -> Theatre Main": lambda state:
-                self.has_gem(state),
 
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_gem(state)

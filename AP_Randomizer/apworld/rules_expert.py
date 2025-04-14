@@ -18,6 +18,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                     or self.kick_or_plunge(state, 2)),  # double check 1 kick + plunge works, should be doable with 1 kick on lunatic?
             "Theatre Main -> Castle => Theatre (Front)": lambda state:
                 self.has_slide(state),
+            "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
+                self.has_slide(state),
             "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1)
                 or self.has_slide(state),

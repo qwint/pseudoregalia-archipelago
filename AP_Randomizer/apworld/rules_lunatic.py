@@ -11,7 +11,7 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
             "Empty Bailey -> Upper Bailey": lambda state:
                 self.can_bounce(state),
             "Theatre Pillar -> Theatre Main": lambda state:
-                self.kick_or_plunge(state, 4),  # bubble route
+                self.get_kicks(state, 2),  # bubble route
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 1),
             "Castle Spiral Climb -> Castle By Scythe Corridor": lambda state:

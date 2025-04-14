@@ -279,8 +279,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_small_keys(state)
                 and (
                     self.can_bounce(state)
-                    or self.get_kicks(state, 1)
-                    or self.has_plunge(state) and self.get_kicks(state, 1) and self.knows_obscure(state)  # crouch backflip from doorway
+                    or self.get_kicks(state, 1),
                     or self.can_slidejump(state)  # probably, idk
                     ),
             "Twilight Theatre - Back Of Auditorium": lambda state:

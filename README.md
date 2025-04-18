@@ -20,7 +20,7 @@ You'll spawn in Dungeon with Dream Breaker at its vanilla location, and you'll h
 Note: If you are installing on Steam Deck, please read [the Steam Deck installation instructions](https://github.com/pseudoregalia-modding/pseudoregalia-archipelago/blob/main/docs/steam_deck_installation.md) instead.
 1. [Go to the Releases page](https://github.com/pseudoregalia-modding/pseudoregalia-archipelago/releases/latest) and download the latest version of `pseudoregalia-archipelago.zip` and `Pseudoregalia.yaml`. You don't need the apworld or weighted yaml if you don't know what those are.
 2. In Steam/steamapps/common, make a copy of your Pseudoregalia folder and rename it "Pseudoregalia_AP" (or whatever else you like).
-   * Note: if you use steam input for your controller, you may need to add the new `pseudoregalia.exe` as a "Non-Steam Game" game in Steam to continue to have that compatibility
+   * You can add the new `pseudoregalia.exe` as a "Non-Steam Game" in Steam to access it easily from Steam and to maintain Steam Input compatibility (which may be required for some controllers)
 3. Extract the contents of pseudoregalia-archipelago.zip directly into "Pseudoregalia_AP". You should see README.md appear in the folder.
 
 ![](https://i.imgur.com/SGPm9oq.jpg)

@@ -275,7 +275,7 @@ namespace Client {
                 }
                 case Hashes::item_id: {
                     int64_t id = std::stoll(node.text);
-                    string item_name = ap->get_item_name(id, "");
+                    string item_name = ap->get_item_name(id, ap->get_player_game(node.player));
                     switch (node.flags) {
                     case APClient::FLAG_ADVANCEMENT:
                         console_text += "<Progression";
@@ -295,7 +295,7 @@ namespace Client {
                 }
                 case Hashes::location_id: {
                     int64_t id = std::stoll(node.text);
-                    string location_name = ap->get_location_name(id, "");
+                    string location_name = ap->get_location_name(id, ap->get_player_game(node.player));
                     console_text += "<Location>" + location_name + "</>";
                     break;
                 }

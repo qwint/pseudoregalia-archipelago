@@ -88,7 +88,8 @@ namespace Client {
                         ap->ConnectUpdate(false, 0, true, list<string> {"DeathLink"});
                     }
                 }
-                // Delay spawning collectibles so that we have time to receive checked locations.
+                ap->LocationScouts(GameData::GetLocations());
+                // Delay spawning collectibles so that we have time to receive checked locations and scouts.
                 Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::SpawnCollectibles);
                 connection_retries = 0;
                 });
@@ -120,6 +121,24 @@ namespace Client {
                     advice = "Please double-check your client version.";
                 }
                 Log("Could not connect to the server. " + advice, LogType::System);
+                });
+
+            // Executes as a response to LocationScouts.
+            ap->set_location_info_handler([](const list<APClient::NetworkItem>& items) {
+                for (const auto& item : items) {
+                    if (ap->get_player_game(item.player) == ap->get_game()) {
+                        GameData::SetPseudoItemClassification(item.location, item.item);
+                    }
+                    else if (item.flags & APClient::FLAG_ADVANCEMENT) {
+                        GameData::SetOffWorldItemClassification(item.location, GameData::Classification::GenericProgression);
+                    }
+                    else if (item.flags & (APClient::FLAG_NEVER_EXCLUDE | APClient::FLAG_TRAP)) {
+                        GameData::SetOffWorldItemClassification(item.location, GameData::Classification::GenericUsefulOrTrap);
+                    }
+                    else {
+                        GameData::SetOffWorldItemClassification(item.location, GameData::Classification::GenericFiller);
+                    }
+                }
                 });
 
             // Executes whenever items are received from the server.

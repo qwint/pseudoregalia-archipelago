@@ -276,19 +276,17 @@ namespace Client {
                 case Hashes::item_id: {
                     int64_t id = std::stoll(node.text);
                     string item_name = ap->get_item_name(id, ap->get_player_game(node.player));
-                    switch (node.flags) {
-                    case APClient::FLAG_ADVANCEMENT:
+                    if (node.flags & APClient::FLAG_ADVANCEMENT) {
                         console_text += "<Progression";
-                        break;
-                    case APClient::FLAG_NEVER_EXCLUDE:
+                    }
+                    else if (node.flags & APClient::FLAG_NEVER_EXCLUDE) {
                         console_text += "<Useful";
-                        break;
-                    case APClient::FLAG_TRAP:
+                    }
+                    else if (node.flags & APClient::FLAG_TRAP) {
                         console_text += "<Trap";
-                        break;
-                    default:
+                    }
+                    else {
                         console_text += "<Filler";
-                        break;
                     }
                     console_text += "Item>" + item_name + "</>";
                     break;

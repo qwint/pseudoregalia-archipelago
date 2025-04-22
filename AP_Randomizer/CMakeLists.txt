@@ -21,9 +21,11 @@ target_include_directories(${TARGET} PRIVATE "dependencies/websocketpp")
 target_include_directories(${TARGET} PRIVATE "dependencies/wswrap/include")
 target_include_directories(${TARGET} PRIVATE "dependencies/asio/include")
 target_include_directories(${TARGET} PRIVATE "dependencies/openssl/include")
+target_include_directories(${TARGET} PRIVATE "dependencies/zlib/include")
 target_link_libraries(${TARGET} PUBLIC UE4SS)
 target_link_libraries(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/openssl/lib/libcrypto.lib)
 target_link_libraries(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/openssl/lib/libssl.lib)
+target_link_libraries(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/zlib/lib/zlib.lib)
 
 target_compile_features(${TARGET} PUBLIC cxx_std_20)
 

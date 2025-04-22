@@ -4,6 +4,7 @@
 
 namespace GameData {
     using std::unordered_map;
+    using std::list;
     using std::wstring;
     using std::string;
 
@@ -16,6 +17,7 @@ namespace GameData {
         bool major_keys[5];
         unordered_map<wstring, int> upgrade_table;
         unordered_map<Map, unordered_map<int64_t, Collectible>> collectible_table;
+        unordered_map<int64_t, Classification> lookup_location_id_to_classification;
         unordered_map<string, int> options;
         bool slidejump_owned;
         bool slidejump_disabled;
@@ -37,28 +39,28 @@ namespace GameData {
         // The two lookup tables below could be combined into one table with something like an ItemIdInfo struct,
         // and should be if a third table would be added.
         const unordered_map<int64_t, ItemType> lookup_item_id_to_type = {
-            {2365810001, ItemType::Ability},
-            {2365810002, ItemType::Ability},
-            {2365810003, ItemType::Ability},
-            {2365810004, ItemType::Ability},
-            {2365810005, ItemType::Ability},
-            {2365810006, ItemType::Ability},
-            {2365810007, ItemType::Ability},
-            {2365810008, ItemType::Ability},
-            {2365810009, ItemType::Ability},
-            {2365810010, ItemType::Ability},
-            {2365810011, ItemType::Ability},
-            {2365810012, ItemType::Ability},
-            {2365810013, ItemType::Ability},
-            {2365810014, ItemType::Ability},
-            {2365810015, ItemType::Ability},
-            {2365810016, ItemType::Ability},
-            {2365810017, ItemType::Ability},
-            {2365810018, ItemType::Ability},
+            {2365810001, ItemType::MajorAbility},
+            {2365810002, ItemType::MajorAbility},
+            {2365810003, ItemType::MajorAbility},
+            {2365810004, ItemType::MajorAbility},
+            {2365810005, ItemType::MajorAbility},
+            {2365810006, ItemType::MajorAbility},
+            {2365810007, ItemType::MajorAbility},
+            {2365810008, ItemType::MajorAbility},
+            {2365810009, ItemType::MajorAbility},
+            {2365810010, ItemType::MajorAbility},
+            {2365810011, ItemType::MinorAbility},
+            {2365810012, ItemType::MinorAbility},
+            {2365810013, ItemType::MinorAbility},
+            {2365810014, ItemType::MinorAbility},
+            {2365810015, ItemType::MinorAbility},
+            {2365810016, ItemType::MinorAbility},
+            {2365810017, ItemType::MinorAbility},
+            {2365810018, ItemType::MinorAbility},
 
-            {2365810026, ItemType::Ability},
-            {2365810027, ItemType::Ability},
-            {2365810028, ItemType::Ability},
+            {2365810026, ItemType::MajorAbility},
+            {2365810027, ItemType::MinorAbility},
+            {2365810028, ItemType::MajorAbility},
 
             {2365810021, ItemType::MajorKey},
             {2365810022, ItemType::MajorKey},
@@ -180,6 +182,53 @@ namespace GameData {
 
     unordered_map<int64_t, Collectible> GameData::GetCollectiblesOfZone(Map current_map) {
         return collectible_table[current_map];
+    }
+
+    list<int64_t> GameData::GetLocations() {
+        list<int64_t> location_ids;
+        for (const auto& [_, zone_map] : collectible_table) {
+            for (const auto& [location_id, collectible] : zone_map) {
+                if (!collectible.CanCreate(GameData::GetOptions())) {
+                    continue;
+                }
+                location_ids.push_back(location_id);
+            }
+        }
+        return location_ids;
+    }
+
+    void GameData::SetPseudoItemClassification(int64_t location_id, int64_t item_id) {
+        ItemType type = lookup_item_id_to_type.at(item_id);
+        switch (type) {
+        case ItemType::MajorAbility:
+            lookup_location_id_to_classification[location_id] = Classification::MajorAbility;
+            break;
+        case ItemType::MinorAbility:
+            lookup_location_id_to_classification[location_id] = Classification::MinorAbility;
+            break;
+        case ItemType::HealthPiece:
+            lookup_location_id_to_classification[location_id] = Classification::HealthPiece;
+            break;
+        case ItemType::MajorKey:
+            lookup_location_id_to_classification[location_id] = Classification::MajorKey;
+            break;
+        case ItemType::SmallKey:
+            lookup_location_id_to_classification[location_id] = Classification::SmallKey;
+            break;
+        }
+    }
+
+    void GameData::SetOffWorldItemClassification(int64_t location_id, Classification classification) {
+        lookup_location_id_to_classification[location_id] = classification;
+    }
+
+    Classification GameData::GetClassification(int64_t location_id) {
+        if (lookup_location_id_to_classification.contains(location_id)) {
+            return lookup_location_id_to_classification[location_id];
+        }
+        else {
+            return Classification::Generic;
+        }
     }
 
     void GameData::Initialize() {
@@ -373,7 +422,8 @@ namespace GameData {
     ItemType GameData::ReceiveItem(int64_t id) {
         ItemType type = lookup_item_id_to_type.at(id);
         switch (type) {
-        case ItemType::Ability:
+        case ItemType::MajorAbility:
+        case ItemType::MinorAbility:
             upgrade_table[lookup_item_id_to_upgrade.at(id)]++;
             if (!slidejump_owned) {
                 if (lookup_item_id_to_upgrade.at(id) == L"SlideJump"

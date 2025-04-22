@@ -11,8 +11,8 @@ namespace Logger {
 		Error
 	};
 
-	void Log(std::wstring, LogType = LogType::Default);
-	void Log(std::string, LogType = LogType::Default);
+	void Log(std::wstring, LogType = LogType::Default, bool = true);
+	void Log(std::string, LogType = LogType::Default, bool = true);
 	void OnTick();
 	void ToggleMessageMute();
 	void ToggleMessageHide();

@@ -33,10 +33,15 @@ namespace Client {
 
     // Private members
     namespace {
+        struct MessageInfo {
+            string markdown_text;
+            bool mentions_player;
+        };
+
         typedef nlohmann::json json;
         typedef APClient::State ConnectionStatus;
         void ReceiveItems(const list<APClient::NetworkItem>&);
-        string ProcessMessageText(const APClient::PrintJSONArgs&);
+        MessageInfo ProcessMessageText(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
@@ -83,7 +88,8 @@ namespace Client {
                         ap->ConnectUpdate(false, 0, true, list<string> {"DeathLink"});
                     }
                 }
-                // Delay spawning collectibles so that we have time to receive checked locations.
+                ap->LocationScouts(GameData::GetLocations());
+                // Delay spawning collectibles so that we have time to receive checked locations and scouts.
                 Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::SpawnCollectibles);
                 connection_retries = 0;
                 });
@@ -117,6 +123,24 @@ namespace Client {
                 Log("Could not connect to the server. " + advice, LogType::System);
                 });
 
+            // Executes as a response to LocationScouts.
+            ap->set_location_info_handler([](const list<APClient::NetworkItem>& items) {
+                for (const auto& item : items) {
+                    if (ap->get_player_game(item.player) == ap->get_game()) {
+                        GameData::SetPseudoItemClassification(item.location, item.item);
+                    }
+                    else if (item.flags & APClient::FLAG_ADVANCEMENT) {
+                        GameData::SetOffWorldItemClassification(item.location, GameData::Classification::GenericProgression);
+                    }
+                    else if (item.flags & (APClient::FLAG_NEVER_EXCLUDE | APClient::FLAG_TRAP)) {
+                        GameData::SetOffWorldItemClassification(item.location, GameData::Classification::GenericUsefulOrTrap);
+                    }
+                    else {
+                        GameData::SetOffWorldItemClassification(item.location, GameData::Classification::GenericFiller);
+                    }
+                }
+                });
+
             // Executes whenever items are received from the server.
             ap->set_items_received_handler([](const list<APClient::NetworkItem>& items) {
                 for (const auto& item : items) {
@@ -130,14 +154,14 @@ namespace Client {
             ap->set_print_json_handler([](const APClient::PrintJSONArgs& args) {
                 using RC::Unreal::FText;
                 string plain_text = ap->render_json(args.data);
-                string markdown_text = ProcessMessageText(args);
+                MessageInfo info = ProcessMessageText(args);
                 Logger::PrintToConsole(
-                    StringOps::ToWide(markdown_text),
+                    StringOps::ToWide(info.markdown_text),
                     StringOps::ToWide(plain_text)
                 );
 
                 if (args.type == "ItemSend") {
-                    Log(plain_text, LogType::Popup);
+                    Log(plain_text, LogType::Popup, info.mentions_player);
                 }
                 else {
                     Log(plain_text, LogType::Console);
@@ -185,6 +209,10 @@ namespace Client {
         list<int64_t> id_list{ id };
         Log(L"Sending check with id " + std::to_wstring(id));
         ap->LocationChecks(id_list);
+
+        Log(L"Marking location " + std::to_wstring(id) + L" as checked");
+        GameData::CheckLocation(id);
+        Engine::DespawnCollectible(id);
     }
     
     // Sends game completion flag to Archipelago.
@@ -244,43 +272,47 @@ namespace Client {
 
     // Private functions
     namespace {
-        string ProcessMessageText(const APClient::PrintJSONArgs& args) {
+        MessageInfo ProcessMessageText(const APClient::PrintJSONArgs& args) {
             string console_text;
+            bool mentions_player = false;
 
             // This loop is basically the logic of APClient::render_json(), adapted to use RichTextBlock markdown.
-            // Later on this will be stylized to consider the perspective of the player.
             for (const auto& node : args.data) {
                 size_t type_hash = StringOps::HashNstring(node.type);
                 switch (type_hash) {
                 case Hashes::player_id: {
                     int id = std::stoi(node.text);
                     string player_name = ap->get_player_alias(id);
-                    console_text += "<Player>" + player_name + "</>";
+                    if (id == ap->get_player_number()) {
+                        mentions_player = true;
+                        console_text += "<Self>" + player_name + "</>";
+                    }
+                    else {
+                        console_text += "<Player>" + player_name + "</>";
+                    }
                     break;
                 }
                 case Hashes::item_id: {
                     int64_t id = std::stoll(node.text);
-                    string item_name = ap->get_item_name(id);
-                    switch (node.flags) {
-                    case APClient::FLAG_ADVANCEMENT:
+                    string item_name = ap->get_item_name(id, ap->get_player_game(node.player));
+                    if (node.flags & APClient::FLAG_ADVANCEMENT) {
                         console_text += "<Progression";
-                        break;
-                    case APClient::FLAG_NEVER_EXCLUDE:
+                    }
+                    else if (node.flags & APClient::FLAG_NEVER_EXCLUDE) {
                         console_text += "<Useful";
-                        break;
-                    case APClient::FLAG_TRAP:
+                    }
+                    else if (node.flags & APClient::FLAG_TRAP) {
                         console_text += "<Trap";
-                        break;
-                    default:
+                    }
+                    else {
                         console_text += "<Filler";
-                        break;
                     }
                     console_text += "Item>" + item_name + "</>";
                     break;
                 }
                 case Hashes::location_id: {
                     int64_t id = std::stoll(node.text);
-                    string location_name = ap->get_location_name(id);
+                    string location_name = ap->get_location_name(id, ap->get_player_game(node.player));
                     console_text += "<Location>" + location_name + "</>";
                     break;
                 }
@@ -290,7 +322,7 @@ namespace Client {
                 }
             }
 
-            return console_text;
+            return MessageInfo{ console_text, mentions_player };
         }
 
         void ReceiveDeathLink(const json& data) {

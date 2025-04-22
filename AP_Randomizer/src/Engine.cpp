@@ -106,6 +106,7 @@ namespace Engine {
 		struct CollectibleSpawnInfo {
 			int64_t new_id;
 			FVector position;
+			int32_t classification;
 		};
 		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(GetCurrentMap());
 		for (const auto& [id, collectible] : collectible_map) {
@@ -119,7 +120,7 @@ namespace Engine {
 				continue;
 			}
 			Log(L"Spawning collectible with id " + to_wstring(id));
-			shared_ptr<void> collectible_info(new CollectibleSpawnInfo{ id, collectible.GetPosition() });
+			shared_ptr<void> collectible_info(new CollectibleSpawnInfo{ id, collectible.GetPosition(), GameData::GetClassification(id)});
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SpawnCollectible", collectible_info);
 		}
 	}

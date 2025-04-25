@@ -1,0 +1,15 @@
+# This file is a template that displays and explains the available client
+# settings. All the selections in this file are the defaults. To have the
+# client actually use your options, rename this file to "settings.toml". Every
+# release will contain "settings.tmpl.toml" so you can reference it to see if
+# there is anything new.
+
+[settings]
+# "item_display" configures how items are displayed in your game.
+#
+# "full": Pseudoregalia items appear as they do in the base game, items from
+#         other games look different based on their classification.
+# "generic_non_pseudo": Pseudoregalia items appear as they do in the base game,
+#                       items from other games all look the same.
+# "generic_all": All items look the same.
+item_display = "full"

@@ -84,7 +84,7 @@ namespace Client {
                 Log("Connected to slot");
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
                     GameData::SetOption(iter.key(), iter.value());
-                    if (iter.key() == "death_link" || iter.value() > 0) {
+                    if (iter.key() == "death_link" && iter.value() > 0) {
                         ap->ConnectUpdate(false, 0, true, list<string> {"DeathLink"});
                     }
                 }

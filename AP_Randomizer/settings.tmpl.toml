@@ -4,7 +4,7 @@
 
 [settings]
 
-# item_display configures how items are displayed in your game.
+# "item_display" configures how items are displayed in your game.
 #
 # "full": Pseudoregalia items look vanilla, items from other games look different based on their classification.
 # "generic_non_pseudo": Pseudoregalia items look vanilla, items from other games all look the same.

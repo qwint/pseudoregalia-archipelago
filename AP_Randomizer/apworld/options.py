@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Toggle, Choice, DefaultOnToggle, DeathLink, PerGameCommonOptions
+from Options import Toggle, Choice, DefaultOnToggle, PerGameCommonOptions
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
 
 
@@ -70,5 +70,4 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     progressive_breaker: ProgressiveBreaker
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
-    death_link: DeathLink
 

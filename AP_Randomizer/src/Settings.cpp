@@ -12,37 +12,63 @@ namespace Settings {
 	using std::ifstream;
 
 	namespace {
-		const string settings_filename = "Mods/AP_Randomizer/settings.toml";
+		// if you run from the executable directory
+		const string settings_filename1 = "Mods/AP_Randomizer/settings.toml";
+		// if you run from the game directory
+		const string settings_filename2 = "pseudoregalia/Binaries/Win64/Mods/AP_Randomizer/settings.toml";
+
 		ItemDisplay item_display = ItemDisplay::Full;
+		bool death_link = false;
 	}
 
 	void Load() {
-		ifstream settings_file(settings_filename);
+		ifstream settings_file(settings_filename1);
 		if (!settings_file.good()) {
-			Log("Settings file not found");
-			return;
+			settings_file = ifstream(settings_filename2);
+			if (!settings_file.good()) {
+				Log("Settings file not found, using default settings");
+				return;
+			}
 		}
 
 		try {
 			toml::table settings_table = toml::parse(settings_file);
+			Log("Loading settings");
 
+			// item_display
 			optional<string> item_display_setting = settings_table["settings"]["item_display"].value<string>();
 			if (item_display_setting) {
-				bool set = false;
-				if (item_display_setting.value() == "generic_non_pseudo") {
+				string setting_value = item_display_setting.value();
+				if (setting_value == "full") {
+					item_display = ItemDisplay::Full;
+					Log("item_display set to " + setting_value);
+				}
+				else if (setting_value == "generic_non_pseudo") {
 					item_display = ItemDisplay::GenericNonPseudo;
-					set = true;
+					Log("item_display set to " + setting_value);
 				}
-				else if (item_display_setting.value() == "generic_all") {
+				else if (setting_value == "generic_all") {
 					item_display = ItemDisplay::GenericAll;
-					set = true;
+					Log("item_display set to " + setting_value);
 				}
-				if (set) {
-					Log("item_display set to " + item_display_setting.value());
+				else {
+					Log("Unknown option " + setting_value + " for item_display, using default option full");
 				}
 			}
+			else {
+				Log("Using default option full for item_display");
+			}
 
-			Log("Loaded settings");
+			// death_link
+			optional<bool> death_link_setting = settings_table["settings"]["death_link"].value<bool>();
+			if (death_link_setting) {
+				death_link = death_link_setting.value();
+				string setting_string = death_link_setting.value() ? "true" : "false";
+				Log("death_link set to " + setting_string);
+			}
+			else {
+				Log("Using default option false for death_link");
+			}
 		}
 		catch (const toml::parse_error& err) {
 			Log("Failed to parse settings: " + string(err.description()));
@@ -51,5 +77,9 @@ namespace Settings {
 
 	ItemDisplay GetItemDisplay() {
 		return item_display;
+	}
+
+	bool GetDeathLink() {
+		return death_link;
 	}
 }

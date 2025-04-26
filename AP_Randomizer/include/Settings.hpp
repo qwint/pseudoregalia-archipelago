@@ -9,4 +9,5 @@ namespace Settings {
 
     void Load();
     ItemDisplay GetItemDisplay();
+    bool GetDeathLink();
 }

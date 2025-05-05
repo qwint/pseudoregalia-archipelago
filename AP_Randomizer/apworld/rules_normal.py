@@ -24,7 +24,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_plunge(state),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.has_gem(state) and self.kick_or_plunge(state, 1),
-            "Theatre Main -> Keep Main": lambda state:
+            "Theatre Main -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_gem(state),
             "Theatre Main -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 2)
@@ -49,6 +49,10 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:  # TODO see if there are more routes
                 self.has_gem(state) and self.get_kicks(state, 3)
                 or self.has_gem(state) and self.can_slidejump(state),
+            "Theatre Outside Scythe Corridor -> Dungeon Escape Upper": lambda state:  # TODO see if there are more routes
+                self.has_gem(state),
+            "Theatre Outside Scythe Corridor -> Keep Main": lambda state:  # TODO see if there are more routes
+                self.has_gem(state),
 
             "Dungeon Mirror -> Dungeon Slide": lambda state:
                 self.can_attack(state),

@@ -16,6 +16,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.has_gem(state)
                     or self.kick_or_plunge(state, 2)),  # double check 1 kick + plunge works, should be doable with 1 kick on lunatic?
+            # "Theatre Main -> Theatre Outside Scythe Corridor": lambda state:
+                # there's certainly some routes besides the gem route that should be expert/lunatic
             "Theatre Main -> Castle => Theatre (Front)": lambda state:
                 self.has_slide(state),
             "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:

@@ -36,16 +36,13 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.can_slidejump(state),
             "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.has_plunge(state) and self.knows_obscure(state)
-                or self.can_slidejump(state)
                 or self.get_kicks(state, 1) and self.can_bounce(state),
             # "Bailey => Theatre Pillar -> Empty Bailey": lambda state: True,
             "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
-                self.has_plunge(state)
-                or self.can_slidejump(state),
+                self.has_plunge(state),
             # "Castle => Theatre Pillar -> Castle Main": lambda state: True,
             "Theatre Pillar -> Theatre Main": lambda state:
                 self.has_gem(state)
-                or self.can_slidejump(state) and self.kick_or_plunge(state, 3)
                 or self.has_plunge(state) and self.get_kicks(state, 3),
             # "Theatre Pillar -> Bailey => Theatre Pillar": lambda state: True,
             # "Theatre Pillar -> Castle => Theatre Pillar": lambda state: True,
@@ -264,14 +261,12 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and (  # we probably already have some of this movement but worth marking it imo
                     self.can_bounce(state)
                     or self.kick_or_plunge(state, 1)
-                    or self.has_gem(state)
-                    or self.can_slidejump(state)),
+                    or self.has_gem(state)),
             "Twilight Theatre - Corner Beam": lambda state:
                 self.has_gem(state)
                 and (
                     self.has_plunge(state)
-                    or self.get_kicks(state, 2)
-                    or self.can_slidejump(state))  # untested
+                    or self.get_kicks(state, 2))
                 or self.has_plunge(state) and self.get_kicks(state, 3) and self.knows_obscure(state)  # use crouch backflip
                 or self.get_kicks(state, 4),
             "Twilight Theatre - Locked Door": lambda state:
@@ -279,21 +274,19 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and (
                     self.can_bounce(state)
                     or self.get_kicks(state, 1)
-                    or self.can_slidejump(state)  # probably, idk
                     ),
             "Twilight Theatre - Back Of Auditorium": lambda state:
                 self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1)
                 or self.has_gem(state)
-                or self.can_slidejump(state),  # shit maybe idk
+                or self.can_slidejump(state),
             # "Twilight Theatre - Murderous Goat": lambda state: True,
             "Twilight Theatre - Center Stage": lambda state:
                 self.can_soulcutter(state) and self.has_gem(state)
                 and self.has_plunge(state) and self.can_slidejump(state),  # cross the gap on right side
                 # potentially more routes
             "Tower Remains - Cling Gem": lambda state:
-                self.can_slidejump(state)  # pretty sure this is easy but can't test rn
-                or self.kick_or_plunge(state, 2),  # climb the right tower and cross
+                self.kick_or_plunge(state, 2),  # climb the right tower and cross
             # "Tower Remains - Atop The Tower": lambda state: True,
 
             # "Dilapidated Dungeon - Dream Breaker": lambda state: True,

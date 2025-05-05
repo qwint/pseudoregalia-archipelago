@@ -16,7 +16,12 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Theatre Main -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1),
             "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
-                self.get_kicks(state, 1),
+                self.get_kicks(state, 1)
+                or self.can_slidejump(state),
+            "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
+                self.can_slidejump(state)
+            "Theatre Pillar -> Theatre Main": lambda state:
+                self.can_slidejump(state) and self.kick_or_plunge(state, 3),
 
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_gem(state)
@@ -89,7 +94,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                     or self.has_plunge(state) and self.get_kicks(state, 3)
                     or self.can_slidejump(state) and self.get_kicks(state, 3)),
             "Underbelly Little Guy -> Upper Bailey": lambda state:
-                self.get_kicks(state, 3),
+                self.get_kicks(state, 3)
+                or self.can_slidejump(state) and self.get_kicks(state, 1),
             "Underbelly Little Guy -> Underbelly Main Lower": lambda state: True,
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
                 self.get_kicks(state, 1)
@@ -99,10 +105,17 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:
                 self.has_gem(state),
+            "Twilight Theatre - Soul Cutter": lambda state:
+                self.can_strikebreak(state) and self.can_slidejump(state),
             "Twilight Theatre - Corner Beam": lambda state:
-                self.has_gem(state) and self.get_kicks(state, 1),
+                self.has_gem(state)
+                and (
+                    self.get_kicks(state, 1)
+                    or self.can_slidejump(state)),
             "Twilight Theatre - Locked Door": lambda state:
                 self.has_small_keys(state) and self.has_gem(state),
+            "Twilight Theatre - Back Of Auditorium": lambda state:
+                self.can_slidejump(state),
             "Twilight Theatre - Center Stage": lambda state:  # i don't feel super confident about this
                 self.can_soulcutter(state) and self.has_gem(state)
                 and self.kick_or_plunge(state, 1) and self.can_slidejump(state),

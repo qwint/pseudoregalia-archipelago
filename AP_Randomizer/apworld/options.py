@@ -8,7 +8,8 @@ class LogicLevel(Choice):
     The overall difficulty of the logic, used to determine the requirements to access locations and regions.
 
     Normal: Suitable for anyone who has beaten the game. Requires backflips and knowing where everything is.
-    Hard: Requires some easier movement tricks such as cling climbing, and more nuanced movement like turning during an air kick.
+    Hard: Requires some easier movement tricks such as cling climbing and backwards ultras using solar wind,
+          and more nuanced movement like turning during an air kick.
     Expert: Requires more difficult movement tricks such as ultrahops and reverse wallkicks, and obscure knowledge.
     Lunatic: Requires extremely difficult jumps and creative thinking. No holds barred. You have been warned.
     """

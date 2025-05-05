@@ -1,6 +1,7 @@
 #pragma once
 #include "GameData.hpp"
 #include "Logger.hpp"
+#include "Settings.hpp"
 
 namespace GameData {
     using std::unordered_map;
@@ -198,6 +199,10 @@ namespace GameData {
     }
 
     void GameData::SetPseudoItemClassification(int64_t location_id, int64_t item_id) {
+        if (Settings::GetItemDisplay() == Settings::ItemDisplay::GenericAll) {
+            return;
+        }
+
         ItemType type = lookup_item_id_to_type.at(item_id);
         switch (type) {
         case ItemType::MajorAbility:
@@ -219,6 +224,11 @@ namespace GameData {
     }
 
     void GameData::SetOffWorldItemClassification(int64_t location_id, Classification classification) {
+        if (Settings::GetItemDisplay() == Settings::ItemDisplay::GenericNonPseudo ||
+            Settings::GetItemDisplay() == Settings::ItemDisplay::GenericAll) {
+            return;
+        }
+
         lookup_location_id_to_classification[location_id] = classification;
     }
 

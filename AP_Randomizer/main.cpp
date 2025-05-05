@@ -16,6 +16,7 @@
 #include "Logger.hpp"
 #include "Timer.hpp"
 #include "StringOps.hpp"
+#include "Settings.hpp"
 
 class AP_Randomizer : public RC::CppUserModBase {
 public:
@@ -36,6 +37,8 @@ public:
         ModDescription = STR("archipelago randomizer for pseudoregalia");
         ModAuthors = STR("littlemeowmeow0134");
         //ModIntendedSDKVersion = STR("2.6");
+
+        Settings::Load();
     }
 
     ~AP_Randomizer()

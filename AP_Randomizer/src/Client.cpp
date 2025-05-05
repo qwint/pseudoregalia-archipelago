@@ -19,6 +19,7 @@
 #include "Timer.hpp"
 #include "DeathLinkMessages.hpp"
 #include "StringOps.hpp"
+#include "Settings.hpp"
 
 namespace Client {
     using std::string;
@@ -82,11 +83,11 @@ namespace Client {
             // Executes on successful connection to slot.
             ap->set_slot_connected_handler([](const json& slot_data) {
                 Log("Connected to slot");
+                if (Settings::GetDeathLink()) {
+                    ap->ConnectUpdate(false, 0, true, list<string> {"DeathLink"});
+                }
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
                     GameData::SetOption(iter.key(), iter.value());
-                    if (iter.key() == "death_link" || iter.value() > 0) {
-                        ap->ConnectUpdate(false, 0, true, list<string> {"DeathLink"});
-                    }
                 }
                 ap->LocationScouts(GameData::GetLocations());
                 // Delay spawning collectibles so that we have time to receive checked locations and scouts.
@@ -244,7 +245,7 @@ namespace Client {
         using DeathLinkMessages::RandomOutgoingDeathlink;
         using DeathLinkMessages::RandomOwnDeathlink;
         if (ap == nullptr
-        || !GameData::GetOptions().at("death_link")
+        || !Settings::GetDeathLink()
         || death_link_locked) {
             return;
         }
@@ -327,7 +328,7 @@ namespace Client {
 
         void ReceiveDeathLink(const json& data) {
             if (ap == nullptr
-                || !GameData::GetOptions().at("death_link")
+                || !Settings::GetDeathLink()
                 || death_link_locked) {
                 return;
             }

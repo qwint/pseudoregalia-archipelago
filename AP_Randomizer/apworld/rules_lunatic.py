@@ -8,7 +8,7 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
         region_clauses = {
             "Tower Remains -> The Great Door": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1),  # possible with plunge instead?
-            "Empty Bailey -> Upper Bailey": lambda state:
+            "Bailey Lower -> Bailey Upper": lambda state:
                 self.can_bounce(state),
             "Theatre Pillar -> Theatre Main": lambda state:
                 self.get_kicks(state, 2),  # bubble route

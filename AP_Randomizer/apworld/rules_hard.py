@@ -6,19 +6,19 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
         super().__init__(world)
 
         region_clauses = {
-            "Empty Bailey -> Upper Bailey": lambda state:
+            "Bailey Lower -> Bailey Upper": lambda state:
                 self.has_plunge(state)
                 or self.has_gem(state),
-            "Upper Bailey -> Tower Remains": lambda state:
+            "Bailey Upper -> Tower Remains": lambda state:
                 self.kick_or_plunge(state, 3),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.has_gem(state),
             "Theatre Main -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1),
-            "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
+            "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1)
                 or self.can_slidejump(state),
-            "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
+            "Theatre Pillar => Castle -> Theatre Pillar": lambda state:
                 self.can_slidejump(state)
             "Theatre Pillar -> Theatre Main": lambda state:
                 self.can_slidejump(state) and self.kick_or_plunge(state, 3),
@@ -26,7 +26,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 2),
-            "Castle Main -> Castle => Theatre Pillar": lambda state:
+            "Castle Main -> Theatre Pillar => Castle": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 1),
             "Castle Main -> Castle Spiral Climb": lambda state:
@@ -93,7 +93,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                     self.has_gem(state)
                     or self.has_plunge(state) and self.get_kicks(state, 3)
                     or self.can_slidejump(state) and self.get_kicks(state, 3)),
-            "Underbelly Little Guy -> Upper Bailey": lambda state:
+            "Underbelly Little Guy -> Bailey Upper": lambda state:
                 self.get_kicks(state, 3)
                 or self.can_slidejump(state) and self.get_kicks(state, 1),
             "Underbelly Little Guy -> Underbelly Main Lower": lambda state: True,

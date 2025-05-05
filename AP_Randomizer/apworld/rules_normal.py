@@ -4,23 +4,23 @@ from .rules import PseudoregaliaRulesHelpers
 class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
     def __init__(self, world) -> None:
         super().__init__(world)
-        upper_bailey = world.get_region("Upper Bailey")
+        upper_bailey = world.get_region("Bailey Upper")
 
         region_clauses = {
-            "Empty Bailey -> Upper Bailey": lambda state:
+            "Bailey Lower -> Bailey Upper": lambda state:
                 self.has_slide(state) and self.can_attack(state)  # going through inside building to reach the tip
                 or self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.knows_obscure(state),
-            # "Empty Bailey -> Castle Main": lambda state: True,
-            # "Empty Bailey -> Bailey => Theatre Pillar": lambda state: True,
-            # "Upper Bailey -> Empty Bailey": lambda state: True,
-            "Upper Bailey -> Tower Remains": lambda state:
+            # "Bailey Lower -> Castle Main": lambda state: True,
+            # "Bailey Lower -> Theatre Pillar => Bailey": lambda state: True,
+            # "Bailey Upper -> Bailey Lower": lambda state: True,
+            "Bailey Upper -> Tower Remains": lambda state:
                 self.kick_or_plunge(state, 4)
                 and (
                     # get onto the bridge
                     self.can_slidejump(state)
                     or self.has_plunge(state) and self.knows_obscure(state)),
-            "Upper Bailey -> Underbelly Little Guy": lambda state:
+            "Bailey Upper -> Underbelly Little Guy": lambda state:
                 self.has_plunge(state),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.has_gem(state) and self.kick_or_plunge(state, 1),
@@ -34,18 +34,18 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_gem(state)
                 or self.get_kicks(state, 1)
                 or self.can_slidejump(state),
-            "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
+            "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:
                 self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1) and self.can_bounce(state),
-            # "Bailey => Theatre Pillar -> Empty Bailey": lambda state: True,
-            "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
+            # "Theatre Pillar => Bailey -> Bailey Lower": lambda state: True,
+            "Theatre Pillar => Castle -> Theatre Pillar": lambda state:
                 self.has_plunge(state),
-            # "Castle => Theatre Pillar -> Castle Main": lambda state: True,
+            # "Theatre Pillar => Castle -> Castle Main": lambda state: True,
             "Theatre Pillar -> Theatre Main": lambda state:
                 self.has_gem(state)
                 or self.has_plunge(state) and self.get_kicks(state, 3),
-            # "Theatre Pillar -> Bailey => Theatre Pillar": lambda state: True,
-            # "Theatre Pillar -> Castle => Theatre Pillar": lambda state: True,
+            # "Theatre Pillar -> Theatre Pillar => Bailey": lambda state: True,
+            # "Theatre Pillar -> Theatre Pillar => Castle": lambda state: True,
             "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:  # TODO see if there are more routes
                 self.has_gem(state) and self.get_kicks(state, 3)
                 or self.has_gem(state) and self.can_slidejump(state),
@@ -80,10 +80,10 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Dungeon Escape Upper -> Theatre Outside Scythe Corridor": lambda state: True,
             # "Castle Main -> Dungeon => Castle": lambda state: True,
             # "Castle Main -> Keep Main": lambda state: True,
-            # "Castle Main -> Empty Bailey": lambda state: True,
+            # "Castle Main -> Bailey Lower": lambda state: True,
             "Castle Main -> Library Main": lambda state:
                 self.can_attack(state),
-            "Castle Main -> Castle => Theatre Pillar": lambda state:
+            "Castle Main -> Theatre Pillar => Castle": lambda state:
                 self.has_gem(state) and self.kick_or_plunge(state, 1)
                 or self.kick_or_plunge(state, 2),
             "Castle Main -> Castle Spiral Climb": lambda state:
@@ -214,8 +214,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and (
                     self.get_kicks(state, 1)
                     or self.has_gem(state)),
-            # "Underbelly Little Guy -> Empty Bailey": lambda state: True,
-            "Underbelly Little Guy -> Upper Bailey": lambda state:
+            # "Underbelly Little Guy -> Bailey Lower": lambda state: True,
+            "Underbelly Little Guy -> Bailey Upper": lambda state:
                 self.knows_obscure(state)
                 or self.has_plunge(state) and self.get_kicks(state, 1),
             "Underbelly Little Guy -> Underbelly Main Lower": lambda state:

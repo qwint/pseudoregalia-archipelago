@@ -6,9 +6,9 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
         super().__init__(world)
 
         region_clauses = {
-            "Empty Bailey -> Upper Bailey": lambda state:
+            "Bailey Lower -> Bailey Upper": lambda state:
                 self.has_slide(state),
-            "Upper Bailey -> Tower Remains": lambda state:
+            "Bailey Upper -> Tower Remains": lambda state:
                 self.has_slide(state),
             "Tower Remains -> The Great Door": lambda state:
                 # get to top of tower
@@ -18,9 +18,9 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                     or self.kick_or_plunge(state, 2)),  # double check 1 kick + plunge works, should be doable with 1 kick on lunatic?
             "Theatre Main -> Castle => Theatre (Front)": lambda state:
                 self.has_slide(state),
-            "Bailey => Theatre Pillar -> Theatre Pillar": lambda state:
+            "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:
                 self.has_slide(state),
-            "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
+            "Theatre Pillar => Castle -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1)
                 or self.has_slide(state),
             "Theatre Pillar -> Theatre Main": lambda state:
@@ -30,7 +30,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Dungeon Escape Upper -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_slide(state),
-            "Castle Main -> Castle => Theatre Pillar": lambda state:
+            "Castle Main -> Theatre Pillar => Castle": lambda state:
                 self.has_slide(state),
             "Castle Main -> Castle Spiral Climb": lambda state:
                 self.has_slide(state),
@@ -111,7 +111,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.has_gem(state)
                     or self.get_kicks(state, 2)),
-            # "Underbelly Little Guy -> Upper Bailey": lambda state: True,  # technically already true because obscure
+            # "Underbelly Little Guy -> Bailey Upper": lambda state: True,  # technically already true because obscure
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
                 self.has_slide(state),
         }

@@ -52,7 +52,7 @@ location_table = {
         region="Castle Main"),
     "Castle Sansa - Alcove Near Dungeon": PseudoregaliaLocationData(
         code=2365810009,
-        region="Castle Main",),
+        region="Castle => Theatre Pillar",),
     "Castle Sansa - Balcony": PseudoregaliaLocationData(
         code=2365810010,
         region="Castle Main",),
@@ -138,19 +138,19 @@ location_table = {
 
     "Empty Bailey - Solar Wind": PseudoregaliaLocationData(
         code=2365810036,
-        region="Empty Bailey",),
+        region="Bailey Lower",),
     "Empty Bailey - Center Steeple": PseudoregaliaLocationData(
         code=2365810037,
-        region="Empty Bailey",),
+        region="Bailey Upper",),
     "Empty Bailey - Cheese Bell": PseudoregaliaLocationData(
         code=2365810038,
-        region="Empty Bailey",),
+        region="Bailey Upper",),
     "Empty Bailey - Guarded Hand": PseudoregaliaLocationData(
         code=2365810039,
-        region="Empty Bailey",),
+        region="Bailey Lower",),
     "Empty Bailey - Inside Building": PseudoregaliaLocationData(
         code=2365810040,
-        region="Empty Bailey",),
+        region="Bailey Lower",),
 
     "The Underbelly - Ascendant Light": PseudoregaliaLocationData(
         code=2365810041,

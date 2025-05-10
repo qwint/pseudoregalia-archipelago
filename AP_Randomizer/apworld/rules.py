@@ -26,68 +26,6 @@ class PseudoregaliaRulesHelpers:
         self.region_rules = {}
         self.location_rules = {}
 
-        region_clauses = {
-            "Empty Bailey -> Castle Main": lambda state: True,
-            "Empty Bailey -> Theatre Pillar": lambda state: True,
-            "Empty Bailey -> Tower Remains": lambda state:
-                self.has_gem(state)
-                or self.has_slide(state) and self.has_plunge(state)
-                or self.get_kicks(state, 1),
-            "Tower Remains -> Underbelly Little Guy": lambda state:
-                self.has_plunge(state),
-            "Tower Remains -> The Great Door": lambda state:
-                self.has_gem(state) and self.get_kicks(state, 3),
-            "Theatre Main -> Keep Main": lambda state:
-                self.has_gem(state),
-            "Theatre Pillar -> Theatre Main": lambda state:
-                state.has_all({"Sunsetter", "Cling Gem"}, self.player)
-                or self.has_plunge(state) and self.get_kicks(state, 4),
-            "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:
-                self.has_gem(state) and self.get_kicks(state, 3)
-                or self.has_gem(state) and self.can_slidejump(state),
-        }
-
-        location_clauses = {
-            "Empty Bailey - Solar Wind": lambda state:
-                self.has_slide(state),
-            "Empty Bailey - Cheese Bell": lambda state:
-                self.can_slidejump(state) and self.get_kicks(state, 1) and self.has_plunge(state)
-                or self.can_slidejump(state) and self.has_gem(state)
-                or self.get_kicks(state, 3) and self.has_plunge(state),
-            "Empty Bailey - Inside Building": lambda state:
-                self.has_slide(state),
-            "Empty Bailey - Center Steeple": lambda state:
-                self.get_kicks(state, 3)
-                or self.has_slide(state) and self.has_plunge(state),
-            "Empty Bailey - Guarded Hand": lambda state:
-                self.has_plunge(state)
-                or self.has_gem(state)
-                or self.get_kicks(state, 3),
-            "Twilight Theatre - Soul Cutter": lambda state:
-                self.can_strikebreak(state),
-            "Twilight Theatre - Corner Beam": lambda state:
-                self.has_gem(state) and self.get_kicks(state, 3)
-                or self.has_gem(state) and self.can_slidejump(state)
-                or self.get_kicks(state, 3) and self.can_slidejump(state),
-            "Twilight Theatre - Locked Door": lambda state:
-                self.has_small_keys(state)
-                and (
-                    self.has_gem(state)
-                    or self.get_kicks(state, 3)),
-            "Twilight Theatre - Back Of Auditorium": lambda state:
-                self.get_kicks(state, 3)
-                or self.has_gem(state),
-            "Twilight Theatre - Murderous Goat": lambda state: True,
-            "Twilight Theatre - Center Stage": lambda state:
-                self.can_soulcutter(state) and self.has_gem(state) and self.can_slidejump(state)
-                or self.can_soulcutter(state) and self.has_gem(state) and self.get_kicks(state, 1),
-            "Tower Remains - Cling Gem": lambda state:
-                self.get_kicks(state, 3),
-            "Tower Remains - Atop The Tower": lambda state: True,
-        }
-
-        self.apply_clauses(region_clauses, location_clauses)
-
         logic_level = world.options.logic_level.value
         if bool(world.options.obscure_logic):
             self.knows_obscure = lambda state: True

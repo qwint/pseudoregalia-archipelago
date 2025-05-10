@@ -6,8 +6,16 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
         super().__init__(world)
 
         region_clauses = {
+            "Tower Remains -> The Great Door": lambda state:
+                self.has_slide(state) and self.get_kicks(state, 1),  # possible with plunge instead?
+            "Bailey Lower -> Bailey Upper": lambda state:
+                self.can_bounce(state),
+            "Theatre Pillar -> Theatre Main": lambda state:
+                self.get_kicks(state, 2),  # bubble route
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 1),
+            "Castle Main -> Castle => Theatre Pillar": lambda state:
+                self.has_plunge(state),
             "Castle Spiral Climb -> Castle By Scythe Corridor": lambda state:
                 self.get_kicks(state, 3),
             "Castle By Scythe Corridor -> Castle => Theatre (Front)": lambda state:
@@ -26,6 +34,8 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
         }
 
         location_clauses = {
+            # "Twilight Theatre - Center Stage": lambda state:
+            #     TODO: theoretical logic for soulcutterless or gemless
             "Dilapidated Dungeon - Past Poles": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Dilapidated Dungeon - Rafters": lambda state:

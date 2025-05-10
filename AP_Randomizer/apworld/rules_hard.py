@@ -18,7 +18,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1)
                 or self.can_slidejump(state),
-            "Theatre Pillar => Castle -> Theatre Pillar": lambda state:
+            "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.can_slidejump(state),
             "Theatre Pillar -> Theatre Main": lambda state:
                 self.can_slidejump(state) and self.kick_or_plunge(state, 3),
@@ -26,7 +26,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 2),
-            "Castle Main -> Theatre Pillar => Castle": lambda state:
+            "Castle Main -> Castle => Theatre Pillar": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 1),
             "Castle Main -> Castle Spiral Climb": lambda state:

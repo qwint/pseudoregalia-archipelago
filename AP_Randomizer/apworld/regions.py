@@ -37,7 +37,7 @@ region_table: Dict[str, List[str]] = {
          "Keep Main",
          "Bailey Lower",
          "Library Main",
-         "Theatre Pillar => Castle",
+         "Castle => Theatre Pillar",
          "Castle Spiral Climb",],
     "Castle Spiral Climb":
         ["Castle Main",
@@ -131,13 +131,13 @@ region_table: Dict[str, List[str]] = {
     "Theatre Pillar => Bailey":
         ["Theatre Pillar",
          "Bailey Lower"],
-    "Theatre Pillar => Castle":
+    "Castle => Theatre Pillar":
         ["Theatre Pillar",
          "Castle Main"],
     "Theatre Pillar":
         ["Theatre Main",
          "Theatre Pillar => Bailey",
-         "Theatre Pillar => Castle",],
+         "Castle => Theatre Pillar",],
     "Theatre Outside Scythe Corridor":
         ["Theatre Main",
          "Dungeon Escape Upper",

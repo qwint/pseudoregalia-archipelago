@@ -38,14 +38,14 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1) and self.can_bounce(state),
             # "Theatre Pillar => Bailey -> Bailey Lower": lambda state: True,
-            "Theatre Pillar => Castle -> Theatre Pillar": lambda state:
+            "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.has_plunge(state),
-            # "Theatre Pillar => Castle -> Castle Main": lambda state: True,
+            # "Castle => Theatre Pillar -> Castle Main": lambda state: True,
             "Theatre Pillar -> Theatre Main": lambda state:
                 self.has_gem(state)
                 or self.has_plunge(state) and self.get_kicks(state, 3),
             # "Theatre Pillar -> Theatre Pillar => Bailey": lambda state: True,
-            # "Theatre Pillar -> Theatre Pillar => Castle": lambda state: True,
+            # "Theatre Pillar -> Castle => Theatre Pillar": lambda state: True,
             "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:  # TODO see if there are more routes
                 self.has_gem(state) and self.get_kicks(state, 3)
                 or self.has_gem(state) and self.can_slidejump(state),
@@ -87,7 +87,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Castle Main -> Bailey Lower": lambda state: True,
             "Castle Main -> Library Main": lambda state:
                 self.can_attack(state),
-            "Castle Main -> Theatre Pillar => Castle": lambda state:
+            "Castle Main -> Castle => Theatre Pillar": lambda state:
                 self.has_gem(state) and self.kick_or_plunge(state, 1)
                 or self.kick_or_plunge(state, 2),
             "Castle Main -> Castle Spiral Climb": lambda state:

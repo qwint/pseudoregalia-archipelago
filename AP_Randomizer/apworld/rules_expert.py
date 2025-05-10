@@ -22,7 +22,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state),
             "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:
                 self.has_slide(state),
-            "Theatre Pillar => Castle -> Theatre Pillar": lambda state:
+            "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1)
                 or self.has_slide(state),
             "Theatre Pillar -> Theatre Main": lambda state:
@@ -32,7 +32,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Dungeon Escape Upper -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_slide(state),
-            "Castle Main -> Theatre Pillar => Castle": lambda state:
+            "Castle Main -> Castle => Theatre Pillar": lambda state:
                 self.has_slide(state),
             "Castle Main -> Castle Spiral Climb": lambda state:
                 self.has_slide(state),

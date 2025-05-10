@@ -315,8 +315,10 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     or self.has_gem(state) and self.get_kicks(state, 3)),
             # "Castle Sansa - Indignation": lambda state: True,
             "Castle Sansa - Alcove Near Dungeon": lambda state:
-                self.has_gem(state) and self.kick_or_plunge(state, 1)
-                or self.kick_or_plunge(state, 2),
+                self.has_gem(state)
+                or self.get_kicks(state, 1)
+                or self.can_slidejump(state)
+                or self.knows_obscure(state) and self.has_plunge(state),
             "Castle Sansa - Balcony": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 3)

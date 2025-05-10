@@ -52,7 +52,7 @@ location_table = {
         region="Castle Main"),
     "Castle Sansa - Alcove Near Dungeon": PseudoregaliaLocationData(
         code=2365810009,
-        region="Castle Main",),
+        region="Theatre Pillar => Castle",),
     "Castle Sansa - Balcony": PseudoregaliaLocationData(
         code=2365810010,
         region="Castle Main",),

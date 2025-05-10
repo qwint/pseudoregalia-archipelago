@@ -163,8 +163,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Castle Sansa - Tall Room Near Wheel Crawlers": lambda state:
                 self.has_slide(state),
             "Castle Sansa - Alcove Near Dungeon": lambda state:
-                self.kick_or_plunge(state, 1)
-                or self.has_slide(state),
+                self.has_slide(state),
             "Castle Sansa - Balcony": lambda state:
                 self.get_kicks(state, 3)
                 or self.has_plunge(state) and self.get_kicks(state, 1)

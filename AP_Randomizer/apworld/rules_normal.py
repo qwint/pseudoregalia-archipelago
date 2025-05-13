@@ -240,11 +240,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Empty Bailey - Solar Wind": lambda state:
                 self.has_slide(state),  # to consider: damage boosting w/ crouch
             "Empty Bailey - Cheese Bell": lambda state:  # TODO consider to/from center steeple
-                self.can_slidejump(state)  # untested
-                and (
-                    self.kick_or_plunge(state, 2)
-                    or self.has_gem(state))
-                or self.get_kicks(state, 3)
+                self.get_kicks(state, 3)
                 or self.has_gem(state) and self.kick_or_plunge(state, 2),
             "Empty Bailey - Inside Building": lambda state:
                 self.has_slide(state),

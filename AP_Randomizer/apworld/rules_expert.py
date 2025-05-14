@@ -202,7 +202,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "The Underbelly - Rafters Near Keep": lambda state:
                 self.has_slide(state),
             "The Underbelly - Main Room": lambda state:
-                self.has_slide(state) or self.get_kicks(state, 1),
+                self.has_slide(state)
+                or self.get_kicks(state, 1),
             "The Underbelly - Alcove Near Light": lambda state:
                 self.get_kicks(state, 1) and self.has_slide(state),
             "The Underbelly - Building Near Little Guy": lambda state:

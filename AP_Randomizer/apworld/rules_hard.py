@@ -67,8 +67,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Underbelly Light Pillar -> Underbelly => Dungeon": lambda state:
                 self.has_plunge(state) and self.get_kicks(state, 2),
             "Underbelly Light Pillar -> Underbelly Ascendant Light": lambda state:
-                self.has_breaker(state)
-                and self.get_kicks(state, 3)
+                self.has_breaker(state) and self.get_kicks(state, 3)
                 or self.knows_obscure(state) and self.has_plunge(state)
                 and (
                     self.has_gem(state)

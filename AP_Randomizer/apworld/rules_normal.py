@@ -50,7 +50,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_gem(state) and self.get_kicks(state, 3)
                 or self.has_gem(state) and self.can_slidejump(state),
             "Theatre Outside Scythe Corridor -> Dungeon Escape Upper": lambda state:  # TODO see if there are more routes
-                self.has_gem(state),
+                self.navigate_darkrooms(state) and self.has_gem(state),
             "Theatre Outside Scythe Corridor -> Keep Main": lambda state:  # TODO see if there are more routes
                 self.has_gem(state),
 

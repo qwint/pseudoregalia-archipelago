@@ -273,8 +273,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_small_keys(state)
                 and (
                     self.can_bounce(state)
-                    or self.get_kicks(state, 1)
-                    ),
+                    or self.get_kicks(state, 1)),
             "Twilight Theatre - Back Of Auditorium": lambda state:
                 self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1)
@@ -363,7 +362,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Listless Library - Sun Greaves 3": lambda state:
                 self.can_attack(state),
             "Listless Library - Upper Back": lambda state:
-                (self.can_attack(state))
+                self.can_attack(state)
                 and (
                     self.has_gem(state) and self.kick_or_plunge(state, 1)
                     or self.kick_or_plunge(state, 2)),

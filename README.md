@@ -14,6 +14,7 @@ You'll spawn in Dungeon with Dream Breaker at its vanilla location, and you'll h
 - You can toggle Solar Wind once you've obtained it by pressing the top face button on controller or left ctrl on keyboard.
 - Entering `/popups mute` into the console will mute the sound effects of send/receive popups.
 - Entering `/popups hide` into the console will stop send/receive popups from appearing completely.
+- Client settings like death link are defined in `pseudoregalia/Binaries/Win64/Mods/AP_Randomizer/settings.toml`. Releases include a template file in the same folder called `settings.tmpl.toml` which explains what is configurable.
 
 
 # Mod Installation

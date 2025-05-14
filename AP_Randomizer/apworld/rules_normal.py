@@ -278,8 +278,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Twilight Theatre - Back Of Auditorium": lambda state:
                 self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1)
-                or self.has_gem(state)
-                or self.can_slidejump(state),
+                or self.has_gem(state),
             # "Twilight Theatre - Murderous Goat": lambda state: True,
             "Twilight Theatre - Center Stage": lambda state:
                 self.can_soulcutter(state) and self.has_gem(state)

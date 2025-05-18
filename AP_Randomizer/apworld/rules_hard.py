@@ -22,6 +22,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.can_slidejump(state),
             "Theatre Pillar -> Theatre Main": lambda state:
                 self.can_slidejump(state) and self.kick_or_plunge(state, 3),
+            "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:
+                self.has_gem(state),
 
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
                 self.has_gem(state)

@@ -138,7 +138,7 @@ class PseudoregaliaRulesHelpers:
                     add_rule(location, rule, "or")
 
         set_rule(multiworld.get_location("D S T RT ED M M O   Y", self.player), lambda state:
-                 state.has_all({
+                 self.has_breaker(state) and state.has_all({
                      "Major Key - Empty Bailey",
                      "Major Key - The Underbelly",
                      "Major Key - Tower Remains",

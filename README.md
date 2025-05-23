@@ -7,7 +7,7 @@ Currently the logic is mostly copied from [spuds' standalone randomizer](https:/
 
 You'll spawn in Dungeon with Dream Breaker at its vanilla location, and you'll have to leave through the breakable wall to Underbelly by backflipping up to the first ledge. If you toss the breaker and bounce it off a wall, then pick it up, it'll continue to light your path.
 
-[You can get the PopTracker pack for Pseudoregalia here.](https://github.com/Br00ty/pseudoregalia_brooty)
+[You can get the PopTracker pack for Pseudoregalia here.](https://github.com/highrow623/pseudoregalia_brooty)
 
 
 # Extra Features

@@ -92,6 +92,8 @@ namespace Client {
                 ap->LocationScouts(GameData::GetLocations());
                 // Delay spawning collectibles so that we have time to receive checked locations and scouts.
                 Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::SpawnCollectibles);
+                // Delay verifying version so that it shows up as the last message after connecting
+                Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::VerifyVersion);
                 connection_retries = 0;
                 });
 

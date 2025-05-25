@@ -14,4 +14,5 @@ namespace Engine {
 	GameData::Map GetCurrentMap();
 	void ToggleSlideJump();
 	void VaporizeGoat();
+	void VerifyVersion();
 }

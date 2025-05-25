@@ -157,6 +157,26 @@ namespace Engine {
 		}
 	}
 
+	void VerifyVersion() {
+		// this implementation assumes players connect after loading into the game. if the connect flow ever changes,
+		// this will need to be updated
+		if (!GameData::CanHaveTimeTrial(GetCurrentMap())) {
+			Log("Unable to verify game version.", LogType::Error);
+			return;
+		}
+
+		bool map_patch = GameData::GetOptions().at("map_patch");
+		std::vector<UObject*> time_trials{};
+		UObjectGlobals::FindAllOf(L"BP_TimeTrial_C", time_trials);
+		bool time_trials_found = time_trials.size() != 0;
+		if (map_patch && !time_trials_found) {
+			Log("Game version map_patch was chosen in the player options, but it seems like you are playing on full gold. Switch to map patch for the intended experience.", LogType::Error);
+		}
+		else if (!map_patch && time_trials_found) {
+			Log("Game version full_gold was chosen in the player options, but it seems like you are playing on map patch. Switch to full gold for the intended experience.", LogType::Error);
+		}
+	}
+
 
 	// Private functions
 	namespace {

@@ -17,6 +17,13 @@ namespace GameData {
 			checked = false;
 		}
 
+		Collectible(FVector new_position, std::vector<std::pair<std::string, int>> new_options, std::wstring new_time_trial_actor_name) {
+			position = new_position;
+			required_options = new_options;
+			checked = false;
+			time_trial_actor_name = new_time_trial_actor_name;
+		}
+
 		bool Check() {
 			checked = true;
 			return checked;
@@ -38,9 +45,22 @@ namespace GameData {
 			return true;
 		}
 
+		bool IsTimeTrial() const {
+			return time_trial_actor_name.has_value();
+		}
+
+		bool HasTimeTrialActorName(std::wstring actor_name) const {
+			if (!time_trial_actor_name) {
+				return false;
+			}
+
+			return *time_trial_actor_name == actor_name;
+		}
+
 	private:
 		FVector position;
 		bool checked;
 		std::vector<std::pair<std::string, int>> required_options;
+		std::optional<std::wstring> time_trial_actor_name;
 	};
 }

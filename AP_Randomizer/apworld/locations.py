@@ -1,5 +1,6 @@
 from BaseClasses import Location
 from typing import NamedTuple, Optional, Callable, TYPE_CHECKING
+from .constants.versions import MAP_PATCH, FULL_GOLD
 
 if TYPE_CHECKING:
     from . import PseudoregaliaWorld
@@ -64,7 +65,8 @@ location_table = {
         region="Castle Main",),
     "Castle Sansa - Locked Door": PseudoregaliaLocationData(
         code=2365810013,
-        region="Castle Main",),
+        region="Castle Main",
+        can_create=lambda world: world.options.game_version == FULL_GOLD),
     "Castle Sansa - Platform In Main Halls": PseudoregaliaLocationData(
         code=2365810014,
         region="Castle Main",),
@@ -95,7 +97,7 @@ location_table = {
         region="Keep Main",),
     "Sansa Keep - Lonely Throne": PseudoregaliaLocationData(
         code=2365810023,
-        region="Keep Main",),
+        region="Keep Throne Room",),
     "Sansa Keep - Near Theatre": PseudoregaliaLocationData(
         code=2365810024,
         region="Keep Main",),
@@ -196,6 +198,39 @@ location_table = {
         code=2365810053,
         region="Library Greaves",
         can_create=lambda world: bool(world.options.split_sun_greaves)),
+    
+    "Dilapidated Dungeon - Time Trial": PseudoregaliaLocationData(
+        code=2365810053,
+        region="Dungeon Mirror",
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Castle Sansa - Time Trial": PseudoregaliaLocationData(
+        code=2365810054,
+        region="Castle Main",
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Sansa Keep - Time Trial": PseudoregaliaLocationData(
+        code=2365810055,
+        region="Keep Throne Room",
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Listless Library - Time Trial": PseudoregaliaLocationData(
+        code=2365810056,
+        region="Library Main",
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Twilight Theatre - Time Trial": PseudoregaliaLocationData(
+        code=2365810057,
+        region="Theatre Pillar",
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Empty Bailey - Time Trial": PseudoregaliaLocationData(
+        code=2365810058,
+        region="Bailey Upper",
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "The Underbelly - Time Trial": PseudoregaliaLocationData(
+        code=2365810059,
+        region="Underbelly Main Upper",
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Tower Remains - Time Trial": PseudoregaliaLocationData(
+        code=2365810060,
+        region="The Great Door",
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
 
     "Dilapidated Dungeon - Unlock Door": PseudoregaliaLocationData(
         region="Dungeon Strong Eyes",

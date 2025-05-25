@@ -1,5 +1,6 @@
 from BaseClasses import Item, ItemClassification
 from typing import NamedTuple, Dict, Set, Callable, TYPE_CHECKING
+from.constants.versions import MAP_PATCH
 
 if TYPE_CHECKING:
     from . import PseudoregaliaWorld
@@ -114,6 +115,35 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         code=2365810028,
         classification=ItemClassification.progression,
         can_create=lambda world: bool(world.options.progressive_breaker)),
+
+    "Devotion": PseudoregaliaItemData(
+        code=2365810029,
+        classification=ItemClassification.filler,
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "A Guardian": PseudoregaliaItemData(
+        code=2365810030,
+        classification=ItemClassification.filler,
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Sweater": PseudoregaliaItemData(
+        code=2365810031,
+        classification=ItemClassification.filler,
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Class": PseudoregaliaItemData(
+        code=2365810032,
+        classification=ItemClassification.filler,
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Chivalry": PseudoregaliaItemData(
+        code=2365810033,
+        classification=ItemClassification.filler,
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "Nostalgia": PseudoregaliaItemData(
+        code=2365810034,
+        classification=ItemClassification.filler,
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
+    "A Bleeding Heart": PseudoregaliaItemData(
+        code=2365810035,
+        classification=ItemClassification.filler,
+        can_create=lambda world: world.options.game_version == MAP_PATCH),
 
     "Unlocked Door": PseudoregaliaItemData(
         classification=ItemClassification.useful),

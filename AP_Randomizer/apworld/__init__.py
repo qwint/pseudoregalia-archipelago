@@ -85,7 +85,7 @@ class PseudoregaliaWorld(World):
                 "progressive_breaker": bool(self.options.progressive_breaker),
                 "progressive_slide": bool(self.options.progressive_slide),
                 "split_sun_greaves": bool(self.options.split_sun_greaves),
-                "map_patch": self.options.game_version == MAP_PATCH, }
+                "game_version": self.options.game_version.value, }
 
     def set_rules(self):
         difficulty = self.options.logic_level

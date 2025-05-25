@@ -10,6 +10,7 @@ from .rules_expert import PseudoregaliaExpertRules
 from .rules_lunatic import PseudoregaliaLunaticRules
 from typing import Dict, Any
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
+from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaWorld(World):
@@ -83,7 +84,8 @@ class PseudoregaliaWorld(World):
                 "obscure_logic": bool(self.options.obscure_logic),
                 "progressive_breaker": bool(self.options.progressive_breaker),
                 "progressive_slide": bool(self.options.progressive_slide),
-                "split_sun_greaves": bool(self.options.split_sun_greaves), }
+                "split_sun_greaves": bool(self.options.split_sun_greaves),
+                "game_version": self.options.game_version.value, }
 
     def set_rules(self):
         difficulty = self.options.logic_level

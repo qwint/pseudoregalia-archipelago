@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from Options import Toggle, Choice, DefaultOnToggle, PerGameCommonOptions
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
+from .constants.versions import MAP_PATCH, FULL_GOLD
 
 
 class LogicLevel(Choice):
@@ -60,6 +61,20 @@ class SplitSunGreaves(Toggle):
     display_name = "Split Sun Greaves"
 
 
+class GameVersion(Choice):
+    """
+    The version of Pseudoregalia you will use when playing the game. Different versions have different logic, locations, and items.
+    After you connect, the game will warn you if the version you are playing doesn't match this option.
+
+    map_patch: The latest version of the game. Includes time trials and new outfits.
+    full_gold: Previous version, accessible using the "fullgoldjump" beta code in Steam.
+    """
+    display_name = "Game Version"
+    option_map_patch = MAP_PATCH
+    option_full_gold = FULL_GOLD
+    default = MAP_PATCH
+
+
 @dataclass
 class PseudoregaliaOptions(PerGameCommonOptions):
     logic_level: LogicLevel
@@ -67,4 +82,5 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     progressive_breaker: ProgressiveBreaker
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
+    game_version: GameVersion
 

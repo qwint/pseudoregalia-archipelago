@@ -488,4 +488,19 @@ namespace GameData {
     bool GameData::SlideJumpDisabled() {
         return slidejump_disabled;
     }
+
+    bool CanHaveTimeTrial(Map map) {
+        switch (map) {
+        case Map::Dungeon:
+        case Map::Castle:
+        case Map::Keep:
+        case Map::Library:
+        case Map::Theatre:
+        case Map::Bailey:
+        case Map::Underbelly:
+        case Map::Tower:
+            return true;
+        }
+        return false;
+    }
 }

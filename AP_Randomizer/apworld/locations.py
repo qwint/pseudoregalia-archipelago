@@ -200,35 +200,35 @@ location_table = {
         can_create=lambda world: bool(world.options.split_sun_greaves)),
     
     "Dilapidated Dungeon - Time Trial": PseudoregaliaLocationData(
-        code=2365810053,
+        code=2365810054,
         region="Dungeon Mirror",
         can_create=lambda world: world.options.game_version == MAP_PATCH),
     "Castle Sansa - Time Trial": PseudoregaliaLocationData(
-        code=2365810054,
+        code=2365810055,
         region="Castle Main",
         can_create=lambda world: world.options.game_version == MAP_PATCH),
     "Sansa Keep - Time Trial": PseudoregaliaLocationData(
-        code=2365810055,
+        code=2365810056,
         region="Keep Throne Room",
         can_create=lambda world: world.options.game_version == MAP_PATCH),
     "Listless Library - Time Trial": PseudoregaliaLocationData(
-        code=2365810056,
+        code=2365810057,
         region="Library Main",
         can_create=lambda world: world.options.game_version == MAP_PATCH),
     "Twilight Theatre - Time Trial": PseudoregaliaLocationData(
-        code=2365810057,
+        code=2365810058,
         region="Theatre Pillar",
         can_create=lambda world: world.options.game_version == MAP_PATCH),
     "Empty Bailey - Time Trial": PseudoregaliaLocationData(
-        code=2365810058,
+        code=2365810059,
         region="Bailey Upper",
         can_create=lambda world: world.options.game_version == MAP_PATCH),
     "The Underbelly - Time Trial": PseudoregaliaLocationData(
-        code=2365810059,
+        code=2365810060,
         region="Underbelly Main Upper",
         can_create=lambda world: world.options.game_version == MAP_PATCH),
     "Tower Remains - Time Trial": PseudoregaliaLocationData(
-        code=2365810060,
+        code=2365810061,
         region="The Great Door",
         can_create=lambda world: world.options.game_version == MAP_PATCH),
 

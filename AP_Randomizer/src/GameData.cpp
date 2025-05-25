@@ -123,7 +123,7 @@ namespace GameData {
             {2365810005, Map::Dungeon},
             {2365810006, Map::Dungeon},
             {2365810007, Map::Dungeon},
-            {2365810053, Map::Dungeon},
+            {2365810054, Map::Dungeon},
             {2365810008, Map::Castle},
             {2365810009, Map::Castle},
             {2365810010, Map::Castle},
@@ -136,14 +136,14 @@ namespace GameData {
             {2365810017, Map::Castle},
             {2365810018, Map::Castle},
             {2365810019, Map::Castle},
-            {2365810054, Map::Castle},
+            {2365810055, Map::Castle},
             {2365810020, Map::Keep},
             {2365810021, Map::Keep},
             {2365810022, Map::Keep},
             {2365810023, Map::Keep},
             {2365810024, Map::Keep},
             {2365810025, Map::Keep},
-            {2365810055, Map::Keep},
+            {2365810056, Map::Keep},
             {2365810026, Map::Library},
             {2365810027, Map::Library},
             {2365810028, Map::Library},
@@ -151,20 +151,20 @@ namespace GameData {
             {2365810051, Map::Library},
             {2365810052, Map::Library},
             {2365810053, Map::Library},
-            {2365810056, Map::Library},
+            {2365810057, Map::Library},
             {2365810030, Map::Theatre},
             {2365810031, Map::Theatre},
             {2365810032, Map::Theatre},
             {2365810033, Map::Theatre},
             {2365810034, Map::Theatre},
             {2365810035, Map::Theatre},
-            {2365810057, Map::Theatre},
+            {2365810058, Map::Theatre},
             {2365810036, Map::Bailey},
             {2365810037, Map::Bailey},
             {2365810038, Map::Bailey},
             {2365810039, Map::Bailey},
             {2365810040, Map::Bailey},
-            {2365810058, Map::Bailey},
+            {2365810059, Map::Bailey},
             {2365810041, Map::Underbelly},
             {2365810042, Map::Underbelly},
             {2365810043, Map::Underbelly},
@@ -173,10 +173,10 @@ namespace GameData {
             {2365810046, Map::Underbelly},
             {2365810047, Map::Underbelly},
             {2365810048, Map::Underbelly},
-            {2365810059, Map::Underbelly},
+            {2365810060, Map::Underbelly},
             {2365810049, Map::Tower},
             {2365810050, Map::Tower},
-            {2365810060, Map::Tower},
+            {2365810061, Map::Tower},
         };
     } // End private members
 
@@ -287,7 +287,7 @@ namespace GameData {
             // Strong Eyes
                 {2365810007, Collectible(FVector(750, 8850, 2650))},
             // Time Trial
-                {2365810053, Collectible(FVector(-3350, -4300, 850), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
+                {2365810054, Collectible(FVector(-3350, -4300, 850), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
                     }},
             {Map::Castle, unordered_map<int64_t, Collectible> {
             // Indignation
@@ -315,7 +315,7 @@ namespace GameData {
             // Near Theatre Front
                 {2365810019, Collectible(FVector(3390, 21150, 6600))},
             // Time Trial
-                {2365810054, Collectible(FVector(3200, -1700, -500), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
+                {2365810055, Collectible(FVector(3200, -1700, -500), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
                     }},
             {Map::Keep, unordered_map<int64_t, Collectible> {
             // Strikebreak
@@ -331,7 +331,7 @@ namespace GameData {
             // Sunsetter
                 {2365810025, Collectible(FVector(-3000, 4900, -400))},
             // Time Trial
-                {2365810055, Collectible(FVector(14350, 400, 1250), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_3")},
+                {2365810056, Collectible(FVector(14350, 400, 1250), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_3")},
                     }},
             {Map::Library, unordered_map<int64_t, Collectible> {
             // Sun Greaves
@@ -349,7 +349,7 @@ namespace GameData {
             // Split Greaves 3
                 {2365810053, Collectible(FVector(-4200, 9250, -100), vector<pair<string, int>>{{"split_sun_greaves", true}})},
             // Time Trial
-                {2365810056, Collectible(FVector(-2850, 360, 900), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_2")},
+                {2365810057, Collectible(FVector(-2850, 3600, 900), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_2")},
                     }},
             {Map::Theatre, unordered_map<int64_t, Collectible> {
             // Soul Cutter
@@ -365,7 +365,7 @@ namespace GameData {
             // Corner Beam
                 {2365810035, Collectible(FVector(-14100, -150, 1950))},
             // Time Trial
-                {2365810057, Collectible(FVector(-14750, 3900, 100), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
+                {2365810058, Collectible(FVector(-14750, 3900, 100), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
                     }},
             {Map::Bailey, unordered_map<int64_t, Collectible> {
             // Solar Wind
@@ -379,7 +379,7 @@ namespace GameData {
             // Inside Building
                 {2365810040, Collectible(FVector(3007, 3457, 300))},
             // Time Trial
-                {2365810058, Collectible(FVector(1150, 5250, -600), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
+                {2365810059, Collectible(FVector(1150, 5250, -600), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
                     }},
             {Map::Underbelly, unordered_map<int64_t, Collectible> {
             // Ascendant Light
@@ -399,7 +399,7 @@ namespace GameData {
             // Surrounded By Holes
                 {2365810048, Collectible(FVector(31900, 26250, 3850))},
             // Time Trial
-                {2365810059, Collectible(FVector(1250, 18000, 3000), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
+                {2365810060, Collectible(FVector(1250, 18000, 3000), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
                     }},
             {Map::Tower, unordered_map<int64_t, Collectible> {
             // Cling Gem
@@ -407,7 +407,7 @@ namespace GameData {
             // Atop The Tower
                 {2365810050, Collectible(FVector(9650, 5250, 7100))},
             // Time Trial
-                {2365810060, Collectible(FVector(10750, 3050, 4000), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_3")},
+                {2365810061, Collectible(FVector(10750, 3050, 4000), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_3")},
                     }},
         };
 

@@ -11,9 +11,6 @@ namespace GameData {
 
     // Private members
     namespace {
-        const int MAP_PATCH = 1;
-        const int FULL_GOLD = 2;
-
         ItemType GetItemType(int64_t);
 
         int health_pieces;

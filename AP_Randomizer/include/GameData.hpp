@@ -4,6 +4,9 @@
 #include "Collectible.hpp"
 
 namespace GameData {
+	const int MAP_PATCH = 1;
+	const int FULL_GOLD = 2;
+
 	enum class ItemType {
 		MajorAbility,
 		MinorAbility,

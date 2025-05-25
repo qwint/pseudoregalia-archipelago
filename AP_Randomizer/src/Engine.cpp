@@ -165,14 +165,14 @@ namespace Engine {
 			return;
 		}
 
-		bool map_patch = GameData::GetOptions().at("map_patch");
+		int game_version = GameData::GetOptions().at("game_version");
 		std::vector<UObject*> time_trials{};
 		UObjectGlobals::FindAllOf(L"BP_TimeTrial_C", time_trials);
 		bool time_trials_found = time_trials.size() != 0;
-		if (map_patch && !time_trials_found) {
+		if (game_version == GameData::MAP_PATCH && !time_trials_found) {
 			Log("Game version map_patch was chosen in the player options, but it seems like you are playing on full gold. Switch to map patch for the intended experience.", LogType::Error);
 		}
-		else if (!map_patch && time_trials_found) {
+		else if (game_version == GameData::FULL_GOLD && time_trials_found) {
 			Log("Game version full_gold was chosen in the player options, but it seems like you are playing on map patch. Switch to full gold for the intended experience.", LogType::Error);
 		}
 	}

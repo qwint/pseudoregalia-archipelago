@@ -80,7 +80,7 @@ class ShuffleOutfits(Toggle):
     Randomizes the outfits into the item pool and opens the time trials for randomization.
     If turned off, the outfits can be found in their vanilla locations (e.g. Professionalism in Castle Sansa - Time Trial).
 
-    Map patch only.
+    This option is automatically turned off on Full Gold patch.
     """
     display_name = "Shuffle Outfits"
 

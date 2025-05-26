@@ -32,11 +32,12 @@ class PseudoregaliaWorld(World):
         for item_name, item_data in item_table.items():
             if not item_data.can_create(self.options):
                 continue
-            locked_location = item_data.locked_location(self.options)
             for count in range(item_data.frequency):
                 item = self.create_item(item_name)
-                if locked_location and count == 0:
-                    self.get_location(locked_location).place_locked_item(item)
+                if item_data.locked_location and count == 0:
+                    self.get_location(item_data.locked_location).place_locked_item(item)
+                elif item_data.precollect(self.options):
+                    self.multiworld.push_precollected(item)
                 else:
                     self.multiworld.itempool.append(item)
 
@@ -44,9 +45,6 @@ class PseudoregaliaWorld(World):
         if self.options.logic_level in (EXPERT, LUNATIC):
             # obscure is forced on for expert/lunatic difficulties
             self.options.obscure_logic.value = 1
-        if self.options.game_version != MAP_PATCH:
-            # shuffle outfits is map patch only
-            self.options.shuffle_outfits.value = 0
 
     def create_regions(self):
         for region_name in region_table.keys():
@@ -71,7 +69,7 @@ class PseudoregaliaWorld(World):
             "progressive_breaker": bool(self.options.progressive_breaker),
             "progressive_slide": bool(self.options.progressive_slide),
             "split_sun_greaves": bool(self.options.split_sun_greaves),
-            "shuffle_outfits": bool(self.options.shuffle_outfits),
+            "start_with_outfits": bool(self.options.start_with_outfits),
         }
 
     def set_rules(self):

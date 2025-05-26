@@ -75,14 +75,14 @@ class GameVersion(Choice):
     default = MAP_PATCH
 
 
-class ShuffleOutfits(Toggle):
+class StartWithOutfits(Toggle):
     """
-    Randomizes the outfits into the item pool and opens the time trials for randomization.
-    If turned off, the outfits can be found in their vanilla locations (e.g. Professionalism in Castle Sansa - Time Trial).
+    Places the outfits in the starting inventory.
+    If turned off, the outfits are randomized into the item pool and the time trials are opened for randomization.
 
-    This option is automatically turned off on Full Gold patch.
+    If Full Gold version is selected, this only affects the Professional outfit.
     """
-    display_name = "Shuffle Outfits"
+    display_name = "Start With Outfits"
 
 
 @dataclass
@@ -93,5 +93,5 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     progressive_breaker: ProgressiveBreaker
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
-    shuffle_outfits: ShuffleOutfits
+    start_with_outfits: StartWithOutfits
 

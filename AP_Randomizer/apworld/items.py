@@ -12,15 +12,8 @@ class PseudoregaliaItemData(NamedTuple):
     code: int | None = None
     frequency: int = 1
     classification: ItemClassification = ItemClassification.filler
-    locked_location: Callable[[PseudoregaliaOptions], str | None] = lambda options: None
-    """
-    This function can return a string to indicate that the item should be placed in the corresponding location instead
-    of the item pool.
-
-    Only the first item will be locked if frequency > 1 and the rest will be placed in the item pool. If this ever needs
-    to be expanded to allow locking more than one item, the function can be changed to return List[str] instead of
-    str | None and PseudoregaliaWorld.create_items will need to be updated.
-    """
+    locked_location: str | None = None
+    precollect: Callable[[PseudoregaliaOptions], bool] = lambda options: False
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
 
 
@@ -28,7 +21,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Dream Breaker": PseudoregaliaItemData(
         code=2365810001,
         classification=ItemClassification.progression,
-        locked_location=lambda options: "Dilapidated Dungeon - Dream Breaker",
+        locked_location="Dilapidated Dungeon - Dream Breaker",
         can_create=lambda options: not bool(options.progressive_breaker)),
     "Indignation": PseudoregaliaItemData(
         code=2365810002,
@@ -90,7 +83,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         classification=ItemClassification.filler),
     "Professionalism": PseudoregaliaItemData(
         code=2365810018,
-        locked_location=lambda options: "Castle Sansa - Time Trial" if options.game_version == MAP_PATCH and not options.shuffle_outfits else None,
+        precollect=lambda options: bool(options.start_with_outfits),
         classification=ItemClassification.filler),
 
     "Health Piece": PseudoregaliaItemData(
@@ -132,48 +125,48 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         code=2365810028,
         frequency=3,
         classification=ItemClassification.progression,
-        locked_location=lambda options: "Dilapidated Dungeon - Dream Breaker",
+        locked_location="Dilapidated Dungeon - Dream Breaker",
         can_create=lambda options: bool(options.progressive_breaker)),
 
     "Devotion": PseudoregaliaItemData(
         code=2365810029,
         classification=ItemClassification.filler,
-        locked_location=lambda options: "Dilapidated Dungeon - Time Trial" if not options.shuffle_outfits else None,
+        precollect=lambda options: bool(options.start_with_outfits),
         can_create=lambda options: options.game_version == MAP_PATCH),
     "A Guardian": PseudoregaliaItemData(
         code=2365810030,
         classification=ItemClassification.filler,
-        locked_location=lambda options: "Sansa Keep - Time Trial" if not options.shuffle_outfits else None,
+        precollect=lambda options: bool(options.start_with_outfits),
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Sweater": PseudoregaliaItemData(
         code=2365810031,
         classification=ItemClassification.filler,
-        locked_location=lambda options: "Listless Library - Time Trial" if not options.shuffle_outfits else None,
+        precollect=lambda options: bool(options.start_with_outfits),
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Class": PseudoregaliaItemData(
         code=2365810032,
         classification=ItemClassification.filler,
-        locked_location=lambda options: "Twilight Theatre - Time Trial" if not options.shuffle_outfits else None,
+        precollect=lambda options: bool(options.start_with_outfits),
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Chivalry": PseudoregaliaItemData(
         code=2365810033,
         classification=ItemClassification.filler,
-        locked_location=lambda options: "Empty Bailey - Time Trial" if not options.shuffle_outfits else None,
+        precollect=lambda options: bool(options.start_with_outfits),
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Nostalgia": PseudoregaliaItemData(
         code=2365810034,
         classification=ItemClassification.filler,
-        locked_location=lambda options: "The Underbelly - Time Trial" if not options.shuffle_outfits else None,
+        precollect=lambda options: bool(options.start_with_outfits),
         can_create=lambda options: options.game_version == MAP_PATCH),
     "A Bleeding Heart": PseudoregaliaItemData(
         code=2365810035,
         classification=ItemClassification.filler,
-        locked_location=lambda options: "Tower Remains - Time Trial" if not options.shuffle_outfits else None,
+        precollect=lambda options: bool(options.start_with_outfits),
         can_create=lambda options: options.game_version == MAP_PATCH),
 
     "Something Worth Being Awake For": PseudoregaliaItemData(
         classification=ItemClassification.progression,
-        locked_location=lambda options: "D S T RT ED M M O   Y"),
+        locked_location="D S T RT ED M M O   Y"),
 }
 
 item_groups: Dict[str, Set[str]] = {

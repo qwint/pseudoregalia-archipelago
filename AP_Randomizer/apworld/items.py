@@ -1,9 +1,7 @@
 from BaseClasses import Item, ItemClassification
-from typing import NamedTuple, Dict, Set, Callable, TYPE_CHECKING
+from typing import NamedTuple, Dict, Set, Callable, Optional
 from .constants.versions import MAP_PATCH
-
-if TYPE_CHECKING:
-    from . import PseudoregaliaWorld
+from .options import PseudoregaliaOptions
 
 
 class PseudoregaliaItem(Item):
@@ -11,38 +9,38 @@ class PseudoregaliaItem(Item):
 
 
 class PseudoregaliaItemData(NamedTuple):
-    code: int = None
+    code: Optional[int] = None
     classification: ItemClassification = ItemClassification.filler
-    can_create: "Callable[[PseudoregaliaWorld, int], bool]" = lambda world: True
+    can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
 
 
 item_table: Dict[str, PseudoregaliaItemData] = {
     "Dream Breaker": PseudoregaliaItemData(
         code=2365810001,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_breaker)),
+        can_create=lambda options: not bool(options.progressive_breaker)),
     "Indignation": PseudoregaliaItemData(
         code=2365810002,
         classification=ItemClassification.useful),
     "Sun Greaves": PseudoregaliaItemData(
         code=2365810003,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.split_sun_greaves)),
+        can_create=lambda options: not bool(options.split_sun_greaves)),
     "Slide": PseudoregaliaItemData(
         code=2365810004,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_slide)),
+        can_create=lambda options: not bool(options.progressive_slide)),
     "Solar Wind": PseudoregaliaItemData(
         code=2365810005,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_slide)),
+        can_create=lambda options: not bool(options.progressive_slide)),
     "Sunsetter": PseudoregaliaItemData(
         code=2365810006,
         classification=ItemClassification.progression),
     "Strikebreak": PseudoregaliaItemData(
         code=2365810007,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_breaker)),
+        can_create=lambda options: not bool(options.progressive_breaker)),
     "Cling Gem": PseudoregaliaItemData(
         code=2365810008,
         classification=ItemClassification.progression),
@@ -52,12 +50,12 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Soul Cutter": PseudoregaliaItemData(
         code=2365810010,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_breaker)),
+        can_create=lambda options: not bool(options.progressive_breaker)),
 
     "Heliacal Power": PseudoregaliaItemData(
         code=2365810011,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.split_sun_greaves)),
+        can_create=lambda options: not bool(options.split_sun_greaves)),
     "Aerial Finesse": PseudoregaliaItemData(
         code=2365810012,
         classification=ItemClassification.filler),
@@ -106,47 +104,44 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Progressive Slide": PseudoregaliaItemData(
         code=2365810026,
         classification=ItemClassification.progression,
-        can_create=lambda world: bool(world.options.progressive_slide)),
+        can_create=lambda options: bool(options.progressive_slide)),
     "Air Kick": PseudoregaliaItemData(
         code=2365810027,
         classification=ItemClassification.progression,
-        can_create=lambda world: bool(world.options.split_sun_greaves)),
+        can_create=lambda options: bool(options.split_sun_greaves)),
     "Progressive Dream Breaker": PseudoregaliaItemData(
         code=2365810028,
         classification=ItemClassification.progression,
-        can_create=lambda world: bool(world.options.progressive_breaker)),
+        can_create=lambda options: bool(options.progressive_breaker)),
 
     "Devotion": PseudoregaliaItemData(
         code=2365810029,
         classification=ItemClassification.filler,
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH),
     "A Guardian": PseudoregaliaItemData(
         code=2365810030,
         classification=ItemClassification.filler,
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH),
     "Sweater": PseudoregaliaItemData(
         code=2365810031,
         classification=ItemClassification.filler,
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH),
     "Class": PseudoregaliaItemData(
         code=2365810032,
         classification=ItemClassification.filler,
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH),
     "Chivalry": PseudoregaliaItemData(
         code=2365810033,
         classification=ItemClassification.filler,
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH),
     "Nostalgia": PseudoregaliaItemData(
         code=2365810034,
         classification=ItemClassification.filler,
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH),
     "A Bleeding Heart": PseudoregaliaItemData(
         code=2365810035,
         classification=ItemClassification.filler,
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
-
-    "Unlocked Door": PseudoregaliaItemData(
-        classification=ItemClassification.useful),
+        can_create=lambda options: options.game_version == MAP_PATCH),
 
     "Something Worth Being Awake For": PseudoregaliaItemData(
         classification=ItemClassification.progression),

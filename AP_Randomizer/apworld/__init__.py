@@ -33,7 +33,7 @@ class PseudoregaliaWorld(World):
         for item_name, item_data in item_table.items():
             if (item_name == "Dream Breaker"):
                 continue  # Really skrunkled way of just adding the one locked breaker to the pool for now.
-            if (item_data.code and item_data.can_create(self)):
+            if (item_data.code and item_data.can_create(self.options)):
                 item_count = 1
                 if (item_name in item_frequencies):
                     item_count = item_frequencies[item_name]
@@ -54,7 +54,7 @@ class PseudoregaliaWorld(World):
             self.multiworld.regions.append(Region(region_name, self.player, self.multiworld))
 
         for loc_name, loc_data in location_table.items():
-            if not loc_data.can_create(self):
+            if not loc_data.can_create(self.options):
                 continue
             region = self.multiworld.get_region(loc_data.region, self.player)
             new_loc = PseudoregaliaLocation(self.player, loc_name, loc_data.code, region)
@@ -68,7 +68,7 @@ class PseudoregaliaWorld(World):
 
         # Place locked locations.
         for location_name, location_data in self.locked_locations.items():
-            if not location_data.can_create(self):
+            if not location_data.can_create(self.options):
                 continue
 
             # Doing this really stupidly because breaker's locking will change after logic rework is done

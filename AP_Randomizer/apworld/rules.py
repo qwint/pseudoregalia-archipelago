@@ -125,7 +125,7 @@ class PseudoregaliaRulesHelpers:
                 else:
                     add_rule(entrance, rule, "or")
         for name, rules in self.location_rules.items():
-            if not location_table[name].can_create(world):
+            if not location_table[name].can_create(world.options):
                 continue
             location = multiworld.get_location(name, self.player)
             for index, rule in enumerate(rules):

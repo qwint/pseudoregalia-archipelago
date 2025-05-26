@@ -14,10 +14,11 @@ class PseudoregaliaItemData(NamedTuple):
     classification: ItemClassification = ItemClassification.filler
     locked_location: Callable[[PseudoregaliaOptions], Optional[str]] = lambda options: None
     """
-    If locked_location returns a string, the item will be placed in the corresponding location instead of in the item
-    pool. If frequency > 1, only the first item will be locked and the rest will be placed in the item pool.
-    
-    If this ever needs to be expanded to allow locking more than one item, the function can return List[str] instead of
+    This function can return a string to indicate that the item should be placed in the corresponding location instead
+    of the item pool.
+
+    Only the first item will be locked if frequency > 1 and the rest will be placed in the item pool. If this ever needs
+    to be expanded to allow locking more than one item, the function can be changed to return List[str] instead of
     Optional[str] and PseudoregaliaWorld.create_items will need to be updated.
     """
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True

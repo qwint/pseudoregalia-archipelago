@@ -10,7 +10,16 @@ class PseudoregaliaItem(Item):
 
 class PseudoregaliaItemData(NamedTuple):
     code: Optional[int] = None
+    frequency: int = 1
     classification: ItemClassification = ItemClassification.filler
+    locked_location: Callable[[PseudoregaliaOptions], Optional[str]] = lambda options: None
+    """
+    If locked_location returns a string, the item will be placed in the corresponding location instead of in the item
+    pool. If frequency > 1, only the first item will be locked and the rest will be placed in the item pool.
+    
+    If this ever needs to be expanded to allow locking more than one item, the function can return List[str] instead of
+    Optional[str] and PseudoregaliaWorld.create_items will need to be updated.
+    """
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
 
 
@@ -18,6 +27,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Dream Breaker": PseudoregaliaItemData(
         code=2365810001,
         classification=ItemClassification.progression,
+        locked_location=lambda options: "Dilapidated Dungeon - Dream Breaker",
         can_create=lambda options: not bool(options.progressive_breaker)),
     "Indignation": PseudoregaliaItemData(
         code=2365810002,
@@ -64,25 +74,31 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         classification=ItemClassification.filler),
     "Empathy": PseudoregaliaItemData(
         code=2365810014,
+        frequency=2,
         classification=ItemClassification.filler),
     "Good Graces": PseudoregaliaItemData(
         code=2365810015,
+        frequency=2,
         classification=ItemClassification.useful),
     "Martial Prowess": PseudoregaliaItemData(
         code=2365810016,
         classification=ItemClassification.useful),
     "Clear Mind": PseudoregaliaItemData(
         code=2365810017,
+        frequency=3,
         classification=ItemClassification.filler),
     "Professionalism": PseudoregaliaItemData(
         code=2365810018,
+        locked_location=lambda options: "Castle Sansa - Time Trial" if options.game_version == MAP_PATCH and not options.shuffle_outfits else None,
         classification=ItemClassification.filler),
 
     "Health Piece": PseudoregaliaItemData(
         code=2365810019,
+        frequency=16,
         classification=ItemClassification.useful),
     "Small Key": PseudoregaliaItemData(
         code=2365810020,
+        frequency=7,
         classification=ItemClassification.progression),
 
     "Major Key - Empty Bailey": PseudoregaliaItemData(
@@ -103,59 +119,60 @@ item_table: Dict[str, PseudoregaliaItemData] = {
 
     "Progressive Slide": PseudoregaliaItemData(
         code=2365810026,
+        frequency=2,
         classification=ItemClassification.progression,
         can_create=lambda options: bool(options.progressive_slide)),
     "Air Kick": PseudoregaliaItemData(
         code=2365810027,
+        frequency=4,
         classification=ItemClassification.progression,
         can_create=lambda options: bool(options.split_sun_greaves)),
     "Progressive Dream Breaker": PseudoregaliaItemData(
         code=2365810028,
+        frequency=3,
         classification=ItemClassification.progression,
+        locked_location=lambda options: "Dilapidated Dungeon - Dream Breaker",
         can_create=lambda options: bool(options.progressive_breaker)),
 
     "Devotion": PseudoregaliaItemData(
         code=2365810029,
         classification=ItemClassification.filler,
+        locked_location=lambda options: "Dilapidated Dungeon - Time Trial" if not options.shuffle_outfits else None,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "A Guardian": PseudoregaliaItemData(
         code=2365810030,
         classification=ItemClassification.filler,
+        locked_location=lambda options: "Sansa Keep - Time Trial" if not options.shuffle_outfits else None,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Sweater": PseudoregaliaItemData(
         code=2365810031,
         classification=ItemClassification.filler,
+        locked_location=lambda options: "Listless Library - Time Trial" if not options.shuffle_outfits else None,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Class": PseudoregaliaItemData(
         code=2365810032,
         classification=ItemClassification.filler,
+        locked_location=lambda options: "Twilight Theatre - Time Trial" if not options.shuffle_outfits else None,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Chivalry": PseudoregaliaItemData(
         code=2365810033,
         classification=ItemClassification.filler,
+        locked_location=lambda options: "Empty Bailey - Time Trial" if not options.shuffle_outfits else None,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Nostalgia": PseudoregaliaItemData(
         code=2365810034,
         classification=ItemClassification.filler,
+        locked_location=lambda options: "The Underbelly - Time Trial" if not options.shuffle_outfits else None,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "A Bleeding Heart": PseudoregaliaItemData(
         code=2365810035,
         classification=ItemClassification.filler,
+        locked_location=lambda options: "Tower Remains - Time Trial" if not options.shuffle_outfits else None,
         can_create=lambda options: options.game_version == MAP_PATCH),
 
     "Something Worth Being Awake For": PseudoregaliaItemData(
-        classification=ItemClassification.progression),
-}
-
-item_frequencies = {
-    "Empathy": 2,
-    "Good Graces": 2,
-    "Clear Mind": 3,
-    "Small Key": 7,
-    "Health Piece": 16,
-    "Progressive Slide": 2,
-    "Air Kick": 4,
-    "Progressive Dream Breaker": 2,  # Will need to change this later when dream breaker stops being locked to vanilla
+        classification=ItemClassification.progression,
+        locked_location=lambda options: "D S T RT ED M M O   Y"),
 }
 
 item_groups: Dict[str, Set[str]] = {

@@ -12,8 +12,6 @@ class PseudoregaliaLocationData(NamedTuple):
     region: str
     code: int = None
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
-    locked_item: Optional[str] = None
-    show_in_spoiler: bool = True
 
 
 location_table = {
@@ -23,10 +21,8 @@ location_table = {
     # Anything optional goes below the 50 base locations
 
     "Dilapidated Dungeon - Dream Breaker": PseudoregaliaLocationData(
-        # Dream Breaker can't really be shuffled right now but I would like to later
         code=2365810001,
-        region="Dungeon Mirror",
-        locked_item="Dream Breaker"),
+        region="Dungeon Mirror"),
     "Dilapidated Dungeon - Slide": PseudoregaliaLocationData(
         code=2365810002,
         region="Dungeon Slide"),
@@ -231,6 +227,5 @@ location_table = {
         can_create=lambda options: options.game_version == MAP_PATCH),
 
     "D S T RT ED M M O   Y": PseudoregaliaLocationData(
-        region="The Great Door",
-        locked_item="Something Worth Being Awake For"),
+        region="The Great Door"),
 }

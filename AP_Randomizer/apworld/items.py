@@ -1,5 +1,5 @@
 from BaseClasses import Item, ItemClassification
-from typing import NamedTuple, Dict, Set, Callable, Optional
+from typing import NamedTuple, Dict, Set, Callable
 from .constants.versions import MAP_PATCH
 from .options import PseudoregaliaOptions
 
@@ -9,17 +9,17 @@ class PseudoregaliaItem(Item):
 
 
 class PseudoregaliaItemData(NamedTuple):
-    code: Optional[int] = None
+    code: int | None = None
     frequency: int = 1
     classification: ItemClassification = ItemClassification.filler
-    locked_location: Callable[[PseudoregaliaOptions], Optional[str]] = lambda options: None
+    locked_location: Callable[[PseudoregaliaOptions], str | None] = lambda options: None
     """
     This function can return a string to indicate that the item should be placed in the corresponding location instead
     of the item pool.
 
     Only the first item will be locked if frequency > 1 and the rest will be placed in the item pool. If this ever needs
     to be expanded to allow locking more than one item, the function can be changed to return List[str] instead of
-    Optional[str] and PseudoregaliaWorld.create_items will need to be updated.
+    str | None and PseudoregaliaWorld.create_items will need to be updated.
     """
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
 

@@ -274,7 +274,7 @@ namespace GameData {
         collectible_table = {
             {Map::Dungeon, unordered_map<int64_t, Collectible>{
             // Dream Breaker
-                {2365810001, Collectible(FVector(-3500.0, 4950.0, -50.0))},
+                {2365810001, Collectible(FVector(-3500.0, 4950.0, -50.0), vector<pair<string, int>>{{"start_with_breaker", false}})},
             // Slide
                 {2365810002, Collectible(FVector(16650, 2600, 2350))},
             // Alcove Near Mirror

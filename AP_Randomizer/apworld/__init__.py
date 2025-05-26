@@ -10,7 +10,6 @@ from .rules_expert import PseudoregaliaExpertRules
 from .rules_lunatic import PseudoregaliaLunaticRules
 from typing import Dict, Any
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
-from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaWorld(World):
@@ -30,13 +29,11 @@ class PseudoregaliaWorld(World):
 
     def create_items(self):
         for item_name, item_data in item_table.items():
-            if not item_data.can_create(self.options):
+            if not item_data.can_create(self.options) or not item_data.code:
                 continue
             for count in range(item_data.frequency):
                 item = self.create_item(item_name)
-                if item_data.locked_location and count == 0:
-                    self.get_location(item_data.locked_location).place_locked_item(item)
-                elif item_data.precollect(self.options):
+                if item_data.precollect(self.options) and count == 0:
                     self.multiworld.push_precollected(item)
                 else:
                     self.multiworld.itempool.append(item)
@@ -56,6 +53,8 @@ class PseudoregaliaWorld(World):
             region = self.multiworld.get_region(loc_data.region, self.player)
             new_loc = PseudoregaliaLocation(self.player, loc_name, loc_data.code, region)
             region.locations.append(new_loc)
+            if loc_data.locked_item:
+                new_loc.place_locked_item(self.create_item(loc_data.locked_item))
 
         for region_name, exit_list in region_table.items():
             region = self.multiworld.get_region(region_name, self.player)
@@ -69,6 +68,7 @@ class PseudoregaliaWorld(World):
             "progressive_breaker": bool(self.options.progressive_breaker),
             "progressive_slide": bool(self.options.progressive_slide),
             "split_sun_greaves": bool(self.options.split_sun_greaves),
+            "start_with_breaker": bool(self.options.start_with_breaker),
             "start_with_outfits": bool(self.options.start_with_outfits),
         }
 

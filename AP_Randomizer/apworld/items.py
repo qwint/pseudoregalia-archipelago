@@ -12,7 +12,6 @@ class PseudoregaliaItemData(NamedTuple):
     code: int | None = None
     frequency: int = 1
     classification: ItemClassification = ItemClassification.filler
-    locked_location: str | None = None
     precollect: Callable[[PseudoregaliaOptions], bool] = lambda options: False
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
 
@@ -21,7 +20,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Dream Breaker": PseudoregaliaItemData(
         code=2365810001,
         classification=ItemClassification.progression,
-        locked_location="Dilapidated Dungeon - Dream Breaker",
+        precollect=lambda options: bool(options.start_with_breaker),
         can_create=lambda options: not bool(options.progressive_breaker)),
     "Indignation": PseudoregaliaItemData(
         code=2365810002,
@@ -125,7 +124,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         code=2365810028,
         frequency=3,
         classification=ItemClassification.progression,
-        locked_location="Dilapidated Dungeon - Dream Breaker",
+        precollect=lambda options: bool(options.start_with_breaker),
         can_create=lambda options: bool(options.progressive_breaker)),
 
     "Devotion": PseudoregaliaItemData(
@@ -165,8 +164,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         can_create=lambda options: options.game_version == MAP_PATCH),
 
     "Something Worth Being Awake For": PseudoregaliaItemData(
-        classification=ItemClassification.progression,
-        locked_location="D S T RT ED M M O   Y"),
+        classification=ItemClassification.progression),
 }
 
 item_groups: Dict[str, Set[str]] = {

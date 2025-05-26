@@ -75,6 +75,14 @@ class GameVersion(Choice):
     default = MAP_PATCH
 
 
+class StartWithBreaker(Toggle):
+    """
+    Places Dream Breaker (or one Progressive Dream Breaker) in the starting inventory.
+    If turned on, Dream Breaker's vanilla location will not have an item.
+    """
+    display_name = "Start With Breaker"
+
+
 class StartWithOutfits(Toggle):
     """
     Places the outfits in the starting inventory.
@@ -93,5 +101,6 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     progressive_breaker: ProgressiveBreaker
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
+    start_with_breaker: StartWithBreaker
     start_with_outfits: StartWithOutfits
 

@@ -12,6 +12,7 @@ class PseudoregaliaLocationData(NamedTuple):
     region: str
     code: int | None = None
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
+    locked_item: str | None = None
 
 
 location_table = {
@@ -22,7 +23,8 @@ location_table = {
 
     "Dilapidated Dungeon - Dream Breaker": PseudoregaliaLocationData(
         code=2365810001,
-        region="Dungeon Mirror"),
+        region="Dungeon Mirror",
+        can_create=lambda options: not options.start_with_breaker),
     "Dilapidated Dungeon - Slide": PseudoregaliaLocationData(
         code=2365810002,
         region="Dungeon Slide"),
@@ -227,5 +229,6 @@ location_table = {
         can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
 
     "D S T RT ED M M O   Y": PseudoregaliaLocationData(
-        region="The Great Door"),
+        region="The Great Door",
+        locked_item="Something Worth Being Awake For"),
 }

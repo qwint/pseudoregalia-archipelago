@@ -1,6 +1,6 @@
 from BaseClasses import Item, ItemClassification
 from typing import NamedTuple, Dict, Set, Callable, TYPE_CHECKING
-from.constants.versions import MAP_PATCH
+from .constants.versions import MAP_PATCH
 
 if TYPE_CHECKING:
     from . import PseudoregaliaWorld

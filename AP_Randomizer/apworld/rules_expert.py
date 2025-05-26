@@ -64,6 +64,12 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state),
             "Library Top -> Library Greaves": lambda state:
                 self.get_kicks(state, 2),
+            "Keep Main -> Keep Throne Room": lambda state:
+                self.has_breaker(state)
+                and (
+                    self.has_gem(state)
+                    or self.can_bounce(state) and self.kick_or_plunge(state, 3)
+                    or self.has_slide(state) and self.get_kicks(state, 3)),
             "Keep Main -> Keep => Underbelly": lambda state:
                 self.has_slide(state),
             "Keep Main -> Theatre Outside Scythe Corridor": lambda state:
@@ -195,12 +201,6 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Sansa Keep - Strikebreak": lambda state:
                 self.has_breaker(state) and self.has_slide(state)
                 or self.can_strikebreak(state) and self.has_plunge(state),
-            "Sansa Keep - Lonely Throne": lambda state:
-                self.has_breaker(state)
-                and (
-                    self.has_gem(state)
-                    or self.can_bounce(state) and self.kick_or_plunge(state, 3)
-                    or self.has_slide(state) and self.get_kicks(state, 3)),
             "Sansa Keep - Near Theatre": lambda state:
                 self.has_slide(state),
             "The Underbelly - Rafters Near Keep": lambda state:

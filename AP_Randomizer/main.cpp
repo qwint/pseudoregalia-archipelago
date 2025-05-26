@@ -28,6 +28,8 @@ public:
     bool returncheck_hooked = false;
     bool toggleslidejump_hooked = false;
     bool deathlink_hooked = false;
+    bool onsuccesfulload_hooked = false;
+    bool manageresult_hooked = false;
     bool copytext_hooked = false;
     bool sendmessage_hooked = false;
 
@@ -93,6 +95,16 @@ public:
             auto deathlink = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
                 Client::SendDeathLink();
                 };
+            auto spawntimetrialcollectible = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
+                std::wstring name = context.Context->GetName();
+                auto id_collectible_pair = GameData::GetTimeTrialCollectible(Engine::GetCurrentMap(), name);
+                if (!id_collectible_pair) {
+                    Log(L"Collectible not found for time trial " + name);
+                    return;
+                }
+                auto& [location_id, collectible] = *id_collectible_pair;
+                Engine::SpawnTimeTrialCollectibleIfBeaten(context.Context, location_id, collectible);
+                };
 
             if (!returncheck_hooked
                 && actor->GetName().starts_with(STR("BP_APCollectible"))) {
@@ -146,6 +158,30 @@ public:
                     }
                     Unreal::UObjectGlobals::RegisterHook(death_function, EmptyFunction, deathlink, nullptr);
                     deathlink_hooked = true;
+                }
+            }
+
+            if (actor->GetName().starts_with(L"BP_TimeTrial")) {
+                if (!onsuccesfulload_hooked) {
+                    UFunction* onsuccesfulload_function = actor->GetFunctionByName(L"BPI_onSuccesfulLoad");
+                    if (!onsuccesfulload_function) {
+                        Log(L"Could not find function \"BPI_onSuccesfulLoad\" in BP_TimeTrial.", LogType::Error);
+                        return;
+                    }
+                    Log(L"Establishing hook for BPI_onSuccesfulLoad");
+                    Unreal::UObjectGlobals::RegisterHook(onsuccesfulload_function, EmptyFunction, spawntimetrialcollectible, nullptr);
+                    onsuccesfulload_hooked = true;
+                }
+
+                if (!manageresult_hooked) {
+                    UFunction* manageresult_function = actor->GetFunctionByName(L"manageResult");
+                    if (!manageresult_function) {
+                        Log(L"Could not find function \"manageResult\" in BP_TimeTrial.", LogType::Error);
+                        return;
+                    }
+                    Log(L"Establishing hook for manageResult");
+                    Unreal::UObjectGlobals::RegisterHook(manageresult_function, EmptyFunction, spawntimetrialcollectible, nullptr);
+                    manageresult_hooked = true;
                 }
             }
             });

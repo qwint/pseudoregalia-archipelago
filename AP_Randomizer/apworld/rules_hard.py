@@ -64,6 +64,14 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 # On Hard and above, the player is expected to not do either.
             "Keep Main -> Keep Sunsetter": lambda state: True,
                 # See "Keep Main -> Keep Locked Room".
+            "Keep Main -> Keep Throne Room": lambda state:
+                self.has_breaker(state) and self.has_gem(state)
+                and (
+                    self.has_plunge(state)
+                    or self.get_kicks(state, 2)
+                    or self.get_kicks(state, 1) and self.knows_obscure(state))
+                or self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 4)
+                or self.can_bounce(state) and self.get_kicks(state, 3),
             "Underbelly => Dungeon -> Underbelly Ascendant Light": lambda state:
                 self.kick_or_plunge(state, 2),
             "Underbelly Light Pillar -> Underbelly => Dungeon": lambda state:
@@ -179,14 +187,6 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 and (
                     self.has_slide(state)
                     or self.can_strikebreak(state)),
-            "Sansa Keep - Lonely Throne": lambda state:
-                self.has_breaker(state) and self.has_gem(state)
-                and (
-                    self.has_plunge(state)
-                    or self.get_kicks(state, 2)
-                    or self.get_kicks(state, 1) and self.knows_obscure(state))
-                or self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 4)
-                or self.can_bounce(state) and self.get_kicks(state, 3),
             "The Underbelly - Rafters Near Keep": lambda state:
                 self.kick_or_plunge(state, 1)
                 or self.has_gem(state),

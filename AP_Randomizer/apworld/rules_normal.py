@@ -157,6 +157,13 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 # See "Keep Main -> Keep Locked Room".
                 # All other methods would go through Keep Locked Room instead.
                 self.has_gem(state),
+            "Keep Main -> Keep Throne Room": lambda state:
+                self.has_breaker(state) and self.has_gem(state)
+                and (
+                    self.has_plunge(state) and self.get_kicks(state, 1)
+                    or self.has_plunge(state) and self.can_bounce(state)
+                    or self.get_kicks(state, 1) and self.can_bounce(state))
+                or self.can_bounce(state) and self.kick_or_plunge(state, 4),
             "Keep Main -> Keep => Underbelly": lambda state:
                 self.kick_or_plunge(state, 1)
                 or self.has_gem(state),
@@ -402,13 +409,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     self.has_gem(state)
                     or self.has_plunge(state) and self.get_kicks(state, 1)
                     or self.get_kicks(state, 3)),
-            "Sansa Keep - Lonely Throne": lambda state:
-                self.has_breaker(state) and self.has_gem(state)
-                and (
-                    self.has_plunge(state) and self.get_kicks(state, 1)
-                    or self.has_plunge(state) and self.can_bounce(state)
-                    or self.get_kicks(state, 1) and self.can_bounce(state))
-                or self.can_bounce(state) and self.kick_or_plunge(state, 4),
+            # "Sansa Keep - Lonely Throne": lambda state: True,
             # "The Underbelly - Ascendant Light": lambda state: True,
             "The Underbelly - Rafters Near Keep": lambda state:
                 self.has_plunge(state)
@@ -441,6 +442,30 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     self.can_bounce(state)
                     or self.get_kicks(state, 2))
                 or self.can_slidejump(state) and self.has_gem(state) and self.get_kicks(state, 1),
+
+            # TODO (time-trials): finish logic
+            "Dilapidated Dungeon - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+            "Castle Sansa - Time Trial": lambda state:
+                self.has_small_keys(state),
+            "Sansa Keep - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+            "Listless Library - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.has_gem(state),
+            "Twilight Theatre - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+            "Empty Bailey - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+            "The Underbelly - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+            "Tower Remains - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
         }
 
         self.apply_clauses(region_clauses, location_clauses)

@@ -2,6 +2,7 @@ from BaseClasses import CollectionState
 from typing import Dict, Callable, TYPE_CHECKING
 from worlds.generic.Rules import add_rule, set_rule, CollectionRule
 from .constants.difficulties import NORMAL
+from .locations import location_table
 
 if TYPE_CHECKING:
     from . import PseudoregaliaWorld
@@ -115,7 +116,6 @@ class PseudoregaliaRulesHelpers:
     def set_pseudoregalia_rules(self) -> None:
         world = self.world
         multiworld = self.world.multiworld
-        split_kicks = bool(world.options.split_sun_greaves)
 
         for name, rules in self.region_rules.items():
             entrance = multiworld.get_entrance(name, self.player)
@@ -125,11 +125,8 @@ class PseudoregaliaRulesHelpers:
                 else:
                     add_rule(entrance, rule, "or")
         for name, rules in self.location_rules.items():
-            if name.startswith("Listless Library"):
-                if split_kicks and name.endswith("Greaves"):
-                    continue
-                if not split_kicks and name[-1].isdigit():
-                    continue
+            if not location_table[name].can_create(world):
+                continue
             location = multiworld.get_location(name, self.player)
             for index, rule in enumerate(rules):
                 if index == 0:

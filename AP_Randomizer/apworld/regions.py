@@ -70,11 +70,14 @@ region_table: Dict[str, List[str]] = {
     "Keep Main":
         ["Keep Locked Room",
          "Keep Sunsetter",
+         "Keep Throne Room",
          "Keep => Underbelly",
          "Theatre Outside Scythe Corridor",],
     "Keep Locked Room":
         ["Keep Sunsetter"],
     "Keep Sunsetter":
+        [],
+    "Keep Throne Room":
         [],
     "Keep => Underbelly":
         ["Keep Main",

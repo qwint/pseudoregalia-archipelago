@@ -75,12 +75,23 @@ class GameVersion(Choice):
     default = MAP_PATCH
 
 
+class ShuffleOutfits(Toggle):
+    """
+    Randomizes the outfits into the item pool and opens the time trials for randomization.
+    If turned off, the outfits can be found in their vanilla locations (e.g. Professionalism in Castle Sansa - Time Trial).
+
+    Map patch only.
+    """
+    display_name = "Shuffle Outfits"
+
+
 @dataclass
 class PseudoregaliaOptions(PerGameCommonOptions):
+    game_version: GameVersion
     logic_level: LogicLevel
     obscure_logic: ObscureLogic
     progressive_breaker: ProgressiveBreaker
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
-    game_version: GameVersion
+    shuffle_outfits: ShuffleOutfits
 

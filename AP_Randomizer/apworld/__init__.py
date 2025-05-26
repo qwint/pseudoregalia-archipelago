@@ -45,6 +45,9 @@ class PseudoregaliaWorld(World):
         if self.options.logic_level in (EXPERT, LUNATIC):
             # obscure is forced on for expert/lunatic difficulties
             self.options.obscure_logic.value = 1
+        if self.options.game_version != MAP_PATCH:
+            # shuffle outfits is map patch only
+            self.options.shuffle_outfits.value = 0
 
     def create_regions(self):
         for region_name in region_table.keys():
@@ -79,13 +82,16 @@ class PseudoregaliaWorld(World):
             self.multiworld.get_location(location_name, self.player).place_locked_item(locked_item)
 
     def fill_slot_data(self) -> Dict[str, Any]:
-        return {"slot_number": self.player,
-                "logic_level": self.options.logic_level.value,
-                "obscure_logic": bool(self.options.obscure_logic),
-                "progressive_breaker": bool(self.options.progressive_breaker),
-                "progressive_slide": bool(self.options.progressive_slide),
-                "split_sun_greaves": bool(self.options.split_sun_greaves),
-                "game_version": self.options.game_version.value, }
+        return {
+            "slot_number": self.player,
+            "game_version": self.options.game_version.value,
+            "logic_level": self.options.logic_level.value,
+            "obscure_logic": bool(self.options.obscure_logic),
+            "progressive_breaker": bool(self.options.progressive_breaker),
+            "progressive_slide": bool(self.options.progressive_slide),
+            "split_sun_greaves": bool(self.options.split_sun_greaves),
+            "shuffle_outfits": bool(self.options.shuffle_outfits),
+        }
 
     def set_rules(self):
         difficulty = self.options.logic_level

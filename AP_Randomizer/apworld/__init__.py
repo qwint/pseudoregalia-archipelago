@@ -65,7 +65,6 @@ class PseudoregaliaWorld(World):
 
     def fill_slot_data(self) -> Dict[str, Any]:
         return {
-            "slot_number": self.player,
             "game_version": self.options.game_version.value,
             "logic_level": self.options.logic_level.value,
             "obscure_logic": bool(self.options.obscure_logic),

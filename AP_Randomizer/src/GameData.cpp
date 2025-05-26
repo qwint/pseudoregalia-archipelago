@@ -10,6 +10,7 @@ namespace GameData {
     using std::string;
     using std::optional;
     using std::pair;
+    using std::tuple;
 
     // Private members
     namespace {
@@ -397,7 +398,7 @@ namespace GameData {
             // Strikebreak Wall
                 {2365810047, Collectible(FVector(11300, 12700, 3107))},
             // Surrounded By Holes
-                {2365810048, Collectible(FVector(31900, 26250, 3850))},
+                {2365810048, Collectible(FVector(33050, 24100, 3850), tuple<FVector, string, int>{FVector(31900, 26250, 3850), "game_version", FULL_GOLD})},
             // Time Trial
                 {2365810060, Collectible(FVector(1250, 18000, 3000), vector<pair<string, int>>{{"game_version", MAP_PATCH}}, L"BP_TimeTrial_C_1")},
                     }},

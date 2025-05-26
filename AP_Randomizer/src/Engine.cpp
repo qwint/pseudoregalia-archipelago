@@ -262,7 +262,7 @@ namespace Engine {
 				FVector position;
 				int32_t classification;
 			};
-			shared_ptr<void> collectible_info(new CollectibleSpawnInfo{ id, collectible.GetPosition(), GameData::GetClassification(id) });
+			shared_ptr<void> collectible_info(new CollectibleSpawnInfo{ id, collectible.GetPosition(GameData::GetOptions()), GameData::GetClassification(id) });
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SpawnCollectible", collectible_info);
 			spawned_collectibles.insert(id);
 		}

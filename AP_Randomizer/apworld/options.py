@@ -86,7 +86,7 @@ class StartWithBreaker(Toggle):
 class StartWithOutfits(Toggle):
     """
     Places the outfits in the starting inventory.
-    The outfit's vanilla locations (time trials) will not have items.
+    The outfits' vanilla locations (i.e. time trials) will not have items.
 
     If Full Gold version is selected, this only applies to the Professional outfit.
     """

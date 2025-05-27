@@ -1,7 +1,7 @@
 # pseudoregalia-archipelago
 This is a mod for Pseudoregalia that works with the [multi-game multi-world randomizer Archipelago](https://archipelago.gg/). It is currently in alpha and is being actively developed. Abilities, minor upgrades, major keys, small keys, and health pieces are shuffled.
 
-You can get the latest release from [the releases page](https://github.com/pseudoregalia-modding/pseudoregalia-archipelago/releases).
+You can get the latest release from [the releases page](https://github.com/qwint/pseudoregalia-archipelago/releases).
 
 Currently the logic is mostly copied from [spuds' standalone randomizer](https://github.com/pseudoregalia-modding/rando), and may require [movement tricks such as solar ultrahops and cling climbing](https://www.youtube.com/watch?v=kZJjYdh6huk).
 
@@ -18,8 +18,8 @@ You'll spawn in Dungeon with Dream Breaker at its vanilla location, and you'll h
 
 
 # Mod Installation
-Note: If you are installing on Steam Deck, please read [the Steam Deck installation instructions](https://github.com/pseudoregalia-modding/pseudoregalia-archipelago/blob/main/docs/steam_deck_installation.md) instead.
-1. [Go to the Releases page](https://github.com/pseudoregalia-modding/pseudoregalia-archipelago/releases/latest) and download the latest version of `pseudoregalia-archipelago.zip` and `Pseudoregalia.yaml`. You don't need the apworld or weighted yaml if you don't know what those are.
+Note: If you are installing on Steam Deck, please read [the Steam Deck installation instructions](https://github.com/qwint/pseudoregalia-archipelago/blob/main/docs/steam_deck_installation.md) instead.
+1. [Go to the Releases page](https://github.com/qwint/pseudoregalia-archipelago/releases/latest) and download the latest version of `pseudoregalia-archipelago.zip` and `Pseudoregalia.yaml`. You don't need the apworld or weighted yaml if you don't know what those are.
 2. In Steam/steamapps/common, make a copy of your Pseudoregalia folder and rename it "Pseudoregalia_AP" (or whatever else you like).
    * You can add the new `pseudoregalia.exe` as a "Non-Steam Game" in Steam to access it easily from Steam and to maintain Steam Input compatibility (which may be required for some controllers)
 3. Extract the contents of pseudoregalia-archipelago.zip directly into "Pseudoregalia_AP". You should see README.md appear in the folder.

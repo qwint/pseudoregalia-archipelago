@@ -78,7 +78,7 @@ class GameVersion(Choice):
 class StartWithBreaker(Toggle):
     """
     Places Dream Breaker (or one Progressive Dream Breaker) in the starting inventory.
-    If turned on, Dream Breaker's vanilla location will not have an item.
+    Dream Breaker's vanilla location will not have an item.
     """
     display_name = "Start With Breaker"
 
@@ -86,9 +86,9 @@ class StartWithBreaker(Toggle):
 class StartWithOutfits(Toggle):
     """
     Places the outfits in the starting inventory.
-    If turned off, the outfits are randomized into the item pool and the time trials are opened for randomization.
+    The outfit's vanilla locations (time trials) will not have items.
 
-    If Full Gold version is selected, this only affects the Professional outfit.
+    If Full Gold version is selected, this only applies to the Professional outfit.
     """
     display_name = "Start With Outfits"
 

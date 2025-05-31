@@ -75,12 +75,31 @@ class GameVersion(Choice):
     default = MAP_PATCH
 
 
+class StartWithBreaker(Toggle):
+    """
+    Places Dream Breaker (or one Progressive Dream Breaker) in the starting inventory.
+    """
+    display_name = "Start With Breaker"
+
+
+class RandomizeTimeTrials(Toggle):
+    """
+    Opens the time trials for randomization and puts the outfits in the item pool.
+    If turned off, the time trials will not have items and the outfits are placed in the starting inventory.
+
+    If Full Gold version is selected, this option has no effect.
+    """
+    display_name = "Randomize Time Trials"
+
+
 @dataclass
 class PseudoregaliaOptions(PerGameCommonOptions):
+    game_version: GameVersion
     logic_level: LogicLevel
     obscure_logic: ObscureLogic
     progressive_breaker: ProgressiveBreaker
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
-    game_version: GameVersion
+    start_with_breaker: StartWithBreaker
+    randomize_time_trials: RandomizeTimeTrials
 

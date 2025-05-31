@@ -193,6 +193,21 @@ namespace Engine {
 		}
 	}
 
+	void SpawnTimeTrialCollectibleIfBeaten(UObject* obj) {
+		wstring name = obj->GetName();
+		auto id_collectible_pair = GameData::GetTimeTrialCollectible(GetCurrentMap(), name);
+		if (!id_collectible_pair) {
+			Log(L"Collectible not found for time trial " + name);
+			return;
+		}
+		auto& [id, collectible] = *id_collectible_pair;
+		if (!collectible.CanCreate(GameData::GetOptions())) {
+			Log(L"Collectible with id " + std::to_wstring(id) + L" was not spawned because its required options were not met.");
+			return;
+		}
+		SpawnTimeTrialCollectibleIfBeaten(obj, id, collectible);
+	}
+
 	void SpawnTimeTrialCollectibleIfBeaten(UObject* obj, int64_t id, GameData::Collectible collectible) {
 		int32_t medal_tier = *static_cast<int32_t*>(obj->GetValuePtrByPropertyName(L"medalTier"));
 		if (medal_tier < 1) {

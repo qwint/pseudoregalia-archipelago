@@ -15,5 +15,6 @@ namespace Engine {
 	void ToggleSlideJump();
 	void VaporizeGoat();
 	void VerifyVersion();
+	void SpawnTimeTrialCollectibleIfBeaten(UObject*);
 	void SpawnTimeTrialCollectibleIfBeaten(UObject*, int64_t, GameData::Collectible);
 }

@@ -1,9 +1,7 @@
 from BaseClasses import Location
-from typing import NamedTuple, Optional, Callable, TYPE_CHECKING
+from typing import NamedTuple, Callable
 from .constants.versions import MAP_PATCH, FULL_GOLD
-
-if TYPE_CHECKING:
-    from . import PseudoregaliaWorld
+from .options import PseudoregaliaOptions
 
 
 class PseudoregaliaLocation(Location):
@@ -12,10 +10,9 @@ class PseudoregaliaLocation(Location):
 
 class PseudoregaliaLocationData(NamedTuple):
     region: str
-    code: int = None
-    can_create: "Callable[[PseudoregaliaWorld, int], bool]" = lambda world: True
-    locked_item: Optional[str] = None
-    show_in_spoiler: bool = True
+    code: int | None = None
+    can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
+    locked_item: str | None = None
 
 
 location_table = {
@@ -25,10 +22,8 @@ location_table = {
     # Anything optional goes below the 50 base locations
 
     "Dilapidated Dungeon - Dream Breaker": PseudoregaliaLocationData(
-        # Dream Breaker can't really be shuffled right now but I would like to later
         code=2365810001,
-        region="Dungeon Mirror",
-        locked_item="Dream Breaker"),
+        region="Dungeon Mirror"),
     "Dilapidated Dungeon - Slide": PseudoregaliaLocationData(
         code=2365810002,
         region="Dungeon Slide"),
@@ -66,7 +61,7 @@ location_table = {
     "Castle Sansa - Locked Door": PseudoregaliaLocationData(
         code=2365810013,
         region="Castle Main",
-        can_create=lambda world: world.options.game_version == FULL_GOLD),
+        can_create=lambda options: options.game_version == FULL_GOLD),
     "Castle Sansa - Platform In Main Halls": PseudoregaliaLocationData(
         code=2365810014,
         region="Castle Main",),
@@ -108,7 +103,7 @@ location_table = {
     "Listless Library - Sun Greaves": PseudoregaliaLocationData(
         code=2365810026,
         region="Library Greaves",
-        can_create=lambda world: not bool(world.options.split_sun_greaves)),
+        can_create=lambda options: not bool(options.split_sun_greaves)),
     "Listless Library - Upper Back": PseudoregaliaLocationData(
         code=2365810027,
         region="Library Top",),
@@ -189,77 +184,48 @@ location_table = {
     "Listless Library - Sun Greaves 1": PseudoregaliaLocationData(
         code=2365810051,
         region="Library Greaves",
-        can_create=lambda world: bool(world.options.split_sun_greaves)),
+        can_create=lambda options: bool(options.split_sun_greaves)),
     "Listless Library - Sun Greaves 2": PseudoregaliaLocationData(
         code=2365810052,
         region="Library Greaves",
-        can_create=lambda world: bool(world.options.split_sun_greaves)),
+        can_create=lambda options: bool(options.split_sun_greaves)),
     "Listless Library - Sun Greaves 3": PseudoregaliaLocationData(
         code=2365810053,
         region="Library Greaves",
-        can_create=lambda world: bool(world.options.split_sun_greaves)),
+        can_create=lambda options: bool(options.split_sun_greaves)),
     
     "Dilapidated Dungeon - Time Trial": PseudoregaliaLocationData(
         code=2365810054,
         region="Dungeon Mirror",
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Castle Sansa - Time Trial": PseudoregaliaLocationData(
         code=2365810055,
         region="Castle Main",
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Sansa Keep - Time Trial": PseudoregaliaLocationData(
         code=2365810056,
         region="Keep Throne Room",
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Listless Library - Time Trial": PseudoregaliaLocationData(
         code=2365810057,
         region="Library Main",
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Twilight Theatre - Time Trial": PseudoregaliaLocationData(
         code=2365810058,
         region="Theatre Pillar",
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Empty Bailey - Time Trial": PseudoregaliaLocationData(
         code=2365810059,
         region="Bailey Upper",
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "The Underbelly - Time Trial": PseudoregaliaLocationData(
         code=2365810060,
         region="Underbelly Main Upper",
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Tower Remains - Time Trial": PseudoregaliaLocationData(
         code=2365810061,
         region="The Great Door",
-        can_create=lambda world: world.options.game_version == MAP_PATCH),
-
-    "Dilapidated Dungeon - Unlock Door": PseudoregaliaLocationData(
-        region="Dungeon Strong Eyes",
-        locked_item="Unlocked Door",
-        show_in_spoiler=False),
-    "Castle Sansa - Unlock Door (Professionalism)": PseudoregaliaLocationData(
-        region="Castle Main",
-        locked_item="Unlocked Door",
-        show_in_spoiler=False),
-    "Castle Sansa - Unlock Door (Sansa Keep)": PseudoregaliaLocationData(
-        region="Castle Main",
-        locked_item="Unlocked Door",
-        show_in_spoiler=False),
-    "Sansa Keep - Unlock Door": PseudoregaliaLocationData(
-        region="Keep Main",
-        locked_item="Unlocked Door",
-        show_in_spoiler=False),
-    "Listless Library - Unlock Door": PseudoregaliaLocationData(
-        region="Library Main",
-        locked_item="Unlocked Door",
-        show_in_spoiler=False),
-    "Twilight Theatre - Unlock Door": PseudoregaliaLocationData(
-        region="Theatre Main",
-        locked_item="Unlocked Door",
-        show_in_spoiler=False),
-    "The Underbelly - Unlock Door": PseudoregaliaLocationData(
-        region="Underbelly By Heliacal",
-        locked_item="Unlocked Door",
-        show_in_spoiler=False),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
 
     "D S T RT ED M M O   Y": PseudoregaliaLocationData(
         region="The Great Door",

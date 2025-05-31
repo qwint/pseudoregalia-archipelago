@@ -96,14 +96,7 @@ public:
                 Client::SendDeathLink();
                 };
             auto spawntimetrialcollectible = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
-                std::wstring name = context.Context->GetName();
-                auto id_collectible_pair = GameData::GetTimeTrialCollectible(Engine::GetCurrentMap(), name);
-                if (!id_collectible_pair) {
-                    Log(L"Collectible not found for time trial " + name);
-                    return;
-                }
-                auto& [location_id, collectible] = *id_collectible_pair;
-                Engine::SpawnTimeTrialCollectibleIfBeaten(context.Context, location_id, collectible);
+                Engine::SpawnTimeTrialCollectibleIfBeaten(context.Context);
                 };
 
             if (!returncheck_hooked

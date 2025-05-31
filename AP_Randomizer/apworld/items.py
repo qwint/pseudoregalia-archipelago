@@ -12,7 +12,7 @@ class PseudoregaliaItemData(NamedTuple):
     code: int | None = None
     frequency: int = 1
     classification: ItemClassification = ItemClassification.filler
-    precollect: Callable[[PseudoregaliaOptions], bool] = lambda options: False
+    precollect: Callable[[PseudoregaliaOptions], int] = lambda options: 0
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
 
 
@@ -20,7 +20,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Dream Breaker": PseudoregaliaItemData(
         code=2365810001,
         classification=ItemClassification.progression,
-        precollect=lambda options: bool(options.start_with_breaker),
+        precollect=lambda options: 1 if options.start_with_breaker else 0,
         can_create=lambda options: not bool(options.progressive_breaker)),
     "Indignation": PseudoregaliaItemData(
         code=2365810002,
@@ -82,7 +82,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         classification=ItemClassification.filler),
     "Professionalism": PseudoregaliaItemData(
         code=2365810018,
-        precollect=lambda options: bool(options.start_with_outfits),
+        precollect=lambda options: 1 if options.start_with_outfits else 0,
         classification=ItemClassification.filler),
 
     "Health Piece": PseudoregaliaItemData(
@@ -124,43 +124,43 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         code=2365810028,
         frequency=3,
         classification=ItemClassification.progression,
-        precollect=lambda options: bool(options.start_with_breaker),
+        precollect=lambda options: 1 if options.start_with_breaker else 0,
         can_create=lambda options: bool(options.progressive_breaker)),
 
     "Devotion": PseudoregaliaItemData(
         code=2365810029,
         classification=ItemClassification.filler,
-        precollect=lambda options: bool(options.start_with_outfits),
+        precollect=lambda options: 1 if options.start_with_outfits else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "A Guardian": PseudoregaliaItemData(
         code=2365810030,
         classification=ItemClassification.filler,
-        precollect=lambda options: bool(options.start_with_outfits),
+        precollect=lambda options: 1 if options.start_with_outfits else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Sweater": PseudoregaliaItemData(
         code=2365810031,
         classification=ItemClassification.filler,
-        precollect=lambda options: bool(options.start_with_outfits),
+        precollect=lambda options: 1 if options.start_with_outfits else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Class": PseudoregaliaItemData(
         code=2365810032,
         classification=ItemClassification.filler,
-        precollect=lambda options: bool(options.start_with_outfits),
+        precollect=lambda options: 1 if options.start_with_outfits else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Chivalry": PseudoregaliaItemData(
         code=2365810033,
         classification=ItemClassification.filler,
-        precollect=lambda options: bool(options.start_with_outfits),
+        precollect=lambda options: 1 if options.start_with_outfits else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "Nostalgia": PseudoregaliaItemData(
         code=2365810034,
         classification=ItemClassification.filler,
-        precollect=lambda options: bool(options.start_with_outfits),
+        precollect=lambda options: 1 if options.start_with_outfits else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
     "A Bleeding Heart": PseudoregaliaItemData(
         code=2365810035,
         classification=ItemClassification.filler,
-        precollect=lambda options: bool(options.start_with_outfits),
+        precollect=lambda options: 1 if options.start_with_outfits else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
 
     "Something Worth Being Awake For": PseudoregaliaItemData(

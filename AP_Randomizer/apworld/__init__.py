@@ -31,12 +31,11 @@ class PseudoregaliaWorld(World):
         for item_name, item_data in item_table.items():
             if not item_data.can_create(self.options) or not item_data.code:
                 continue
-            for count in range(item_data.frequency):
-                item = self.create_item(item_name)
-                if item_data.precollect(self.options) and count == 0:
-                    self.multiworld.push_precollected(item)
-                else:
-                    self.multiworld.itempool.append(item)
+            precollect = item_data.precollect(self.options)
+            for _ in range(precollect):
+                self.multiworld.push_precollected(self.create_item(item_name))
+            for _ in range(precollect, item_data.frequency):
+                self.multiworld.itempool.append(self.create_item(item_name))
 
     def generate_early(self):
         if self.options.logic_level in (EXPERT, LUNATIC):

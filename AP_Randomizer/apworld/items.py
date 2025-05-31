@@ -82,7 +82,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         classification=ItemClassification.filler),
     "Professionalism": PseudoregaliaItemData(
         code=2365810018,
-        precollect=lambda options: 1 if options.version == MAP_PATCH and not options.randomize_time_trials else 0,
+        precollect=lambda options: 1 if options.game_version == MAP_PATCH and not options.randomize_time_trials else 0,
         classification=ItemClassification.filler),
 
     "Health Piece": PseudoregaliaItemData(

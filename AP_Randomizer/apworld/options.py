@@ -83,14 +83,14 @@ class StartWithBreaker(Toggle):
     display_name = "Start With Breaker"
 
 
-class StartWithOutfits(Toggle):
+class RandomizeTimeTrials(Toggle):
     """
-    Places the outfits in the starting inventory.
-    The outfits' vanilla locations (i.e. time trials) will not have items.
+    Opens the time trials for randomization and puts the outfits in the item pool.
+    If turned off, the time trials will not have items and the outfits are placed in the starting inventory.
 
-    If Full Gold version is selected, this only applies to the Professional outfit.
+    If Full Gold version is selected, this option has no effect.
     """
-    display_name = "Start With Outfits"
+    display_name = "Randomize Time Trials"
 
 
 @dataclass
@@ -102,5 +102,5 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
     start_with_breaker: StartWithBreaker
-    start_with_outfits: StartWithOutfits
+    randomize_time_trials: RandomizeTimeTrials
 

@@ -23,6 +23,9 @@ class PseudoregaliaWorld(World):
     options_dataclass = PseudoregaliaOptions
     options: PseudoregaliaOptions
 
+    def get_filler_item_name(self) -> str:
+        return "Health Piece"
+
     def create_item(self, name: str) -> PseudoregaliaItem:
         data = item_table[name]
         return PseudoregaliaItem(name, data.classification, data.code, self.player)
@@ -67,8 +70,7 @@ class PseudoregaliaWorld(World):
             "progressive_breaker": bool(self.options.progressive_breaker),
             "progressive_slide": bool(self.options.progressive_slide),
             "split_sun_greaves": bool(self.options.split_sun_greaves),
-            "start_with_breaker": bool(self.options.start_with_breaker),
-            "start_with_outfits": bool(self.options.start_with_outfits),
+            "randomize_time_trials": bool(self.options.randomize_time_trials),
         }
 
     def set_rules(self):

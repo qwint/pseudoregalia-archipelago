@@ -23,8 +23,7 @@ location_table = {
 
     "Dilapidated Dungeon - Dream Breaker": PseudoregaliaLocationData(
         code=2365810001,
-        region="Dungeon Mirror",
-        can_create=lambda options: not options.start_with_breaker),
+        region="Dungeon Mirror"),
     "Dilapidated Dungeon - Slide": PseudoregaliaLocationData(
         code=2365810002,
         region="Dungeon Slide"),
@@ -62,7 +61,7 @@ location_table = {
     "Castle Sansa - Locked Door": PseudoregaliaLocationData(
         code=2365810013,
         region="Castle Main",
-        can_create=lambda options: options.game_version == FULL_GOLD and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == FULL_GOLD),
     "Castle Sansa - Platform In Main Halls": PseudoregaliaLocationData(
         code=2365810014,
         region="Castle Main",),
@@ -198,35 +197,35 @@ location_table = {
     "Dilapidated Dungeon - Time Trial": PseudoregaliaLocationData(
         code=2365810054,
         region="Dungeon Mirror",
-        can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Castle Sansa - Time Trial": PseudoregaliaLocationData(
         code=2365810055,
         region="Castle Main",
-        can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Sansa Keep - Time Trial": PseudoregaliaLocationData(
         code=2365810056,
         region="Keep Throne Room",
-        can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Listless Library - Time Trial": PseudoregaliaLocationData(
         code=2365810057,
         region="Library Main",
-        can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Twilight Theatre - Time Trial": PseudoregaliaLocationData(
         code=2365810058,
         region="Theatre Pillar",
-        can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Empty Bailey - Time Trial": PseudoregaliaLocationData(
         code=2365810059,
         region="Bailey Upper",
-        can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "The Underbelly - Time Trial": PseudoregaliaLocationData(
         code=2365810060,
         region="Underbelly Main Upper",
-        can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
     "Tower Remains - Time Trial": PseudoregaliaLocationData(
         code=2365810061,
         region="The Great Door",
-        can_create=lambda options: options.game_version == MAP_PATCH and not options.start_with_outfits),
+        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
 
     "D S T RT ED M M O   Y": PseudoregaliaLocationData(
         region="The Great Door",

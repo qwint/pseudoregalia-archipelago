@@ -8,4 +8,5 @@ namespace Client {
 	void CompleteGame();
 	void SendDeathLink();
 	void Disconnect();
+	bool IsMissingLocation(int64_t);
 }

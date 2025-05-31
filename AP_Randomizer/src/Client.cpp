@@ -190,7 +190,6 @@ namespace Client {
             ap->set_location_checked_handler([](const list<int64_t>& location_ids) {
                 for (const auto& id : location_ids) {
                     Log(L"Marking location " + std::to_wstring(id) + L" as checked");
-                    GameData::CheckLocation(id);
                     Engine::DespawnCollectible(id);
                 }
                 });
@@ -214,7 +213,6 @@ namespace Client {
         ap->LocationChecks(id_list);
 
         Log(L"Marking location " + std::to_wstring(id) + L" as checked");
-        GameData::CheckLocation(id);
         Engine::DespawnCollectible(id);
     }
     
@@ -270,6 +268,15 @@ namespace Client {
         }
 
         ap->Say(input);
+    }
+
+    // returns true if the id param is a "missing location", ie a location that has an item and hasn't been checked. the
+    // function returns false if not connected to indicate that there are no locations to check yet.
+    bool Client::IsMissingLocation(int64_t id) {
+        if (ap == nullptr) {
+            return false;
+        }
+        return ap->get_missing_locations().contains(id);
     }
 
 

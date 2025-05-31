@@ -78,7 +78,6 @@ class GameVersion(Choice):
 class StartWithBreaker(Toggle):
     """
     Places Dream Breaker (or one Progressive Dream Breaker) in the starting inventory.
-    Dream Breaker's vanilla location will not have an item.
     """
     display_name = "Start With Breaker"
 

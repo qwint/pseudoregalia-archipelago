@@ -203,6 +203,7 @@ namespace Client {
         GameData::Close();
         delete ap;
         ap = nullptr;
+        Log("Disconnected from Archipelago.", LogType::System);
     }
 
     void Client::SendCheck(int64_t id) {

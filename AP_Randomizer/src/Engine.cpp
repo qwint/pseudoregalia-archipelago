@@ -38,6 +38,7 @@ namespace Engine {
 		// on load runs twice for some reason, and it will also try to spawn when the time trial is beaten.
 		unordered_set<int64_t> spawned_collectibles;
 
+		bool has_initialized_console = false;
 		deque<pair<wstring, wstring>> messages;
 
 		const wstring intro_markdown = L"<System>Welcome to Pseudoregalia Archipelago! You can connect by pressing Enter to open the console, then typing</>\n<System>/connect ip:port \"player name\"</>\n\n<System>Once you've obtained Solar Wind, you can toggle it with either Left Ctrl or the top face button on your controller.</>";
@@ -242,11 +243,14 @@ namespace Engine {
 	}
 
 	void InitializeConsole(UObject* console) {
-		if (messages.empty()) {
-			PrintToConsole(intro_markdown, intro_plain, console);
-			return;
+		GameData::Map current_map = GetCurrentMap();
+		if (has_initialized_console) {
+			AddMessages(console);
 		}
-		AddMessages(console);
+		else if (GetCurrentMap() != GameData::Map::TitleScreen) {
+			has_initialized_console = true;
+			PrintToConsole(intro_markdown, intro_plain, console);
+		}
 	}
 
 

@@ -243,7 +243,6 @@ namespace Engine {
 	}
 
 	void InitializeConsole(UObject* console) {
-		GameData::Map current_map = GetCurrentMap();
 		if (has_initialized_console) {
 			AddMessages(console);
 		}

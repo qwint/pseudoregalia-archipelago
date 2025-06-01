@@ -82,6 +82,15 @@ class StartWithBreaker(Toggle):
     display_name = "Start With Breaker"
 
 
+class StartWithMap(Toggle):
+    """
+    Places the map item (Memento) in the starting inventory.
+
+    If Full Gold version is selected, this option has no effect.
+    """
+    display_name = "Start With Map"
+
+
 class RandomizeTimeTrials(Toggle):
     """
     Opens the time trials for randomization and puts the outfits in the item pool.
@@ -101,5 +110,6 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
     start_with_breaker: StartWithBreaker
+    start_with_map: StartWithMap
     randomize_time_trials: RandomizeTimeTrials
 

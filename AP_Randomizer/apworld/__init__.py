@@ -10,6 +10,7 @@ from .rules_expert import PseudoregaliaExpertRules
 from .rules_lunatic import PseudoregaliaLunaticRules
 from typing import Dict, Any
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
+from .constants.versions import FULL_GOLD
 
 
 class PseudoregaliaWorld(World):
@@ -47,6 +48,10 @@ class PseudoregaliaWorld(World):
         if self.options.logic_level in (EXPERT, LUNATIC):
             # obscure is forced on for expert/lunatic difficulties
             self.options.obscure_logic.value = 1
+        if self.options.game_version == FULL_GOLD:
+            # zero out options that don't do anything on full gold
+            self.options.start_with_map.value = 0
+            self.options.randomize_time_trials.value = 0
 
     def create_regions(self):
         for region_name in region_table.keys():

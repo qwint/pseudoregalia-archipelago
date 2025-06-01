@@ -163,6 +163,12 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         precollect=lambda options: 1 if not options.randomize_time_trials else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
 
+    "Memento": PseudoregaliaItemData(
+        code=2365810036,
+        classification=ItemClassification.useful,
+        precollect=lambda options: 1 if options.start_with_map else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
+
     "Something Worth Being Awake For": PseudoregaliaItemData(
         classification=ItemClassification.progression),
 }

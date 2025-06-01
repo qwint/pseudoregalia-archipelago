@@ -6,6 +6,7 @@
 #include "Unreal/World.hpp"
 #include "Engine.hpp"
 #include "Logger.hpp"
+#include "Client.hpp"
 
 namespace Engine {
 	using namespace RC::Unreal; // Give Engine easy access to Unreal objects
@@ -119,11 +120,6 @@ namespace Engine {
 		// but I don't think it's worth changing right now since this is just called once each map load.
 		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(GetCurrentMap());
 		for (const auto& [id, collectible] : collectible_map) {
-			// Return if the collectible shouldn't be spawned based on options
-			if (!collectible.CanCreate(GameData::GetOptions())) {
-				Log(L"Collectible with id " + to_wstring(id) + L" was not spawned because its required options were not met.");
-				continue;
-			}
 			if (collectible.IsTimeTrial()) {
 				// trying to spawn here on load will fail because the time trial actor hasn't loaded its data yet, so it
 				// will report as not having been beaten even if it has. however, we still need to try in case the
@@ -201,10 +197,6 @@ namespace Engine {
 			return;
 		}
 		auto& [id, collectible] = *id_collectible_pair;
-		if (!collectible.CanCreate(GameData::GetOptions())) {
-			Log(L"Collectible with id " + std::to_wstring(id) + L" was not spawned because its required options were not met.");
-			return;
-		}
 		SpawnTimeTrialCollectibleIfBeaten(obj, id, collectible);
 	}
 
@@ -263,8 +255,8 @@ namespace Engine {
 		}
 
 		void SpawnCollectible(int64_t id, GameData::Collectible collectible) {
-			if (collectible.IsChecked()) {
-				Log(L"Collectible with id " + to_wstring(id) + L" has already been checked");
+			if (!Client::IsMissingLocation(id)) {
+				Log(L"Collectible with id " + to_wstring(id) + L" was not spawned because it is not a missing location.");
 				return;
 			}
 			if (spawned_collectibles.contains(id)) {

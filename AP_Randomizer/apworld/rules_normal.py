@@ -466,6 +466,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Tower Remains - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
                 and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+
+            # "Castle Sansa - Memento": lambda state: True,
         }
 
         self.apply_clauses(region_clauses, location_clauses)

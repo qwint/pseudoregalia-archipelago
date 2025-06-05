@@ -227,6 +227,11 @@ location_table = {
         region="The Great Door",
         can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
 
+    "Castle Sansa - Memento": PseudoregaliaLocationData(
+        code=2365810062,
+        region="Castle Main",
+        can_create=lambda options: options.game_version == MAP_PATCH),
+
     "D S T RT ED M M O   Y": PseudoregaliaLocationData(
         region="The Great Door",
         locked_item="Something Worth Being Awake For"),

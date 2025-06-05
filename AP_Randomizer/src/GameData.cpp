@@ -83,6 +83,8 @@ namespace GameData {
             {2365810033, ItemType::MinorAbility},
             {2365810034, ItemType::MinorAbility},
             {2365810035, ItemType::MinorAbility},
+
+            {2365810036, ItemType::MinorAbility},
         };
 
         const unordered_map<int64_t, wstring> lookup_item_id_to_upgrade = {
@@ -114,6 +116,7 @@ namespace GameData {
             {2365810033, L"outfitKnight"},
             {2365810034, L"outfitJam"},
             {2365810035, L"outfitPast"},
+            {2365810036, L"map"},
         };
 
         // This is for location ids, not items, so it can't be combined with the tables above.
@@ -139,6 +142,7 @@ namespace GameData {
             {2365810018, Map::Castle},
             {2365810019, Map::Castle},
             {2365810055, Map::Castle},
+            {2365810062, Map::Castle},
             {2365810020, Map::Keep},
             {2365810021, Map::Keep},
             {2365810022, Map::Keep},
@@ -317,6 +321,8 @@ namespace GameData {
                 {2365810019, Collectible(FVector(3390, 21150, 6600))},
             // Time Trial
                 {2365810055, Collectible(FVector(3200, -1700, -500), L"BP_TimeTrial_C_1")},
+            // Memento
+                {2365810062, Collectible(FVector(8950, 6450, -175))},
                     }},
             {Map::Keep, unordered_map<int64_t, Collectible> {
             // Strikebreak
@@ -438,6 +444,7 @@ namespace GameData {
             {L"outfitKnight", 0},
             {L"outfitJam", 0},
             {L"outfitPast", 0},
+            {L"map", 0},
         };
 
         slidejump_owned = false;
@@ -482,6 +489,7 @@ namespace GameData {
             {L"outfitKnight", 0},
             {L"outfitJam", 0},
             {L"outfitPast", 0},
+            {L"map", 0},
         };
     }
 

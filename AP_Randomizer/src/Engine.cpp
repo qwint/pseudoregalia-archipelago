@@ -20,6 +20,8 @@ namespace Engine {
 	using std::unordered_set;
 	using std::vector;
 	using std::optional;
+	using std::deque;
+	using std::pair;
 
 	// Private members
 	namespace {
@@ -29,11 +31,18 @@ namespace Engine {
 		void SyncAbilities();
 		void SpawnCollectible(int64_t, GameData::Collectible);
 		optional<UObject*> GetTimeTrialObjectWithName(vector<UObject*>, GameData::Collectible);
+		void AddMessages(UObject*);
 
 		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary
 		// because time trials will try to spawn their collectibles multiple times: the function we hook into to spawn
 		// on load runs twice for some reason, and it will also try to spawn when the time trial is beaten.
 		unordered_set<int64_t> spawned_collectibles;
+
+		bool has_initialized_console = false;
+		deque<pair<wstring, wstring>> messages;
+
+		const wstring intro_markdown = L"<System>Welcome to Pseudoregalia Archipelago! You can connect by pressing Enter to open the console, then typing</>\n<System>/connect ip:port \"player name\"</>\n\n<System>Once you've obtained Solar Wind, you can toggle it with either Left Ctrl or the top face button on your controller.</>";
+		const wstring intro_plain = L"Welcome to Pseudoregalia Archipelago! You can connect by pressing Enter to open the console, then typing\n/connect ip:port \"player name\"\n\nOnce you've obtained Solar Wind, you can toggle it with either Left Ctrl or the top face button on your controller.";
 
 		struct BlueprintFunctionInfo {
 			variant<wstring, UObject*> parent;
@@ -209,6 +218,40 @@ namespace Engine {
 		SpawnCollectible(id, collectible);
 	}
 
+	void PrintToConsole(wstring markdown_text, wstring plain_text, optional<UObject*> console) {
+		struct ConsoleLineInfo {
+			FText markdown;
+			FText plain;
+		};
+		FText ue_markdown(markdown_text);
+		FText ue_plain(plain_text);
+		std::shared_ptr<void> params(new ConsoleLineInfo{ ue_markdown, ue_plain });
+		if (console) {
+			ExecuteBlueprintFunction(*console, L"AP_PrintToConsole", params);
+		}
+		else {
+			ExecuteBlueprintFunction(L"AP_DeluxeConsole_C", L"AP_PrintToConsole", params);
+		}
+	}
+
+	void SaveMessage(wstring markdown, wstring plain) {
+		if (messages.size() == 100) {
+			// only maintain the last 100 messages
+			messages.pop_front();
+		}
+		messages.push_back(pair<wstring, wstring>{ markdown, plain });
+	}
+
+	void InitializeConsole(UObject* console) {
+		if (has_initialized_console) {
+			AddMessages(console);
+		}
+		else if (GetCurrentMap() != GameData::Map::TitleScreen) {
+			has_initialized_console = true;
+			PrintToConsole(intro_markdown, intro_plain, console);
+		}
+	}
+
 
 	// Private functions
 	namespace {
@@ -281,6 +324,21 @@ namespace Engine {
 				}
 			}
 			return {};
+		}
+
+		void AddMessages(UObject* console) {
+			struct AddMessagesInfo {
+				TArray<FText> markdown_messages;
+				TArray<FText> plain_messages;
+			};
+			TArray<FText> ue_markdown_messages = { FText(intro_markdown) };
+			TArray<FText> ue_plain_messages = { FText(intro_plain) };
+			for (const auto& [markdown, plain] : messages) {
+				ue_markdown_messages.Add(FText(markdown));
+				ue_plain_messages.Add(FText(plain));
+			}
+			std::shared_ptr<void> params(new AddMessagesInfo{ ue_markdown_messages, ue_plain_messages });
+			ExecuteBlueprintFunction(console, L"AP_AddMessages", params);
 		}
 	} // End private functions
 }

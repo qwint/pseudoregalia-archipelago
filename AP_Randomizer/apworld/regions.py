@@ -10,7 +10,8 @@ class RegionExit(NamedTuple):
 
 region_table: Dict[str, List[str]] = {
     "Menu":
-        ["Dungeon Mirror"],
+        ["Castle Main"],
+
     "Dungeon Mirror":
         ["Dungeon Slide"],
     "Dungeon Slide":

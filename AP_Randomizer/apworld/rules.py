@@ -1,7 +1,7 @@
 from BaseClasses import CollectionState
 from typing import Dict, Callable, TYPE_CHECKING
 from worlds.generic.Rules import add_rule, set_rule, CollectionRule
-from .constants.difficulties import NORMAL
+from .constants.difficulties import NORMAL, EXPERT, LUNATIC
 from .locations import location_table
 
 if TYPE_CHECKING:
@@ -94,8 +94,9 @@ class PseudoregaliaRulesHelpers:
         return state.count("Small Key", self.player) >= self.required_small_keys
 
     def navigate_darkrooms(self, state) -> bool:
-        # TODO: Update this to check obscure tricks for breaker only when logic rework nears completion
-        return self.has_breaker(state) or state.has("Ascendant Light", self.player)
+        return (state.has("Ascendant Light", self.player)
+                or self.knows_obscure(state) and self.has_breaker(state)  # throw breaker for light
+                or self.world.options.logic_level in (EXPERT, LUNATIC))  # navigate without light
 
     def can_slidejump(self, state) -> bool:
         return (state.has_all({"Slide", "Solar Wind"}, self.player)

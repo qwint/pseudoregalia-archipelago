@@ -16,7 +16,6 @@ namespace Engine {
 	void VaporizeGoat();
 	void VerifyVersion();
 	void SpawnTimeTrialCollectibleIfBeaten(UObject*);
-	void SpawnTimeTrialCollectibleIfBeaten(UObject*, int64_t, GameData::Collectible);
 	void PrintToConsole(std::wstring, std::wstring, std::optional<UObject*> = {});
 	void SaveMessage(std::wstring, std::wstring);
 	void InitializeConsole(UObject*);

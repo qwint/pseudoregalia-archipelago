@@ -29,13 +29,12 @@ namespace Engine {
 		void SyncHealthPieces();
 		void SyncSmallKeys();
 		void SyncAbilities();
-		void SpawnCollectible(int64_t, GameData::Collectible);
-		optional<UObject*> GetTimeTrialObjectWithName(vector<UObject*>, GameData::Collectible);
+		void SpawnCollectible(int64_t, FVector);
 		void AddMessages(UObject*);
 
-		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary
-		// because time trials will try to spawn their collectibles multiple times: the function we hook into to spawn
-		// on load runs twice for some reason, and it will also try to spawn when the time trial is beaten.
+		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary because
+		// time trials may try to spawn their collectibles multiple times if the player beats the time trial more than once
+		// without getting the collectible
 		unordered_set<int64_t> spawned_collectibles;
 
 		bool has_initialized_console = false;
@@ -121,28 +120,13 @@ namespace Engine {
 	// Calls blueprint's AP_SpawnCollectible function for each unchecked collectible in a map.
 	void Engine::SpawnCollectibles() {
 		spawned_collectibles.clear();
-		vector<UObject*> time_trial_objs{};
-		UObjectGlobals::FindAllOf(L"BP_TimeTrial_C", time_trial_objs);
 		// This function must loop through instead of calling once with an array;
 		// as of 10/11/23 the params struct method I use can't easily represent FVectors or FTransforms in C++.
 		// This might be worked around by storing positions as three separate numbers instead and constructing the vectors in BP,
 		// but I don't think it's worth changing right now since this is just called once each map load.
 		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(GetCurrentMap());
 		for (const auto& [id, collectible] : collectible_map) {
-			if (collectible.IsTimeTrial()) {
-				// trying to spawn here on load will fail because the time trial actor hasn't loaded its data yet, so it
-				// will report as not having been beaten even if it has. however, we still need to try in case the
-				// player connects to the server after loading into the zone.
-				optional<UObject*> time_trial_obj = GetTimeTrialObjectWithName(time_trial_objs, collectible);
-				if (!time_trial_obj) {
-					Log(L"Time trial object not found for collectible with id " + to_wstring(id), LogType::Error);
-					continue;
-				}
-				SpawnTimeTrialCollectibleIfBeaten(*time_trial_obj, id, collectible);
-			}
-			else {
-				SpawnCollectible(id, collectible);
-			}
+			SpawnCollectible(id, collectible.GetPosition(GameData::GetOptions()));
 		}
 	}
 
@@ -200,22 +184,18 @@ namespace Engine {
 
 	void SpawnTimeTrialCollectibleIfBeaten(UObject* obj) {
 		wstring name = obj->GetName();
-		auto id_collectible_pair = GameData::GetTimeTrialCollectible(GetCurrentMap(), name);
-		if (!id_collectible_pair) {
+		optional<GameData::TimeTrial> time_trial = GameData::GetTimeTrial(GetCurrentMap(), name);
+		if (!time_trial) {
 			Log(L"Collectible not found for time trial " + name);
 			return;
 		}
-		auto& [id, collectible] = *id_collectible_pair;
-		SpawnTimeTrialCollectibleIfBeaten(obj, id, collectible);
-	}
-
-	void SpawnTimeTrialCollectibleIfBeaten(UObject* obj, int64_t id, GameData::Collectible collectible) {
+		auto& [id, position] = *time_trial;
 		int32_t medal_tier = *static_cast<int32_t*>(obj->GetValuePtrByPropertyName(L"medalTier"));
 		if (medal_tier < 1) {
 			Log(L"Time trial for collectible " + to_wstring(id) + L" has not been beaten");
 			return;
 		}
-		SpawnCollectible(id, collectible);
+		SpawnCollectible(id, position);
 	}
 
 	void PrintToConsole(wstring markdown_text, wstring plain_text, optional<UObject*> console) {
@@ -297,7 +277,7 @@ namespace Engine {
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SetUpgrades", upgrade_params);
 		}
 
-		void SpawnCollectible(int64_t id, GameData::Collectible collectible) {
+		void SpawnCollectible(int64_t id, FVector position) {
 			if (!Client::IsMissingLocation(id)) {
 				Log(L"Collectible with id " + to_wstring(id) + L" was not spawned because it is not a missing location.");
 				return;
@@ -309,21 +289,12 @@ namespace Engine {
 			Log(L"Spawning collectible with id " + to_wstring(id));
 			struct CollectibleSpawnInfo {
 				int64_t new_id;
-				FVector position;
+				FVector new_position;
 				int32_t classification;
 			};
-			shared_ptr<void> collectible_info(new CollectibleSpawnInfo{ id, collectible.GetPosition(GameData::GetOptions()), GameData::GetClassification(id) });
+			shared_ptr<void> collectible_info(new CollectibleSpawnInfo{ id, position, GameData::GetClassification(id) });
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SpawnCollectible", collectible_info);
 			spawned_collectibles.insert(id);
-		}
-
-		optional<UObject*> GetTimeTrialObjectWithName(vector<UObject*> time_trial_objs, GameData::Collectible collectible) {
-			for (const auto& time_trial_obj : time_trial_objs) {
-				if (collectible.HasTimeTrialActorName(time_trial_obj->GetName())) {
-					return time_trial_obj;
-				}
-			}
-			return {};
 		}
 
 		void AddMessages(UObject* console) {

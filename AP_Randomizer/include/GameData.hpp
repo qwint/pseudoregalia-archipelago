@@ -44,6 +44,9 @@ namespace GameData {
 		SmallKey,
 	};
 
+	// encodes the location id and spawn position of a time trial collectible
+	typedef std::pair<int64_t, FVector> TimeTrial;
+
 	void Initialize();
 	void Close();
 	int GetHealthPieces();
@@ -53,7 +56,7 @@ namespace GameData {
 	std::unordered_map<std::string, int> GetOptions();
 	std::unordered_map<std::wstring, int> GetUpgradeTable();
 	std::unordered_map<int64_t, Collectible> GetCollectiblesOfZone(Map);
-	std::list<int64_t> GetLocations();
+	std::list<int64_t> GetMissingSpawnableLocations();
 	void SetPseudoItemClassification(int64_t, int64_t);
 	void SetOffWorldItemClassification(int64_t, Classification);
 	Classification GetClassification(int64_t);
@@ -62,5 +65,5 @@ namespace GameData {
 	bool ToggleSlideJump();
 	bool SlideJumpDisabled();
 	bool CanHaveTimeTrial(Map);
-	std::optional<std::pair<int64_t, Collectible>> GetTimeTrialCollectible(Map, std::wstring);
+	std::optional<TimeTrial> GetTimeTrial(Map, std::wstring);
 }

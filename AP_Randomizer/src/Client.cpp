@@ -89,7 +89,7 @@ namespace Client {
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
                     GameData::SetOption(iter.key(), iter.value());
                 }
-                ap->LocationScouts(GameData::GetLocations());
+                ap->LocationScouts(GameData::GetMissingSpawnableLocations());
                 // Delay spawning collectibles so that we have time to receive checked locations and scouts.
                 Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::SpawnCollectibles);
                 // Delay verifying version so that it shows up as the last message after connecting

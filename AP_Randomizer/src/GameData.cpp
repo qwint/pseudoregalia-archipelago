@@ -22,6 +22,7 @@ namespace GameData {
         bool major_keys[5];
         unordered_map<wstring, int> upgrade_table;
         unordered_map<Map, unordered_map<int64_t, Collectible>> collectible_table;
+        unordered_map<Map, unordered_map<wstring, TimeTrial>> time_trial_table;
         unordered_map<int64_t, Classification> lookup_location_id_to_classification;
         unordered_map<string, int> options;
         bool slidejump_owned;
@@ -216,10 +217,18 @@ namespace GameData {
         return collectible_table[current_map];
     }
 
-    list<int64_t> GameData::GetLocations() {
+    list<int64_t> GameData::GetMissingSpawnableLocations() {
         list<int64_t> location_ids;
         for (const auto& [_, zone_map] : collectible_table) {
-            for (const auto& [location_id, collectible] : zone_map) {
+            for (const auto& [location_id, _] : zone_map) {
+                if (Client::IsMissingLocation(location_id)) {
+                    location_ids.push_back(location_id);
+                }
+            }
+        }
+        for (const auto& [_, zone_map] : time_trial_table) {
+            for (const auto& [_, time_trial] : zone_map) {
+                const int64_t location_id = time_trial.first;
                 if (Client::IsMissingLocation(location_id)) {
                     location_ids.push_back(location_id);
                 }
@@ -291,8 +300,6 @@ namespace GameData {
                 {2365810006, Collectible(FVector(7487, 1407, 4250))},
             // Strong Eyes
                 {2365810007, Collectible(FVector(750, 8850, 2650))},
-            // Time Trial
-                {2365810054, Collectible(FVector(-3350, -4300, 850), L"BP_TimeTrial_C_1")},
                     }},
             {Map::Castle, unordered_map<int64_t, Collectible> {
             // Indignation
@@ -319,8 +326,6 @@ namespace GameData {
                 {2365810018, Collectible(FVector(-9600, 21750, 5400))},
             // Near Theatre Front
                 {2365810019, Collectible(FVector(3390, 21150, 6600))},
-            // Time Trial
-                {2365810055, Collectible(FVector(3200, -1700, -500), L"BP_TimeTrial_C_1")},
             // Memento
                 {2365810062, Collectible(FVector(8950, 6450, -175))},
                     }},
@@ -337,8 +342,6 @@ namespace GameData {
                 {2365810024, Collectible(FVector(-3900, -6109, -450))},
             // Sunsetter
                 {2365810025, Collectible(FVector(-3000, 4900, -400))},
-            // Time Trial
-                {2365810056, Collectible(FVector(14350, 400, 1250), L"BP_TimeTrial_C_3")},
                     }},
             {Map::Library, unordered_map<int64_t, Collectible> {
             // Sun Greaves
@@ -355,8 +358,6 @@ namespace GameData {
                 {2365810052, Collectible(FVector(-4100, 9250, -100))},
             // Split Greaves 3
                 {2365810053, Collectible(FVector(-4200, 9250, -100))},
-            // Time Trial
-                {2365810057, Collectible(FVector(-2850, 3600, 900), L"BP_TimeTrial_C_2")},
                     }},
             {Map::Theatre, unordered_map<int64_t, Collectible> {
             // Soul Cutter
@@ -371,8 +372,6 @@ namespace GameData {
                 {2365810034, Collectible(FVector(255, 1150, 50))},
             // Corner Beam
                 {2365810035, Collectible(FVector(-14100, -150, 1950))},
-            // Time Trial
-                {2365810058, Collectible(FVector(-14750, 3900, 100), L"BP_TimeTrial_C_1")},
                     }},
             {Map::Bailey, unordered_map<int64_t, Collectible> {
             // Solar Wind
@@ -385,8 +384,6 @@ namespace GameData {
                 {2365810039, Collectible(FVector(-1787, 5236, 650))},
             // Inside Building
                 {2365810040, Collectible(FVector(3007, 3457, 300))},
-            // Time Trial
-                {2365810059, Collectible(FVector(1150, 5250, -600), L"BP_TimeTrial_C_1")},
                     }},
             {Map::Underbelly, unordered_map<int64_t, Collectible> {
             // Ascendant Light
@@ -405,18 +402,43 @@ namespace GameData {
                 {2365810047, Collectible(FVector(11300, 12700, 3107))},
             // Surrounded By Holes
                 {2365810048, Collectible(FVector(33050, 24100, 3850), tuple<FVector, string, int>{FVector(31900, 26250, 3850), "game_version", FULL_GOLD})},
-            // Time Trial
-                {2365810060, Collectible(FVector(1250, 18000, 3000), L"BP_TimeTrial_C_1")},
                     }},
             {Map::Tower, unordered_map<int64_t, Collectible> {
             // Cling Gem
                 {2365810049, Collectible(FVector(13350, 5250, 4150))},
             // Atop The Tower
                 {2365810050, Collectible(FVector(9650, 5250, 7100))},
-            // Time Trial
-                {2365810061, Collectible(FVector(10750, 3050, 4000), L"BP_TimeTrial_C_3")},
                     }},
         };
+
+        // map -> time trial actor name -> location id + position
+        time_trial_table = {
+            {Map::Dungeon, {
+                {L"BP_TimeTrial_C_1", {2365810054, FVector(-3350, -4300, 850)}},
+            }},
+            {Map::Castle, {
+                {L"BP_TimeTrial_C_1", {2365810055, FVector(3200, -1700, -500)}},
+            }},
+            {Map::Keep, {
+                {L"BP_TimeTrial_C_3", {2365810056, FVector(14350, 400, 1250)}},
+            }},
+            {Map::Library, {
+                {L"BP_TimeTrial_C_2", {2365810057, FVector(-2850, 3600, 900)}},
+            }},
+            {Map::Theatre, {
+                {L"BP_TimeTrial_C_1", {2365810058, FVector(-14750, 3900, 100)}},
+            }},
+            {Map::Bailey, {
+                {L"BP_TimeTrial_C_1", {2365810059, FVector(1150, 5250, -600)}},
+            }},
+            {Map::Underbelly, {
+                {L"BP_TimeTrial_C_1", {2365810060, FVector(1250, 18000, 3000)}},
+            }},
+            {Map::Tower, {
+                {L"BP_TimeTrial_C_3", {2365810061, FVector(10750, 3050, 4000)}},
+            }},
+        };
+
 
         upgrade_table = {
             {L"attack", 0},
@@ -457,6 +479,7 @@ namespace GameData {
 
     void GameData::Close() {
         collectible_table = {};
+        time_trial_table = {};
         slidejump_owned = false;
         slidejump_disabled = false;
         small_keys = 0;
@@ -562,15 +585,13 @@ namespace GameData {
         return false;
     }
 
-    optional<pair<int64_t, Collectible>> GetTimeTrialCollectible(Map map, wstring time_trial_actor_name) {
-        if (!collectible_table.contains(map)) {
+    optional<TimeTrial> GetTimeTrial(Map map, wstring time_trial_actor_name) {
+        if (!time_trial_table.contains(map)) {
             return {};
         }
-        for (const auto& [location_id, collectible] : collectible_table[map]) {
-            if (collectible.HasTimeTrialActorName(time_trial_actor_name)) {
-                return pair<int64_t, Collectible>{ location_id, collectible };
-            }
+        if (!time_trial_table.at(map).contains(time_trial_actor_name)) {
+            return {};
         }
-        return {};
+        return time_trial_table.at(map).at(time_trial_actor_name);
     }
 }

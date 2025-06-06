@@ -28,7 +28,6 @@ public:
     bool returncheck_hooked = false;
     bool toggleslidejump_hooked = false;
     bool deathlink_hooked = false;
-    bool onsuccesfulload_hooked = false;
     bool manageresult_hooked = false;
     bool copytext_hooked = false;
     bool sendmessage_hooked = false;
@@ -155,17 +154,6 @@ public:
             }
 
             if (actor->GetName().starts_with(L"BP_TimeTrial")) {
-                if (!onsuccesfulload_hooked) {
-                    UFunction* onsuccesfulload_function = actor->GetFunctionByName(L"BPI_onSuccesfulLoad");
-                    if (!onsuccesfulload_function) {
-                        Log(L"Could not find function \"BPI_onSuccesfulLoad\" in BP_TimeTrial.", LogType::Error);
-                        return;
-                    }
-                    Log(L"Establishing hook for BPI_onSuccesfulLoad");
-                    Unreal::UObjectGlobals::RegisterHook(onsuccesfulload_function, EmptyFunction, spawntimetrialcollectible, nullptr);
-                    onsuccesfulload_hooked = true;
-                }
-
                 if (!manageresult_hooked) {
                     UFunction* manageresult_function = actor->GetFunctionByName(L"manageResult");
                     if (!manageresult_function) {

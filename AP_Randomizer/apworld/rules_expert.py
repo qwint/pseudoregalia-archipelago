@@ -1,4 +1,5 @@
 from .rules_hard import PseudoregaliaHardRules
+from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaExpertRules(PseudoregaliaHardRules):
@@ -7,8 +8,6 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
 
         region_clauses = {
             "Bailey Lower -> Bailey Upper": lambda state:
-                self.has_slide(state),
-            "Bailey Upper -> Tower Remains": lambda state:
                 self.has_slide(state),
             "Tower Remains -> The Great Door": lambda state:
                 # get to top of tower
@@ -127,6 +126,17 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
                 self.has_slide(state),
         }
+
+        # logic differences due to geometry changes between versions
+        if self.world.options.game_version == MAP_PATCH:
+            region_clauses["Bailey Upper -> Tower Remains"] = lambda state: \
+                self.has_slide(state) \
+                and (
+                    self.can_bounce(state)
+                    or self.get_kicks(state, 1))
+        else:
+            region_clauses["Bailey Upper -> Tower Remains"] = lambda state: \
+                self.has_slide(state)
 
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:

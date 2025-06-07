@@ -1,4 +1,5 @@
 from .rules_normal import PseudoregaliaNormalRules
+from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaHardRules(PseudoregaliaNormalRules):
@@ -9,8 +10,6 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Bailey Lower -> Bailey Upper": lambda state:
                 self.has_plunge(state)
                 or self.has_gem(state),
-            "Bailey Upper -> Tower Remains": lambda state:
-                self.kick_or_plunge(state, 3),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.has_gem(state),
             "Theatre Main -> Theatre Pillar": lambda state:
@@ -110,6 +109,16 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.get_kicks(state, 1)
                 or self.has_gem(state),
         }
+
+        # logic differences due to geometry changes between versions
+        if self.world.options.game_version == MAP_PATCH:
+            # TODO (version-logic): kick or plunge 3 is still possible but maybe too hard for hard?
+            region_clauses["Bailey Upper -> Tower Remains"] = lambda state: \
+                self.kick_or_plunge(state, 3) \
+                or self.get_kicks(state, 2) and self.can_bounce(state)
+        else:
+            region_clauses["Bailey Upper -> Tower Remains"] = lambda state: \
+                self.kick_or_plunge(state, 3)
 
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:

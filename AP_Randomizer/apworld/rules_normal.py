@@ -1,4 +1,5 @@
 from .rules import PseudoregaliaRulesHelpers
+from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
@@ -14,12 +15,6 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Bailey Lower -> Castle Main": lambda state: True,
             # "Bailey Lower -> Theatre Pillar => Bailey": lambda state: True,
             # "Bailey Upper -> Bailey Lower": lambda state: True,
-            "Bailey Upper -> Tower Remains": lambda state:
-                self.kick_or_plunge(state, 4)
-                and (
-                    # get onto the bridge
-                    self.can_slidejump(state)
-                    or self.has_plunge(state) and self.knows_obscure(state)),
             "Bailey Upper -> Underbelly Little Guy": lambda state:
                 self.has_plunge(state),
             "Tower Remains -> The Great Door": lambda state:
@@ -253,6 +248,23 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Underbelly Hole -> Underbelly => Keep": lambda state:
                 self.has_slide(state),
         }
+
+        # logic differences due to geometry changes between versions
+        if self.world.options.game_version == MAP_PATCH:
+            region_clauses["Bailey Upper -> Tower Remains"] = lambda state: \
+                (self.kick_or_plunge(state, 4)
+                or self.get_kicks(state, 1) and self.has_plunge(state) and self.can_bounce(state)) \
+                and (
+                    # get onto the bridge
+                    self.can_slidejump(state)
+                    or self.has_plunge(state) and self.knows_obscure(state))
+        else:
+            region_clauses["Bailey Upper -> Tower Remains"] = lambda state: \
+                self.kick_or_plunge(state, 4) \
+                and (
+                    # get onto the bridge
+                    self.can_slidejump(state)
+                    or self.has_plunge(state) and self.knows_obscure(state))
 
         location_clauses = {
             "Empty Bailey - Solar Wind": lambda state:

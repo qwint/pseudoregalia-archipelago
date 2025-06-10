@@ -100,10 +100,10 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                     or self.has_gem(state) and self.get_kicks(state, 1)
                     or self.kick_or_plunge(state, 4)
                     or self.knows_obscure(state) and self.has_gem(state)),
-            "Underbelly Little Guy -> Bailey Upper": lambda state:
+            "Underbelly => Bailey -> Bailey Upper": lambda state:
                 self.get_kicks(state, 3)
                 or self.can_slidejump(state) and self.get_kicks(state, 1),
-            "Underbelly Little Guy -> Underbelly Main Lower": lambda state: 
+            "Underbelly => Bailey -> Underbelly Main Lower": lambda state: 
                 self.has_gem(state),
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
                 self.has_plunge(state)

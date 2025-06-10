@@ -127,7 +127,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.has_gem(state)
                     or self.get_kicks(state, 2)),
-            # "Underbelly Little Guy -> Bailey Upper": lambda state: True,  # technically already true because obscure
+            # "Underbelly => Bailey -> Bailey Upper": lambda state: True,  # technically already true because obscure
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
                 self.has_plunge(state) and self.has_slide(state),
         }

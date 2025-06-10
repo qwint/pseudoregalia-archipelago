@@ -20,7 +20,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     # get onto the bridge
                     self.can_slidejump(state)
                     or self.has_plunge(state) and self.knows_obscure(state)),
-            "Bailey Upper -> Underbelly Little Guy": lambda state:
+            "Bailey Upper -> Underbelly => Bailey": lambda state:
                 self.has_plunge(state),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.has_gem(state) and self.kick_or_plunge(state, 1),
@@ -202,7 +202,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.has_gem(state)
                 or self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.can_slidejump(state),
-            # "Underbelly Main Lower -> Underbelly Little Guy": lambda state: True,
+            # "Underbelly Main Lower -> Underbelly => Bailey": lambda state: True,
             "Underbelly Main Lower -> Underbelly Hole": lambda state:
                 self.has_plunge(state)
                 and (
@@ -232,11 +232,11 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and (
                     self.get_kicks(state, 1)
                     or self.has_gem(state)),
-            # "Underbelly Little Guy -> Bailey Lower": lambda state: True,
-            "Underbelly Little Guy -> Bailey Upper": lambda state:
+            # "Underbelly => Bailey -> Bailey Lower": lambda state: True,
+            "Underbelly => Bailey -> Bailey Upper": lambda state:
                 self.knows_obscure(state)
                 or self.has_plunge(state) and self.get_kicks(state, 1),
-            "Underbelly Little Guy -> Underbelly Main Lower": lambda state:
+            "Underbelly => Bailey -> Underbelly Main Lower": lambda state:
                 self.has_plunge(state)
                 or self.get_kicks(state, 2)
                 or self.knows_obscure(state),

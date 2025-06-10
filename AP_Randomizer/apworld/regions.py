@@ -104,8 +104,7 @@ region_table: Dict[str, List[str]] = {
          "Underbelly => Dungeon",
          "Underbelly Ascendant Light"],
     "Underbelly Ascendant Light":
-        ["Underbelly Light Pillar",
-         "Underbelly => Dungeon"],
+        ["Underbelly => Dungeon"],
     "Underbelly Main Lower":
         ["Underbelly Little Guy",
          "Underbelly Hole",

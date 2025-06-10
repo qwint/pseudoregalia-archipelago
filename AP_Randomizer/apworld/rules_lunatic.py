@@ -33,12 +33,7 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                     and self.has_plunge(state)
                     and self.can_soulcutter(state)),
             "Underbelly Main Lower -> Underbelly Main Upper": lambda state:
-                self.has_slide(state)
-                and (
-                    self.has_gem(state)
-                    or self.get_kicks(state, 2)
-                    or self.get_kicks(state, 1) and self.has_plunge(state)
-                    or self.get_kicks(state, 1) and self.has_breaker(state)),
+                self.get_kicks(state, 1),
         }
 
         location_clauses = {

@@ -14,7 +14,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state)  # ultras from right tower directly to pole
                 and (
                     self.has_gem(state)
-                    or self.kick_or_plunge(state, 2)),  # double check 1 kick + plunge works, should be doable with 1 kick on lunatic?
+                    or self.get_kicks(state, 2))
+                or self.can_gold_ultra(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             # "Theatre Main -> Theatre Outside Scythe Corridor": lambda state:
                 # there's certainly some routes besides the gem route that should be expert/lunatic
             "Theatre Main -> Castle => Theatre (Front)": lambda state:
@@ -32,30 +33,35 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state),
 
             "Dungeon Escape Lower -> Dungeon Escape Upper": lambda state:
-                self.has_slide(state) and self.get_kicks(state, 1),
+                self.can_gold_ultra(state) and self.get_kicks(state, 1),
             "Dungeon Escape Upper -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_slide(state),
             "Castle Main -> Castle => Theatre Pillar": lambda state:
                 self.has_slide(state),
             "Castle Main -> Castle Spiral Climb": lambda state:
-                self.has_slide(state),
+                self.can_gold_ultra(state)
+                or self.has_slide(state) and self.kick_or_plunge(state, 1),
             "Castle Spiral Climb -> Castle High Climb": lambda state:
-                self.has_slide(state)
+                self.can_gold_slide_ultra(state)
+                or self.has_slide(state) and self.kick_or_plunge(state, 1)
                 or self.get_kicks(state, 2),
             "Castle Spiral Climb -> Castle By Scythe Corridor": lambda state:
                 self.kick_or_plunge(state, 4),
             "Castle By Scythe Corridor -> Castle => Theatre (Front)": lambda state:
-                self.has_slide(state) and self.get_kicks(state, 2),
+                self.can_gold_ultra(state) and self.get_kicks(state, 2)
+                or self.has_slide(state) and self.kick_or_plunge(state, 3),
             "Castle By Scythe Corridor -> Castle High Climb": lambda state:
                 self.has_slide(state)
                 or self.kick_or_plunge(state, 2),
             "Castle => Theatre (Front) -> Castle By Scythe Corridor": lambda state:
-                self.has_slide(state)
+                self.can_gold_slide_ultra(state)
+                or self.has_slide(state) and self.get_kicks(state, 1)
                 or self.get_kicks(state, 3),
             "Castle => Theatre (Front) -> Castle Moon Room": lambda state:
                 self.has_slide(state),
             "Castle => Theatre (Front) -> Theatre Main": lambda state:
-                self.has_slide(state),
+                self.can_gold_slide_ultra(state)
+                or self.has_slide(state) and self.kick_or_plunge(state, 1),
             "Library Main -> Library Top": lambda state:
                 self.has_plunge(state)
                 or self.has_slide(state),
@@ -169,12 +175,15 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state),
 
             "Dilapidated Dungeon - Dark Orbs": lambda state:
-                self.has_slide(state) and self.get_kicks(state, 1)
-                or self.has_slide(state) and self.can_bounce(state),
+                self.can_gold_slide_ultra(state) and self.get_kicks(state, 1)
+                or self.has_slide(state)
+                and (
+                    self.can_bounce(state)
+                    or self.get_kicks(state, 2)),
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.kick_or_plunge(state, 2)
                 or self.can_bounce(state) and self.get_kicks(state, 1)
-                or self.has_slide(state) and self.kick_or_plunge(state, 1),
+                or self.can_gold_ultra(state) and self.kick_or_plunge(state, 1),
             "Dilapidated Dungeon - Strong Eyes": lambda state:
                 self.has_gem(state)
                 or self.has_slide(state) and self.get_kicks(state, 1),
@@ -183,13 +192,14 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.kick_or_plunge(state, 1)
                     or self.has_slide(state))
-                or self.has_slide(state) and self.get_kicks(state, 1)
+                or self.can_gold_ultra(state) and self.get_kicks(state, 1)
+                or self.has_slide(state) and self.kick_or_plunge(state, 2)
                 or self.get_kicks(state, 3)
                 or self.has_gem(state),
             "Castle Sansa - Platform In Main Halls": lambda state:
                 self.has_slide(state),
             "Castle Sansa - Tall Room Near Wheel Crawlers": lambda state:
-                self.has_slide(state),
+                self.can_gold_ultra(state),
             "Castle Sansa - Alcove Near Dungeon": lambda state:
                 self.has_slide(state),
             "Castle Sansa - Balcony": lambda state:
@@ -203,9 +213,11 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 or self.has_slide(state),
             "Castle Sansa - Alcove Near Scythe Corridor": lambda state:
                 self.kick_or_plunge(state, 3)
-                or self.has_slide(state) and self.kick_or_plunge(state, 1),
+                or self.has_slide(state) and self.get_kicks(state, 1)
+                or self.can_gold_ultra(state) and self.has_plunge(state),
             "Castle Sansa - Near Theatre Front": lambda state:
-                self.has_slide(state),
+                self.can_gold_slide_ultra(state)
+                or self.has_slide(state) and self.get_kicks(state, 1),
             "Castle Sansa - High Climb From Courtyard": lambda state:
                 self.can_attack(state) and self.get_kicks(state, 1)
                 or self.has_slide(state),

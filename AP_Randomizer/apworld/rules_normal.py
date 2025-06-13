@@ -247,43 +247,37 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
 
         # logic differences due to geometry changes between versions
         if self.world.options.game_version == MAP_PATCH:
-            region_clauses.update({
-                "Bailey Upper -> Tower Remains": lambda state:
-                    (self.kick_or_plunge(state, 4)
-                    or self.get_kicks(state, 1) and self.has_plunge(state) and self.can_bounce(state))
-                    and (
-                        # get onto the bridge
-                        self.can_slidejump(state)
-                        or self.has_plunge(state) and self.knows_obscure(state)),
-                "Dungeon => Castle -> Dungeon Strong Eyes": lambda state:
-                    self.has_small_keys(state)
-                    or self.knows_obscure(state)
-                    and (
-                        self.has_plunge(state)
-                        or self.has_breaker(state) and self.get_kicks(state, 1)),
-                "Dungeon Strong Eyes -> Dungeon => Castle": lambda state:
-                    self.has_small_keys(state)
-                    or self.knows_obscure(state)
-                    and (
-                        self.can_bounce(state)
-                        or self.can_attack(state)
-                        and (
-                            self.get_kicks(state, 2)
-                            or self.has_gem(state))),
-            })
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                (self.kick_or_plunge(state, 4)
+                or self.get_kicks(state, 1) and self.has_plunge(state) and self.can_bounce(state))
+                and (
+                    # get onto the bridge
+                    self.can_slidejump(state)
+                    or self.has_plunge(state) and self.knows_obscure(state)))
+            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
+                self.has_small_keys(state)
+                or self.knows_obscure(state)
+                and (
+                    self.has_plunge(state)
+                    or self.has_breaker(state) and self.get_kicks(state, 1)))
+            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
+                self.has_small_keys(state)
+                or self.knows_obscure(state)
+                and (
+                    self.can_bounce(state)
+                    or self.can_attack(state) and self.get_kicks(state, 2)
+                    or self.can_attack(state) and self.has_gem(state)))
         else:
-            region_clauses.update({
-                "Bailey Upper -> Tower Remains": lambda state:
-                    self.kick_or_plunge(state, 4)
-                    and (
-                        # get onto the bridge
-                        self.can_slidejump(state)
-                        or self.has_plunge(state) and self.knows_obscure(state)),
-                "Dungeon => Castle -> Dungeon Strong Eyes": lambda state:
-                    self.has_small_keys(state),
-                "Dungeon Strong Eyes -> Dungeon => Castle": lambda state:
-                    self.has_small_keys(state),
-                })
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.kick_or_plunge(state, 4)
+                and (
+                    # get onto the bridge
+                    self.can_slidejump(state)
+                    or self.has_plunge(state) and self.knows_obscure(state)))
+            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
+                self.has_small_keys(state))
+            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
+                self.has_small_keys(state))
 
         location_clauses = {
             "Empty Bailey - Solar Wind": lambda state:

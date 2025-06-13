@@ -135,22 +135,18 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
 
         # logic differences due to geometry changes between versions
         if self.world.options.game_version == MAP_PATCH:
-            region_clauses.update({
-                "Bailey Upper -> Tower Remains": lambda state:
-                    self.has_slide(state)
-                    and (
-                        self.can_bounce(state)
-                        or self.get_kicks(state, 1)),
-                "Dungeon => Castle -> Dungeon Strong Eyes": lambda state:
-                    self.has_breaker(state) and self.has_slide(state),
-                "Dungeon Strong Eyes -> Dungeon => Castle": lambda state:
-                    self.can_attack(state) and self.has_slide(state),
-            })
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.has_slide(state)
+                and (
+                    self.can_bounce(state)
+                    or self.get_kicks(state, 1)))
+            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
+                self.has_breaker(state) and self.has_slide(state))
+            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
+                self.can_attack(state) and self.has_slide(state))
         else:
-            region_clauses.update({
-                "Bailey Upper -> Tower Remains": lambda state:
-                    self.has_slide(state),
-            })
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.has_slide(state))
 
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:

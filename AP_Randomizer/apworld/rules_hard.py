@@ -112,26 +112,20 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
 
         # logic differences due to geometry changes between versions
         if self.world.options.game_version == MAP_PATCH:
-            region_clauses.update({
-                "Bailey Upper -> Tower Remains": lambda state:
-                    self.kick_or_plunge(state, 3)  # TODO (version-logic): 3 kicks is still possible but maybe too hard for hard?
-                    or self.get_kicks(state, 2) and self.can_bounce(state),
-                "Dungeon => Castle -> Dungeon Strong Eyes": lambda state:
-                    self.knows_obscure(state) and self.has_breaker(state) and self.has_gem(state),
-                "Dungeon Strong Eyes -> Dungeon => Castle": lambda state:
-                    self.knows_obscure(state)
-                    and (
-                        self.has_plunge(state)
-                        or self.has_breaker(state)
-                        and (
-                            self.get_kicks(state, 1)
-                            or self.can_slidejump(state))),
-            })
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.kick_or_plunge(state, 3)  # TODO (version-logic): 3 kicks is still possible but maybe too hard for hard?
+                or self.get_kicks(state, 2) and self.can_bounce(state))
+            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
+                self.knows_obscure(state) and self.has_breaker(state) and self.has_gem(state))
+            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
+                self.knows_obscure(state)
+                and (
+                    self.has_plunge(state)
+                    or self.has_breaker(state) and self.get_kicks(state, 1)
+                    or self.has_breaker(state) and self.can_slidejump(state)))
         else:
-            region_clauses.update({
-                "Bailey Upper -> Tower Remains": lambda state:
-                    self.kick_or_plunge(state, 3),
-            })
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.kick_or_plunge(state, 3))
 
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:

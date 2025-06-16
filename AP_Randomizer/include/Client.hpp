@@ -5,6 +5,7 @@ namespace Client {
 	void SendCheck(int64_t);
 	void Say(std::string);
 	void PollServer();
+	void SetZoneData();
 	void CompleteGame();
 	void SendDeathLink();
 	void Disconnect();

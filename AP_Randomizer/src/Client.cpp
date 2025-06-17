@@ -89,6 +89,7 @@ namespace Client {
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
                     GameData::SetOption(iter.key(), iter.value());
                 }
+                SetZoneData();
                 ap->LocationScouts(GameData::GetMissingSpawnableLocations());
                 // Delay spawning collectibles so that we have time to receive checked locations and scouts.
                 Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::SpawnCollectibles);
@@ -214,6 +215,21 @@ namespace Client {
 
         Log(L"Marking location " + std::to_wstring(id) + L" as checked");
         Engine::DespawnCollectible(id);
+    }
+    
+    // Sets the data storage Zone value based on the player's current zone.
+    void Client::SetZoneData() {
+        if (ap == nullptr) {
+            return;
+        }
+
+        string key =
+            "Pseudoregalia - Team " + std::to_string(ap->get_team_number())
+            + " - Player " + std::to_string(ap->get_player_number())
+            + " - Zone";
+        int32_t zone = static_cast<int32_t>(Engine::GetCurrentMap());
+        list<APClient::DataStorageOperation> operations{ { "replace", zone } };
+        ap->Set(key, 0, false, operations);
     }
     
     // Sends game completion flag to Archipelago.

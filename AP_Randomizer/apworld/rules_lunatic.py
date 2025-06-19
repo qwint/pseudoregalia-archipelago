@@ -51,7 +51,7 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                 self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.can_bounce(state) and self.kick_or_plunge(state, 1)
-                or self.can_gold_slide_ultra(state),
+                or self.can_gold_ultra(state),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Castle Sansa - Platform In Main Halls": lambda state:

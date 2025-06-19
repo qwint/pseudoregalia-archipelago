@@ -133,21 +133,6 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state),
         }
 
-        # logic differences due to geometry changes between versions
-        if self.world.options.game_version == MAP_PATCH:
-            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
-                self.has_slide(state)
-                and (
-                    self.can_bounce(state)
-                    or self.get_kicks(state, 1)))
-            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
-                self.has_breaker(state) and self.has_slide(state))
-            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
-                self.can_attack(state) and self.has_slide(state))
-        else:
-            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
-                self.has_slide(state))
-
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1),
@@ -180,9 +165,6 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.kick_or_plunge(state, 2)
                 or self.can_bounce(state) and self.get_kicks(state, 1)
                 or self.can_gold_ultra(state) and self.kick_or_plunge(state, 1),
-            "Dilapidated Dungeon - Strong Eyes": lambda state:
-                self.has_gem(state)
-                or self.has_slide(state) and self.get_kicks(state, 1),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.can_bounce(state)
                 and (
@@ -248,6 +230,26 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.can_soulcutter(state) and self.has_slide(state)
                 or self.has_slide(state) and self.get_kicks(state, 1),
         }
+
+        # logic differences due to geometry changes between versions
+        if self.world.options.game_version == MAP_PATCH:
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.has_slide(state)
+                and (
+                    self.can_bounce(state)
+                    or self.get_kicks(state, 1)))
+            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
+                self.has_breaker(state) and self.has_slide(state))
+            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
+                self.can_attack(state) and self.has_slide(state))
+            location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
+                self.has_slide(state))
+        else:
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.has_slide(state))
+            location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
+                self.has_gem(state)
+                or self.has_slide(state) and self.get_kicks(state, 1))
 
         self.apply_clauses(region_clauses, location_clauses)
 

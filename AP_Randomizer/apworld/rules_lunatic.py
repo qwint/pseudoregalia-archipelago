@@ -1,4 +1,5 @@
 from .rules_expert import PseudoregaliaExpertRules
+from .constants.versions import FULL_GOLD
 
 
 class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
@@ -51,8 +52,6 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.can_bounce(state) and self.kick_or_plunge(state, 1)
                 or self.can_gold_slide_ultra(state),
-            "Dilapidated Dungeon - Strong Eyes": lambda state:
-                self.has_slide(state) and self.kick_or_plunge(state, 1),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Castle Sansa - Platform In Main Halls": lambda state:
@@ -66,6 +65,12 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
             "Listless Library - Upper Back": lambda state:
                 self.has_plunge(state),
         }
+
+        # logic differences due to geometry changes between versions
+        if self.world.options.game_version == FULL_GOLD:
+            location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
+                self.has_slide(state) and self.kick_or_plunge(state, 1))
+
 
         self.apply_clauses(region_clauses, location_clauses)
 

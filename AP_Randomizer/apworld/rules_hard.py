@@ -206,7 +206,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
         # logic differences due to geometry changes between versions
         if self.world.options.game_version == MAP_PATCH:
             region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
-                self.kick_or_plunge(state, 3)  # TODO (version-logic): 3 kicks is still possible but maybe too hard for hard?
+                self.kick_or_plunge(state, 3)
                 or self.get_kicks(state, 2) and self.can_bounce(state))
             region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
                 self.knows_obscure(state) and self.has_breaker(state) and self.has_gem(state))

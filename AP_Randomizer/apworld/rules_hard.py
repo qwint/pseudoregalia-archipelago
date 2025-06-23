@@ -1,4 +1,5 @@
 from .rules_normal import PseudoregaliaNormalRules
+from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaHardRules(PseudoregaliaNormalRules):
@@ -9,8 +10,6 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Bailey Lower -> Bailey Upper": lambda state:
                 self.has_plunge(state)
                 or self.has_gem(state),
-            "Bailey Upper -> Tower Remains": lambda state:
-                self.kick_or_plunge(state, 3),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.has_gem(state),
             "Theatre Main -> Theatre Pillar": lambda state:
@@ -150,8 +149,6 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.has_gem(state)
                 or self.get_kicks(state, 1) and self.has_plunge(state)
                 or self.get_kicks(state, 1) and self.can_bounce(state),
-            "Dilapidated Dungeon - Strong Eyes": lambda state:
-                self.knows_obscure(state) and self.has_gem(state) and self.kick_or_plunge(state, 2),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.kick_or_plunge(state, 4)
                 or self.has_gem(state),
@@ -205,6 +202,25 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "The Underbelly - Surrounded By Holes": lambda state:
                 self.has_plunge(state) and self.has_gem(state),
         }
+
+        # logic differences due to geometry changes between versions
+        if self.world.options.game_version == MAP_PATCH:
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.kick_or_plunge(state, 3)
+                or self.get_kicks(state, 2) and self.can_bounce(state))
+            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
+                self.knows_obscure(state) and self.has_breaker(state) and self.has_gem(state))
+            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
+                self.knows_obscure(state)
+                and (
+                    self.has_plunge(state)
+                    or self.has_breaker(state) and self.get_kicks(state, 1)
+                    or self.has_breaker(state) and self.can_slidejump(state)))
+        else:
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.kick_or_plunge(state, 3))
+            location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
+                self.knows_obscure(state) and self.has_gem(state) and self.kick_or_plunge(state, 2))
 
         self.apply_clauses(region_clauses, location_clauses)
 

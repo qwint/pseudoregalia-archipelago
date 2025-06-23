@@ -2,6 +2,7 @@ from BaseClasses import CollectionState
 from typing import Dict, Callable, TYPE_CHECKING
 from worlds.generic.Rules import add_rule, set_rule, CollectionRule
 from .constants.difficulties import NORMAL, EXPERT, LUNATIC
+from .constants.versions import MAP_PATCH
 from .locations import location_table
 
 if TYPE_CHECKING:
@@ -27,13 +28,27 @@ class PseudoregaliaRulesHelpers:
         self.region_rules = {}
         self.location_rules = {}
 
+        # memoize functions that differ based on options
+        if world.options.game_version == MAP_PATCH:
+            self.can_gold_ultra = self.can_slidejump
+            self.can_gold_slide_ultra = lambda state: False
+        else:
+            self.can_gold_ultra = self.has_slide
+            self.can_gold_slide_ultra = self.has_slide
+
         logic_level = world.options.logic_level.value
-        if bool(world.options.obscure_logic):
+        if logic_level in (EXPERT, LUNATIC):
             self.knows_obscure = lambda state: True
             self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
+            self.navigate_darkrooms = lambda state: True
+        elif bool(world.options.obscure_logic):
+            self.knows_obscure = lambda state: True
+            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
+            self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player) or self.has_breaker(state)
         else:
             self.knows_obscure = lambda state: False
-            self.can_attack = lambda state: self.has_breaker(state)
+            self.can_attack = self.has_breaker
+            self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player)
 
         if logic_level == NORMAL:
             self.required_small_keys = 7
@@ -94,13 +109,20 @@ class PseudoregaliaRulesHelpers:
         return state.count("Small Key", self.player) >= self.required_small_keys
 
     def navigate_darkrooms(self, state) -> bool:
-        return (state.has("Ascendant Light", self.player)
-                or self.knows_obscure(state) and self.has_breaker(state)  # throw breaker for light
-                or self.world.options.logic_level in (EXPERT, LUNATIC))  # navigate without light
+        """Used on entry into the dungeon darkrooms."""
+        raise Exception("navigate_darkrooms() was not set")
 
     def can_slidejump(self, state) -> bool:
         return (state.has_all({"Slide", "Solar Wind"}, self.player)
                 or state.count("Progressive Slide", self.player) >= 2)
+
+    def can_gold_ultra(self, state) -> bool:
+        """Used when a gold ultra is needed and it is possible to solar ultra."""
+        raise Exception("can_gold_ultra() was not set")
+
+    def can_gold_slide_ultra(self, state) -> bool:
+        """Used when a gold ultra is needed but it is not possible to solar ultra."""
+        raise Exception("can_gold_slide_ultra() was not set")
 
     def can_strikebreak(self, state) -> bool:
         return (state.has_all({"Dream Breaker", "Strikebreak"}, self.player)

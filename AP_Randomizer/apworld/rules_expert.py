@@ -75,10 +75,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Keep Main -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_slide(state),
             "Underbelly => Dungeon -> Underbelly Ascendant Light": lambda state:
-                self.get_kicks(state, 1)
-                and (
-                    self.has_slide(state)
-                    or self.has_plunge(state)),
+                self.get_kicks(state, 1) and self.has_slide(state),
             "Underbelly Light Pillar -> Underbelly => Dungeon": lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 2)
                 or self.has_plunge(state) and self.get_kicks(state, 2),
@@ -127,9 +124,6 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.has_gem(state)
                     or self.get_kicks(state, 2)),
-            # "Underbelly => Bailey -> Bailey Upper": lambda state: True,  # technically already true because obscure
-            "Underbelly Hole -> Underbelly Main Lower": lambda state:
-                self.has_plunge(state) and self.has_slide(state),
         }
 
         location_clauses = {

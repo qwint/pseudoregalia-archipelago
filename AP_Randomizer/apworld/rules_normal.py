@@ -196,7 +196,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_breaker(state)
                 and (
                     self.has_plunge(state)
-                    or self.get_kicks(state, 3)),
+                    or self.knows_obscure(state) and self.get_kicks(state, 3)),
             "Underbelly Ascendant Light -> Underbelly => Dungeon": lambda state:
                 self.can_bounce(state)
                 or self.has_gem(state)

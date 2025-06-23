@@ -73,11 +73,10 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 or self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 4)
                 or self.can_bounce(state) and self.get_kicks(state, 3),
             "Underbelly Light Pillar -> Underbelly Ascendant Light": lambda state:
-                self.has_breaker(state) and self.get_kicks(state, 2)
-                or self.knows_obscure(state) and self.has_plunge(state)
+                self.knows_obscure(state)
                 and (
-                    self.has_gem(state)
-                    or self.get_kicks(state, 2)),
+                    self.can_attack(state) and self.get_kicks(state, 2)
+                    or self.has_plunge(state) and self.has_gem(state)),
             "Underbelly Main Lower -> Underbelly Hole": lambda state:
                 self.has_plunge(state) and self.has_gem(state),
             "Underbelly Main Lower -> Underbelly By Heliacal": lambda state:
@@ -97,7 +96,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.has_breaker(state)
                 and (
                     state.has("Ascendant Light", self.player)
-                    or self.has_gem(state) and self.get_kicks(state, 1)
+                    or self.has_gem(state) and self.kick_or_plunge(state, 1)
                     or self.kick_or_plunge(state, 4)
                     or self.knows_obscure(state) and self.has_gem(state)),
             "Underbelly => Bailey -> Bailey Upper": lambda state:

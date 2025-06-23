@@ -136,6 +136,7 @@ public:
                 }
                 Engine::SpawnCollectibles();
                 Engine::SyncItems();
+                Client::SetZoneData();
             }
 
             if (actor->GetName().starts_with(L"BP_PlayerGoatMain")) {

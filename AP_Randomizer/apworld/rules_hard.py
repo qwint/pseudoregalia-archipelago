@@ -72,43 +72,43 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                     or self.get_kicks(state, 1) and self.knows_obscure(state))
                 or self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 4)
                 or self.can_bounce(state) and self.get_kicks(state, 3),
-            "Underbelly => Dungeon -> Underbelly Ascendant Light": lambda state:
-                self.kick_or_plunge(state, 2),
-            "Underbelly Light Pillar -> Underbelly => Dungeon": lambda state:
-                self.has_plunge(state) and self.get_kicks(state, 2),
             "Underbelly Light Pillar -> Underbelly Ascendant Light": lambda state:
-                self.has_breaker(state) and self.get_kicks(state, 3)
-                or self.knows_obscure(state) and self.has_plunge(state)
+                self.knows_obscure(state)
                 and (
-                    self.has_gem(state)
-                    or self.get_kicks(state, 1)
-                    or self.can_slidejump(state)),
-            "Underbelly Ascendant Light -> Underbelly => Dungeon": lambda state:
-                self.kick_or_plunge(state, 2),
+                    self.can_attack(state) and self.get_kicks(state, 2)
+                    or self.has_plunge(state) and self.has_gem(state)),
             "Underbelly Main Lower -> Underbelly Hole": lambda state:
                 self.has_plunge(state) and self.has_gem(state),
             "Underbelly Main Lower -> Underbelly By Heliacal": lambda state:
-                self.has_slide(state) and self.knows_obscure(state) and self.get_kicks(state, 2),
+                self.has_slide(state) and self.get_kicks(state, 2),
             "Underbelly Main Lower -> Underbelly Main Upper": lambda state:
-                self.knows_obscure(state) and self.has_gem(state) and self.get_kicks(state, 1),
-            "Underbelly Main Upper -> Underbelly Light Pillar": lambda state:
-                self.has_gem(state)
+                self.knows_obscure(state)
                 and (
-                    self.has_plunge(state)
-                    or self.get_kicks(state, 3)),
+                    self.has_plunge(state) and self.get_kicks(state, 1)
+                    or self.has_plunge(state) and self.has_gem(state)
+                    or self.get_kicks(state, 2) and self.has_gem(state)),
+            "Underbelly Main Upper -> Underbelly Light Pillar": lambda state:
+                self.knows_obscure(state)
+                and (
+                    self.has_breaker(state) and self.has_gem(state)
+                    or self.can_slidejump(state) and self.get_kicks(state, 1) and self.has_plunge(state)),
             "Underbelly Main Upper -> Underbelly By Heliacal": lambda state:
                 self.has_breaker(state)
                 and (
-                    self.has_gem(state)
-                    or self.has_plunge(state) and self.get_kicks(state, 3)
-                    or self.can_slidejump(state) and self.get_kicks(state, 3)),
-            "Underbelly Little Guy -> Bailey Upper": lambda state:
+                    state.has("Ascendant Light", self.player)
+                    or self.has_gem(state) and self.kick_or_plunge(state, 1)
+                    or self.kick_or_plunge(state, 4)
+                    or self.knows_obscure(state) and self.has_gem(state)),
+            "Underbelly => Bailey -> Bailey Upper": lambda state:
                 self.get_kicks(state, 3)
                 or self.can_slidejump(state) and self.get_kicks(state, 1),
-            "Underbelly Little Guy -> Underbelly Main Lower": lambda state: True,
+            "Underbelly => Bailey -> Underbelly Main Lower": lambda state: 
+                self.has_gem(state),
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
-                self.get_kicks(state, 1)
-                or self.has_gem(state),
+                self.has_plunge(state)
+                and (
+                    self.get_kicks(state, 1)
+                    or self.has_gem(state)),
         }
 
         location_clauses = {
@@ -200,11 +200,10 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "The Underbelly - Strikebreak Wall": lambda state:
                 self.can_strikebreak(state)
                 and (
-                    self.get_kicks(state, 3)
-                    or self.get_kicks(state, 1) and self.has_plunge(state)),
+                    self.can_bounce(state)
+                    or self.kick_or_plunge(state, 3)),
             "The Underbelly - Surrounded By Holes": lambda state:
-                self.can_soulcutter(state) and self.get_kicks(state, 1)
-                or self.has_gem(state),
+                self.has_plunge(state) and self.has_gem(state),
         }
 
         self.apply_clauses(region_clauses, location_clauses)

@@ -425,10 +425,9 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     or self.get_kicks(state, 2)
                     or self.knows_obscure(state) and self.get_kicks(state, 1)),
 
-            # TODO (time-trials): finish logic
             "Dilapidated Dungeon - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+                and self.has_gem(state) and self.can_slidejump(state),
             "Castle Sansa - Time Trial": lambda state:
                 self.has_small_keys(state),
             "Sansa Keep - Time Trial": lambda state:
@@ -438,16 +437,16 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_breaker(state) and self.has_plunge(state) and self.has_gem(state),
             "Twilight Theatre - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+                and self.has_gem(state) and self.can_slidejump(state),
             "Empty Bailey - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+                and self.has_gem(state) and self.can_slidejump(state),
             "The Underbelly - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+                and self.has_gem(state) and self.can_slidejump(state),
             "Tower Remains - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+                and self.has_gem(state) and self.can_slidejump(state),
 
             # "Castle Sansa - Memento": lambda state: True,
         }

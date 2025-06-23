@@ -30,11 +30,11 @@ class PseudoregaliaRulesHelpers:
 
         # memoize functions that differ based on options
         if world.options.game_version == MAP_PATCH:
-            self.can_gold_ultra = lambda state: self.can_slidejump(state)
+            self.can_gold_ultra = self.can_slidejump
             self.can_gold_slide_ultra = lambda state: False
         else:
-            self.can_gold_ultra = lambda state: self.has_slide(state)
-            self.can_gold_slide_ultra = lambda state: self.has_slide(state)
+            self.can_gold_ultra = self.has_slide
+            self.can_gold_slide_ultra = self.has_slide
 
         logic_level = world.options.logic_level.value
         if logic_level in (EXPERT, LUNATIC):
@@ -47,7 +47,7 @@ class PseudoregaliaRulesHelpers:
             self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player) or self.has_breaker(state)
         else:
             self.knows_obscure = lambda state: False
-            self.can_attack = lambda state: self.has_breaker(state)
+            self.can_attack = self.has_breaker
             self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player)
 
         if logic_level == NORMAL:

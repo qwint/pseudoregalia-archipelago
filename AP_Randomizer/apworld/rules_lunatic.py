@@ -8,7 +8,8 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
 
         region_clauses = {
             "Tower Remains -> The Great Door": lambda state:
-                self.can_gold_ultra(state) and self.get_kicks(state, 1),
+                self.can_gold_ultra(state) and self.get_kicks(state, 1)
+                or self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Bailey Lower -> Bailey Upper": lambda state:
                 self.can_bounce(state),
             "Theatre Pillar -> Theatre Main": lambda state:

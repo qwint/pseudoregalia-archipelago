@@ -1,5 +1,5 @@
 # pseudoregalia-archipelago
-This is a mod for Pseudoregalia that works with the [multi-game multi-world randomizer Archipelago](https://archipelago.gg/). It is currently in alpha and is being actively developed. Abilities, minor upgrades, major keys, small keys, and health pieces are shuffled. Outfits are also shuffle if you are playing on current patch and the `randomize_time_trials` option is turned on.
+This is a mod for Pseudoregalia that works with the [multi-game multi-world randomizer Archipelago](https://archipelago.gg/). It is currently in alpha and is being actively developed. Abilities, minor upgrades, major keys, small keys, and health pieces are shuffled. Outfits are also shuffled if you are playing on current patch and the `randomize_time_trials` option is turned on.
 
 You can get the latest release from [the releases page](https://github.com/qwint/pseudoregalia-archipelago/releases).
 

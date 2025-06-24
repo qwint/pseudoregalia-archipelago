@@ -39,7 +39,7 @@ Note: If you are installing on Steam Deck, please read [the Steam Deck installat
 
 ![](https://i.imgur.com/9IedtY4.jpg)
 
-2. Place `pseudoregalia.apworld` into Archipelago/custom_worlds.
+2. [Go to the Releases page](https://github.com/qwint/pseudoregalia-archipelago/releases/latest) and download the latest version of `pseudoregalia.apworld` and either double click to open the file with Archipelago, or manually place `pseudoregalia.apworld` into `Archipelago/custom_worlds` to install.
 3. Place all yamls for the seed into Archipelago/Players.
    * You can get a template yaml file by clicking Generate Template Options after installing the apworld. If you just installed the apworld, you may have to restart the Archipelago Launcher before generating.
 4. Run Generate from the Launcher.

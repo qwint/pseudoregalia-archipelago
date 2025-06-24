@@ -22,7 +22,7 @@ Note: If you are installing on Steam Deck, please read [the Steam Deck installat
 1. [Go to the Releases page](https://github.com/qwint/pseudoregalia-archipelago/releases/latest) and download the latest version of `pseudoregalia-archipelago.zip`.
 2. In Steam/steamapps/common, make a copy of your Pseudoregalia folder and rename it "Pseudoregalia_AP" (or whatever else you like).
    * You can add the new `pseudoregalia.exe` as a "Non-Steam Game" in Steam to access it easily from Steam and to maintain Steam Input compatibility (which may be required for some controllers)
-   * If you would like to play on full gold version, down patch using the beta code `fullgoldjump` in Steam before copying the folder. You can make an AP folder for both versions if you want to be able to play on both.
+   * If you would like to play on full gold version, downpatch using the beta code `fullgoldjump` in Steam before copying the folder. You can make an AP folder for both versions if you want to be able to play on both.
 3. Extract the contents of `pseudoregalia-archipelago.zip` directly into "Pseudoregalia_AP".
 
 ![](https://i.imgur.com/SGPm9oq.jpg)

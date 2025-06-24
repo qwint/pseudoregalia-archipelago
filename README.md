@@ -1,5 +1,5 @@
 # pseudoregalia-archipelago
-This is a mod for Pseudoregalia that works with the [multi-game multi-world randomizer Archipelago](https://archipelago.gg/). It is currently in alpha and is being actively developed. Abilities, minor upgrades, major keys, small keys, and health pieces are shuffled.
+This is a mod for Pseudoregalia that works with the [multi-game multi-world randomizer Archipelago](https://archipelago.gg/). It is currently in alpha and is being actively developed. Abilities, minor upgrades, major keys, small keys, and health pieces are shuffled. Outfits are also shuffle if you are playing on current patch and the `randomize_time_trials` option is turned on.
 
 You can get the latest release from [the releases page](https://github.com/qwint/pseudoregalia-archipelago/releases).
 
@@ -35,10 +35,7 @@ Note: If you are installing on Steam Deck, please read [the Steam Deck installat
 
 
 # Generating a Seed
-1. [Install Archipelago,](https://archipelago.gg/tutorial/Archipelago/setup/en) including at least the generator.
-
-![](https://i.imgur.com/9IedtY4.jpg)
-
+1. Install [Archipelago](https://archipelago.gg/tutorial/Archipelago/setup/en).
 2. [Go to the Releases page](https://github.com/qwint/pseudoregalia-archipelago/releases/latest) and download the latest version of `pseudoregalia.apworld` and either double click to open the file with Archipelago, or manually place `pseudoregalia.apworld` into `Archipelago/custom_worlds` to install.
 3. Place all yamls for the seed into Archipelago/Players.
    * You can get a template yaml file by clicking Generate Template Options after installing the apworld. If you just installed the apworld, you may have to restart the Archipelago Launcher before generating.

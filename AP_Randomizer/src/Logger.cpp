@@ -73,14 +73,8 @@ namespace Logger {
 	}
 
 	void Logger::PrintToConsole(std::wstring markdown_text, std::wstring plain_text) {
-		struct ConsoleLineInfo {
-			FText markdown;
-			FText plain;
-		};
-		FText ue_markdown(markdown_text);
-		FText ue_plain(plain_text);
-		std::shared_ptr<void> params(new ConsoleLineInfo{ ue_markdown, ue_plain });
-		Engine::ExecuteBlueprintFunction(L"AP_DeluxeConsole_C", L"AP_PrintToConsole", params);
+		Engine::SaveMessage(markdown_text, plain_text);
+		Engine::PrintToConsole(markdown_text, plain_text);
 	}
 
 	void Logger::PrintToConsole(std::wstring text) {

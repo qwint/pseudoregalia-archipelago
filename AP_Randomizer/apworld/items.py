@@ -1,8 +1,7 @@
 from BaseClasses import Item, ItemClassification
-from typing import NamedTuple, Dict, Set, Callable, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from . import PseudoregaliaWorld
+from typing import NamedTuple, Dict, Set, Callable
+from .constants.versions import MAP_PATCH
+from .options import PseudoregaliaOptions
 
 
 class PseudoregaliaItem(Item):
@@ -10,38 +9,41 @@ class PseudoregaliaItem(Item):
 
 
 class PseudoregaliaItemData(NamedTuple):
-    code: int = None
+    code: int | None = None
+    frequency: int = 1
     classification: ItemClassification = ItemClassification.filler
-    can_create: "Callable[[PseudoregaliaWorld, int], bool]" = lambda world: True
+    precollect: Callable[[PseudoregaliaOptions], int] = lambda options: 0
+    can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
 
 
 item_table: Dict[str, PseudoregaliaItemData] = {
     "Dream Breaker": PseudoregaliaItemData(
         code=2365810001,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_breaker)),
+        precollect=lambda options: 1 if options.start_with_breaker else 0,
+        can_create=lambda options: not bool(options.progressive_breaker)),
     "Indignation": PseudoregaliaItemData(
         code=2365810002,
         classification=ItemClassification.useful),
     "Sun Greaves": PseudoregaliaItemData(
         code=2365810003,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.split_sun_greaves)),
+        can_create=lambda options: not bool(options.split_sun_greaves)),
     "Slide": PseudoregaliaItemData(
         code=2365810004,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_slide)),
+        can_create=lambda options: not bool(options.progressive_slide)),
     "Solar Wind": PseudoregaliaItemData(
         code=2365810005,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_slide)),
+        can_create=lambda options: not bool(options.progressive_slide)),
     "Sunsetter": PseudoregaliaItemData(
         code=2365810006,
         classification=ItemClassification.progression),
     "Strikebreak": PseudoregaliaItemData(
         code=2365810007,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_breaker)),
+        can_create=lambda options: not bool(options.progressive_breaker)),
     "Cling Gem": PseudoregaliaItemData(
         code=2365810008,
         classification=ItemClassification.progression),
@@ -51,12 +53,12 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Soul Cutter": PseudoregaliaItemData(
         code=2365810010,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.progressive_breaker)),
+        can_create=lambda options: not bool(options.progressive_breaker)),
 
     "Heliacal Power": PseudoregaliaItemData(
         code=2365810011,
         classification=ItemClassification.progression,
-        can_create=lambda world: not bool(world.options.split_sun_greaves)),
+        can_create=lambda options: not bool(options.split_sun_greaves)),
     "Aerial Finesse": PseudoregaliaItemData(
         code=2365810012,
         classification=ItemClassification.filler),
@@ -65,25 +67,31 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         classification=ItemClassification.filler),
     "Empathy": PseudoregaliaItemData(
         code=2365810014,
+        frequency=2,
         classification=ItemClassification.filler),
     "Good Graces": PseudoregaliaItemData(
         code=2365810015,
+        frequency=2,
         classification=ItemClassification.useful),
     "Martial Prowess": PseudoregaliaItemData(
         code=2365810016,
         classification=ItemClassification.useful),
     "Clear Mind": PseudoregaliaItemData(
         code=2365810017,
+        frequency=3,
         classification=ItemClassification.filler),
     "Professionalism": PseudoregaliaItemData(
         code=2365810018,
+        precollect=lambda options: 1 if options.game_version == MAP_PATCH and not options.randomize_time_trials else 0,
         classification=ItemClassification.filler),
 
     "Health Piece": PseudoregaliaItemData(
         code=2365810019,
+        frequency=16,
         classification=ItemClassification.useful),
     "Small Key": PseudoregaliaItemData(
         code=2365810020,
+        frequency=7,
         classification=ItemClassification.progression),
 
     "Major Key - Empty Bailey": PseudoregaliaItemData(
@@ -104,33 +112,65 @@ item_table: Dict[str, PseudoregaliaItemData] = {
 
     "Progressive Slide": PseudoregaliaItemData(
         code=2365810026,
+        frequency=2,
         classification=ItemClassification.progression,
-        can_create=lambda world: bool(world.options.progressive_slide)),
+        can_create=lambda options: bool(options.progressive_slide)),
     "Air Kick": PseudoregaliaItemData(
         code=2365810027,
+        frequency=4,
         classification=ItemClassification.progression,
-        can_create=lambda world: bool(world.options.split_sun_greaves)),
+        can_create=lambda options: bool(options.split_sun_greaves)),
     "Progressive Dream Breaker": PseudoregaliaItemData(
         code=2365810028,
+        frequency=3,
         classification=ItemClassification.progression,
-        can_create=lambda world: bool(world.options.progressive_breaker)),
+        precollect=lambda options: 1 if options.start_with_breaker else 0,
+        can_create=lambda options: bool(options.progressive_breaker)),
 
-    "Unlocked Door": PseudoregaliaItemData(
-        classification=ItemClassification.useful),
+    "Devotion": PseudoregaliaItemData(
+        code=2365810029,
+        classification=ItemClassification.filler,
+        precollect=lambda options: 1 if not options.randomize_time_trials else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
+    "A Guardian": PseudoregaliaItemData(
+        code=2365810030,
+        classification=ItemClassification.filler,
+        precollect=lambda options: 1 if not options.randomize_time_trials else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
+    "Sweater": PseudoregaliaItemData(
+        code=2365810031,
+        classification=ItemClassification.filler,
+        precollect=lambda options: 1 if not options.randomize_time_trials else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
+    "Class": PseudoregaliaItemData(
+        code=2365810032,
+        classification=ItemClassification.filler,
+        precollect=lambda options: 1 if not options.randomize_time_trials else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
+    "Chivalry": PseudoregaliaItemData(
+        code=2365810033,
+        classification=ItemClassification.filler,
+        precollect=lambda options: 1 if not options.randomize_time_trials else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
+    "Nostalgia": PseudoregaliaItemData(
+        code=2365810034,
+        classification=ItemClassification.filler,
+        precollect=lambda options: 1 if not options.randomize_time_trials else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
+    "A Bleeding Heart": PseudoregaliaItemData(
+        code=2365810035,
+        classification=ItemClassification.filler,
+        precollect=lambda options: 1 if not options.randomize_time_trials else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
+
+    "Memento": PseudoregaliaItemData(
+        code=2365810036,
+        classification=ItemClassification.useful,
+        precollect=lambda options: 1 if options.start_with_map else 0,
+        can_create=lambda options: options.game_version == MAP_PATCH),
 
     "Something Worth Being Awake For": PseudoregaliaItemData(
         classification=ItemClassification.progression),
-}
-
-item_frequencies = {
-    "Empathy": 2,
-    "Good Graces": 2,
-    "Clear Mind": 3,
-    "Small Key": 7,
-    "Health Piece": 16,
-    "Progressive Slide": 2,
-    "Air Kick": 4,
-    "Progressive Dream Breaker": 2,  # Will need to change this later when dream breaker stops being locked to vanilla
 }
 
 item_groups: Dict[str, Set[str]] = {

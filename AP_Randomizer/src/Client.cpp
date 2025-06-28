@@ -89,9 +89,12 @@ namespace Client {
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
                     GameData::SetOption(iter.key(), iter.value());
                 }
-                ap->LocationScouts(GameData::GetLocations());
+                SetZoneData();
+                ap->LocationScouts(GameData::GetMissingSpawnableLocations());
                 // Delay spawning collectibles so that we have time to receive checked locations and scouts.
                 Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::SpawnCollectibles);
+                // Delay verifying version so that it shows up as the last message after connecting
+                Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::VerifyVersion);
                 connection_retries = 0;
                 });
 
@@ -188,7 +191,6 @@ namespace Client {
             ap->set_location_checked_handler([](const list<int64_t>& location_ids) {
                 for (const auto& id : location_ids) {
                     Log(L"Marking location " + std::to_wstring(id) + L" as checked");
-                    GameData::CheckLocation(id);
                     Engine::DespawnCollectible(id);
                 }
                 });
@@ -212,8 +214,22 @@ namespace Client {
         ap->LocationChecks(id_list);
 
         Log(L"Marking location " + std::to_wstring(id) + L" as checked");
-        GameData::CheckLocation(id);
         Engine::DespawnCollectible(id);
+    }
+    
+    // Sets the data storage Zone value based on the player's current zone.
+    void Client::SetZoneData() {
+        if (ap == nullptr) {
+            return;
+        }
+
+        string key =
+            "Pseudoregalia - Team " + std::to_string(ap->get_team_number())
+            + " - Player " + std::to_string(ap->get_player_number())
+            + " - Zone";
+        int32_t zone = static_cast<int32_t>(Engine::GetCurrentMap());
+        list<APClient::DataStorageOperation> operations{ { "replace", zone } };
+        ap->Set(key, 0, false, operations);
     }
     
     // Sends game completion flag to Archipelago.
@@ -268,6 +284,15 @@ namespace Client {
         }
 
         ap->Say(input);
+    }
+
+    // returns true if the id param is a "missing location", ie a location that has an item and hasn't been checked. the
+    // function returns false if not connected to indicate that there are no locations to check yet.
+    bool Client::IsMissingLocation(int64_t id) {
+        if (ap == nullptr) {
+            return false;
+        }
+        return ap->get_missing_locations().contains(id);
     }
 
 

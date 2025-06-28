@@ -1,4 +1,5 @@
 from .rules import PseudoregaliaRulesHelpers
+from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
@@ -14,13 +15,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Bailey Lower -> Castle Main": lambda state: True,
             # "Bailey Lower -> Theatre Pillar => Bailey": lambda state: True,
             # "Bailey Upper -> Bailey Lower": lambda state: True,
-            "Bailey Upper -> Tower Remains": lambda state:
-                self.kick_or_plunge(state, 4)
-                and (
-                    # get onto the bridge
-                    self.can_slidejump(state)
-                    or self.has_plunge(state) and self.knows_obscure(state)),
-            "Bailey Upper -> Underbelly Little Guy": lambda state:
+            "Bailey Upper -> Underbelly => Bailey": lambda state:
                 self.has_plunge(state),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.has_gem(state) and self.kick_or_plunge(state, 1),
@@ -71,14 +66,10 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Dungeon Slide -> Dungeon Strong Eyes": lambda state:
                 self.has_slide(state),
             "Dungeon Slide -> Dungeon Escape Lower": lambda state:
-                self.can_attack(state) and self.navigate_darkrooms(state),
+                self.knows_obscure(state) and self.can_attack(state) and self.navigate_darkrooms(state),
             "Dungeon Strong Eyes -> Dungeon Slide": lambda state:
                 self.has_slide(state),
-            "Dungeon Strong Eyes -> Dungeon => Castle": lambda state:
-                self.has_small_keys(state),
             # "Dungeon => Castle -> Dungeon Mirror": lambda state: True,
-            "Dungeon => Castle -> Dungeon Strong Eyes": lambda state:
-                self.has_small_keys(state),
             # "Dungeon => Castle -> Castle Main": lambda state: True,
             "Dungeon Escape Lower -> Dungeon Slide": lambda state:
                 self.can_attack(state),
@@ -157,6 +148,13 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 # See "Keep Main -> Keep Locked Room".
                 # All other methods would go through Keep Locked Room instead.
                 self.has_gem(state),
+            "Keep Main -> Keep Throne Room": lambda state:
+                self.has_breaker(state) and self.has_gem(state)
+                and (
+                    self.has_plunge(state) and self.get_kicks(state, 1)
+                    or self.has_plunge(state) and self.can_bounce(state)
+                    or self.get_kicks(state, 1) and self.can_bounce(state))
+                or self.can_bounce(state) and self.kick_or_plunge(state, 4),
             "Keep Main -> Keep => Underbelly": lambda state:
                 self.kick_or_plunge(state, 1)
                 or self.has_gem(state),
@@ -183,19 +181,19 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.can_bounce(state)
                 or self.kick_or_plunge(state, 4),
             "Underbelly Light Pillar -> Underbelly Ascendant Light": lambda state:
+                # this route is more difficult with ascendant light because of the long room with the switches, but
+                # since it's possible to use AL to go up the pillar and get to the item that way (i.e. passing through
+                # Underbelly => Dungeon), the logic for this entrance is written assuming the player doesn't have AL
                 self.has_breaker(state)
                 and (
                     self.has_plunge(state)
-                    or self.get_kicks(state, 4))
-                or self.knows_obscure(state) and self.has_plunge(state) and self.get_kicks(state, 1),
-            "Underbelly Ascendant Light -> Underbelly Light Pillar": lambda state:
-                self.has_breaker(state),
+                    or self.knows_obscure(state) and self.get_kicks(state, 3)),
             "Underbelly Ascendant Light -> Underbelly => Dungeon": lambda state:
                 self.can_bounce(state)
                 or self.has_gem(state)
                 or self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.can_slidejump(state),
-            # "Underbelly Main Lower -> Underbelly Little Guy": lambda state: True,
+            # "Underbelly Main Lower -> Underbelly => Bailey": lambda state: True,
             "Underbelly Main Lower -> Underbelly Hole": lambda state:
                 self.has_plunge(state)
                 and (
@@ -205,22 +203,18 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Underbelly Main Lower -> Underbelly By Heliacal": lambda state:
                 self.has_slide(state) and self.has_plunge(state),
             "Underbelly Main Lower -> Underbelly Main Upper": lambda state:
-                self.has_plunge(state)
-                and (
-                    self.get_kicks(state, 2)
-                    or self.get_kicks(state, 1) and self.has_gem(state)),
+                self.knows_obscure(state) and self.has_plunge(state) and self.get_kicks(state, 2),
             # "Underbelly Main Upper -> Underbelly Main Lower": lambda state: True,
             "Underbelly Main Upper -> Underbelly Light Pillar": lambda state:
                 self.has_breaker(state) and self.has_plunge(state)
-                or self.has_breaker(state) and self.get_kicks(state, 2)
-                or self.has_gem(state)
+                or self.knows_obscure(state) and self.has_breaker(state)
                 and (
-                    self.get_kicks(state, 2) and self.has_plunge(state)
-                    or self.get_kicks(state, 4)),
+                    self.get_kicks(state, 2)
+                    or self.has_gem(state) and self.get_kicks(state, 1)),
             "Underbelly Main Upper -> Underbelly By Heliacal": lambda state:
                 self.has_breaker(state)
                 and (
-                    state.has("Ascendant Light", self.player)
+                    state.has("Ascendant Light", self.player) and self.get_kicks(state, 1)
                     or self.can_slidejump(state) and self.get_kicks(state, 3)
                     or self.has_gem(state) and self.get_kicks(state, 2)),
             "Underbelly By Heliacal -> Underbelly Main Upper": lambda state:
@@ -229,22 +223,25 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and (
                     self.get_kicks(state, 1)
                     or self.has_gem(state)),
-            # "Underbelly Little Guy -> Bailey Lower": lambda state: True,
-            "Underbelly Little Guy -> Bailey Upper": lambda state:
+            # "Underbelly => Bailey -> Bailey Lower": lambda state: True,
+            "Underbelly => Bailey -> Bailey Upper": lambda state:
                 self.knows_obscure(state)
                 or self.has_plunge(state) and self.get_kicks(state, 1),
-            "Underbelly Little Guy -> Underbelly Main Lower": lambda state:
-                self.has_gem(state)
-                or self.kick_or_plunge(state, 1),
+            "Underbelly => Bailey -> Underbelly Main Lower": lambda state:
+                self.has_plunge(state)
+                or self.get_kicks(state, 2)
+                or self.knows_obscure(state),
             # "Underbelly => Keep -> Keep => Underbelly": lambda state: True,
             "Underbelly => Keep -> Underbelly Hole": lambda state:
                 self.has_plunge(state),
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
-                self.get_kicks(state, 2)
-                or self.has_gem(state) and self.can_slidejump(state)
-                or self.can_attack(state),
+                self.has_plunge(state)
+                and (
+                    self.can_attack(state)
+                    or self.can_slidejump(state) and self.has_gem(state)
+                    or self.can_slidejump(state) and self.get_kicks(state, 1)),
             "Underbelly Hole -> Underbelly => Keep": lambda state:
-                self.has_slide(state),
+                self.has_plunge(state) and self.has_slide(state),
         }
 
         location_clauses = {
@@ -312,12 +309,6 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.kick_or_plunge(state, 3)
                 or self.knows_obscure(state) and self.can_bounce(state) and self.has_gem(state),
-            "Dilapidated Dungeon - Strong Eyes": lambda state:
-                self.has_breaker(state)
-                or self.knows_obscure(state)
-                and (
-                    self.has_gem(state) and self.get_kicks(state, 1) and self.has_plunge(state)
-                    or self.has_gem(state) and self.get_kicks(state, 3)),
             # "Castle Sansa - Indignation": lambda state: True,
             "Castle Sansa - Alcove Near Dungeon": lambda state:
                 self.has_gem(state)
@@ -402,13 +393,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     self.has_gem(state)
                     or self.has_plunge(state) and self.get_kicks(state, 1)
                     or self.get_kicks(state, 3)),
-            "Sansa Keep - Lonely Throne": lambda state:
-                self.has_breaker(state) and self.has_gem(state)
-                and (
-                    self.has_plunge(state) and self.get_kicks(state, 1)
-                    or self.has_plunge(state) and self.can_bounce(state)
-                    or self.get_kicks(state, 1) and self.can_bounce(state))
-                or self.can_bounce(state) and self.kick_or_plunge(state, 4),
+            # "Sansa Keep - Lonely Throne": lambda state: True,
             # "The Underbelly - Ascendant Light": lambda state: True,
             "The Underbelly - Rafters Near Keep": lambda state:
                 self.has_plunge(state)
@@ -418,9 +403,11 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_small_keys(state),
             "The Underbelly - Main Room": lambda state:
                 self.has_plunge(state)
-                or self.has_gem(state)
-                or self.get_kicks(state, 2)
-                or self.can_slidejump(state) and self.get_kicks(state, 1),
+                or self.can_slidejump(state) and self.get_kicks(state, 1)
+                or self.knows_obscure(state)
+                and (
+                    self.has_gem(state)
+                    or self.get_kicks(state, 2)),
             "The Underbelly - Alcove Near Light": lambda state:
                 self.can_attack(state)
                 or self.has_gem(state)
@@ -430,18 +417,86 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_plunge(state)
                 or self.get_kicks(state, 3),
             "The Underbelly - Strikebreak Wall": lambda state:
-                self.can_strikebreak(state)
-                and (
-                    self.can_bounce(state)
-                    or self.get_kicks(state, 4)
-                    or self.get_kicks(state, 2) and self.has_plunge(state)),
+                self.can_strikebreak(state) and self.can_bounce(state) and self.kick_or_plunge(state, 1),
             "The Underbelly - Surrounded By Holes": lambda state:
-                self.can_soulcutter(state)
+                self.can_soulcutter(state) and self.has_plunge(state)
                 and (
                     self.can_bounce(state)
-                    or self.get_kicks(state, 2))
-                or self.can_slidejump(state) and self.has_gem(state) and self.get_kicks(state, 1),
+                    or self.get_kicks(state, 2)
+                    or self.knows_obscure(state) and self.get_kicks(state, 1)),
+
+            "Dilapidated Dungeon - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state),
+            "Castle Sansa - Time Trial": lambda state:
+                self.has_small_keys(state),
+            "Sansa Keep - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+            "Listless Library - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.has_gem(state),
+            "Twilight Theatre - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state),
+            "Empty Bailey - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state),
+            "The Underbelly - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state),
+            "Tower Remains - Time Trial": lambda state:
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
+                and self.has_gem(state) and self.can_slidejump(state),
+
+            # "Castle Sansa - Memento": lambda state: True,
         }
+
+        # logic differences due to geometry changes between versions
+        if self.world.options.game_version == MAP_PATCH:
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                (self.kick_or_plunge(state, 4)
+                or self.get_kicks(state, 1) and self.has_plunge(state) and self.can_bounce(state))
+                and (
+                    # get onto the bridge
+                    self.can_slidejump(state)
+                    or self.has_plunge(state) and self.knows_obscure(state)))
+            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
+                self.has_small_keys(state)
+                or self.knows_obscure(state)
+                and (
+                    self.has_plunge(state)
+                    or self.has_breaker(state) and self.get_kicks(state, 1)))
+            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
+                self.has_small_keys(state)
+                or self.knows_obscure(state)
+                and (
+                    self.can_bounce(state)
+                    or self.can_attack(state) and self.get_kicks(state, 2)
+                    or self.can_attack(state) and self.has_gem(state)))
+            location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
+                self.has_breaker(state)
+                or self.knows_obscure(state)
+                and (
+                    self.has_gem(state)
+                    or self.get_kicks(state, 1)
+                    or self.has_plunge(state)))
+        else:
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.kick_or_plunge(state, 4)
+                and (
+                    # get onto the bridge
+                    self.can_slidejump(state)
+                    or self.has_plunge(state) and self.knows_obscure(state)))
+            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
+                self.has_small_keys(state))
+            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
+                self.has_small_keys(state))
+            location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
+                self.has_breaker(state)
+                or self.knows_obscure(state)
+                and (
+                    self.has_gem(state) and self.get_kicks(state, 1) and self.has_plunge(state)
+                    or self.has_gem(state) and self.get_kicks(state, 3)))
 
         self.apply_clauses(region_clauses, location_clauses)
 

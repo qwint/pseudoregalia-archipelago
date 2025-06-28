@@ -2,12 +2,16 @@
 #include "GameData.hpp"
 #include "Logger.hpp"
 #include "Settings.hpp"
+#include "Client.hpp"
 
 namespace GameData {
     using std::unordered_map;
     using std::list;
     using std::wstring;
     using std::string;
+    using std::optional;
+    using std::pair;
+    using std::tuple;
 
     // Private members
     namespace {
@@ -18,6 +22,7 @@ namespace GameData {
         bool major_keys[5];
         unordered_map<wstring, int> upgrade_table;
         unordered_map<Map, unordered_map<int64_t, Collectible>> collectible_table;
+        unordered_map<Map, unordered_map<wstring, TimeTrial>> time_trial_table;
         unordered_map<int64_t, Classification> lookup_location_id_to_classification;
         unordered_map<string, int> options;
         bool slidejump_owned;
@@ -71,6 +76,16 @@ namespace GameData {
 
             {2365810019, ItemType::HealthPiece},
             {2365810020, ItemType::SmallKey},
+
+            {2365810029, ItemType::MinorAbility},
+            {2365810030, ItemType::MinorAbility},
+            {2365810031, ItemType::MinorAbility},
+            {2365810032, ItemType::MinorAbility},
+            {2365810033, ItemType::MinorAbility},
+            {2365810034, ItemType::MinorAbility},
+            {2365810035, ItemType::MinorAbility},
+
+            {2365810036, ItemType::MinorAbility},
         };
 
         const unordered_map<int64_t, wstring> lookup_item_id_to_upgrade = {
@@ -95,6 +110,14 @@ namespace GameData {
             {2365810026, L"progressiveSlide"},
             {2365810027, L"extraKick"}, // Used for split kicks, just treats them like heliacal
             {2365810028, L"progressiveBreaker"},
+            {2365810029, L"outfitFaith"},
+            {2365810030, L"outfitShoujo"},
+            {2365810031, L"outfitSweater"},
+            {2365810032, L"outfitClassy"},
+            {2365810033, L"outfitKnight"},
+            {2365810034, L"outfitJam"},
+            {2365810035, L"outfitPast"},
+            {2365810036, L"map"},
         };
 
         // This is for location ids, not items, so it can't be combined with the tables above.
@@ -106,6 +129,7 @@ namespace GameData {
             {2365810005, Map::Dungeon},
             {2365810006, Map::Dungeon},
             {2365810007, Map::Dungeon},
+            {2365810054, Map::Dungeon},
             {2365810008, Map::Castle},
             {2365810009, Map::Castle},
             {2365810010, Map::Castle},
@@ -118,12 +142,15 @@ namespace GameData {
             {2365810017, Map::Castle},
             {2365810018, Map::Castle},
             {2365810019, Map::Castle},
+            {2365810055, Map::Castle},
+            {2365810062, Map::Castle},
             {2365810020, Map::Keep},
             {2365810021, Map::Keep},
             {2365810022, Map::Keep},
             {2365810023, Map::Keep},
             {2365810024, Map::Keep},
             {2365810025, Map::Keep},
+            {2365810056, Map::Keep},
             {2365810026, Map::Library},
             {2365810027, Map::Library},
             {2365810028, Map::Library},
@@ -131,17 +158,20 @@ namespace GameData {
             {2365810051, Map::Library},
             {2365810052, Map::Library},
             {2365810053, Map::Library},
+            {2365810057, Map::Library},
             {2365810030, Map::Theatre},
             {2365810031, Map::Theatre},
             {2365810032, Map::Theatre},
             {2365810033, Map::Theatre},
             {2365810034, Map::Theatre},
             {2365810035, Map::Theatre},
+            {2365810058, Map::Theatre},
             {2365810036, Map::Bailey},
             {2365810037, Map::Bailey},
             {2365810038, Map::Bailey},
             {2365810039, Map::Bailey},
             {2365810040, Map::Bailey},
+            {2365810059, Map::Bailey},
             {2365810041, Map::Underbelly},
             {2365810042, Map::Underbelly},
             {2365810043, Map::Underbelly},
@@ -150,8 +180,10 @@ namespace GameData {
             {2365810046, Map::Underbelly},
             {2365810047, Map::Underbelly},
             {2365810048, Map::Underbelly},
+            {2365810060, Map::Underbelly},
             {2365810049, Map::Tower},
             {2365810050, Map::Tower},
+            {2365810061, Map::Tower},
         };
     } // End private members
 
@@ -185,14 +217,21 @@ namespace GameData {
         return collectible_table[current_map];
     }
 
-    list<int64_t> GameData::GetLocations() {
+    list<int64_t> GameData::GetMissingSpawnableLocations() {
         list<int64_t> location_ids;
         for (const auto& [_, zone_map] : collectible_table) {
-            for (const auto& [location_id, collectible] : zone_map) {
-                if (!collectible.CanCreate(GameData::GetOptions())) {
-                    continue;
+            for (const auto& [location_id, _] : zone_map) {
+                if (Client::IsMissingLocation(location_id)) {
+                    location_ids.push_back(location_id);
                 }
-                location_ids.push_back(location_id);
+            }
+        }
+        for (const auto& [_, zone_map] : time_trial_table) {
+            for (const auto& [_, time_trial] : zone_map) {
+                const int64_t location_id = time_trial.first;
+                if (Client::IsMissingLocation(location_id)) {
+                    location_ids.push_back(location_id);
+                }
             }
         }
         return location_ids;
@@ -287,6 +326,8 @@ namespace GameData {
                 {2365810018, Collectible(FVector(-9600, 21750, 5400))},
             // Near Theatre Front
                 {2365810019, Collectible(FVector(3390, 21150, 6600))},
+            // Memento
+                {2365810062, Collectible(FVector(8950, 6450, -175))},
                     }},
             {Map::Keep, unordered_map<int64_t, Collectible> {
             // Strikebreak
@@ -304,7 +345,7 @@ namespace GameData {
                     }},
             {Map::Library, unordered_map<int64_t, Collectible> {
             // Sun Greaves
-                {2365810026, Collectible(FVector(-4150, 9200, -100), vector<pair<string, int>>{{"split_sun_greaves", false}})},
+                {2365810026, Collectible(FVector(-4150, 9200, -100))},
             // Upper Back
                 {2365810027, Collectible(FVector(-9250, -1850, 1250))},
             // Locked Door Across
@@ -312,11 +353,11 @@ namespace GameData {
             // Locked Door Left
                 {2365810029, Collectible(FVector(-3750, -4170, -700))},
             // Split Greaves 1
-                {2365810051, Collectible(FVector(-4150, 9160, 0), vector<pair<string, int>>{{"split_sun_greaves", true}})},
+                {2365810051, Collectible(FVector(-4150, 9160, 0))},
             // Split Greaves 2
-                {2365810052, Collectible(FVector(-4100, 9250, -100), vector<pair<string, int>>{{"split_sun_greaves", true}})},
+                {2365810052, Collectible(FVector(-4100, 9250, -100))},
             // Split Greaves 3
-                {2365810053, Collectible(FVector(-4200, 9250, -100), vector<pair<string, int>>{{"split_sun_greaves", true}})},
+                {2365810053, Collectible(FVector(-4200, 9250, -100))},
                     }},
             {Map::Theatre, unordered_map<int64_t, Collectible> {
             // Soul Cutter
@@ -360,7 +401,7 @@ namespace GameData {
             // Strikebreak Wall
                 {2365810047, Collectible(FVector(11300, 12700, 3107))},
             // Surrounded By Holes
-                {2365810048, Collectible(FVector(31900, 26250, 3850))},
+                {2365810048, Collectible(FVector(33050, 24100, 3850), tuple<FVector, string, int>{FVector(31900, 26250, 3850), "game_version", FULL_GOLD})},
                     }},
             {Map::Tower, unordered_map<int64_t, Collectible> {
             // Cling Gem
@@ -369,6 +410,35 @@ namespace GameData {
                 {2365810050, Collectible(FVector(9650, 5250, 7100))},
                     }},
         };
+
+        // map -> time trial actor name -> location id + position
+        time_trial_table = {
+            {Map::Dungeon, {
+                {L"BP_TimeTrial_C_1", {2365810054, FVector(-3350, -4300, 850)}},
+            }},
+            {Map::Castle, {
+                {L"BP_TimeTrial_C_1", {2365810055, FVector(3200, -1700, -500)}},
+            }},
+            {Map::Keep, {
+                {L"BP_TimeTrial_C_3", {2365810056, FVector(14350, 400, 1250)}},
+            }},
+            {Map::Library, {
+                {L"BP_TimeTrial_C_2", {2365810057, FVector(-2850, 3600, 900)}},
+            }},
+            {Map::Theatre, {
+                {L"BP_TimeTrial_C_1", {2365810058, FVector(-14750, 3900, 100)}},
+            }},
+            {Map::Bailey, {
+                {L"BP_TimeTrial_C_1", {2365810059, FVector(1150, 5250, -600)}},
+            }},
+            {Map::Underbelly, {
+                {L"BP_TimeTrial_C_1", {2365810060, FVector(1250, 18000, 3000)}},
+            }},
+            {Map::Tower, {
+                {L"BP_TimeTrial_C_3", {2365810061, FVector(10750, 3050, 4000)}},
+            }},
+        };
+
 
         upgrade_table = {
             {L"attack", 0},
@@ -389,6 +459,14 @@ namespace GameData {
             {L"damageBoost", 0},
             {L"magicPiece", 0},
             {L"outfitPro", 0},
+            {L"outfitFaith", 0},
+            {L"outfitShoujo", 0},
+            {L"outfitSweater", 0},
+            {L"outfitClassy", 0},
+            {L"outfitKnight", 0},
+            {L"outfitJam", 0},
+            {L"outfitPast", 0},
+            {L"map", 0},
         };
 
         slidejump_owned = false;
@@ -401,6 +479,7 @@ namespace GameData {
 
     void GameData::Close() {
         collectible_table = {};
+        time_trial_table = {};
         slidejump_owned = false;
         slidejump_disabled = false;
         small_keys = 0;
@@ -426,6 +505,14 @@ namespace GameData {
             {L"damageBoost", 0},
             {L"magicPiece", 0},
             {L"outfitPro", 0},
+            {L"outfitFaith", 0},
+            {L"outfitShoujo", 0},
+            {L"outfitSweater", 0},
+            {L"outfitClassy", 0},
+            {L"outfitKnight", 0},
+            {L"outfitJam", 0},
+            {L"outfitPast", 0},
+            {L"map", 0},
         };
     }
 
@@ -463,12 +550,6 @@ namespace GameData {
         return map_names.at(map_name);
     }
 
-    void GameData::CheckLocation(const int64_t id) {
-        Map current_zone = lookup_location_id_to_zone.at(id);
-        Collectible& collectible = collectible_table.at(current_zone).at(id);
-        collectible.Check();
-    }
-
     bool GameData::ToggleSlideJump() {
         if (!slidejump_owned) {
             Log(L"Slidejump is not obtained");
@@ -487,5 +568,30 @@ namespace GameData {
 
     bool GameData::SlideJumpDisabled() {
         return slidejump_disabled;
+    }
+
+    bool CanHaveTimeTrial(Map map) {
+        switch (map) {
+        case Map::Dungeon:
+        case Map::Castle:
+        case Map::Keep:
+        case Map::Library:
+        case Map::Theatre:
+        case Map::Bailey:
+        case Map::Underbelly:
+        case Map::Tower:
+            return true;
+        }
+        return false;
+    }
+
+    optional<TimeTrial> GetTimeTrial(Map map, wstring time_trial_actor_name) {
+        if (!time_trial_table.contains(map)) {
+            return {};
+        }
+        if (!time_trial_table.at(map).contains(time_trial_actor_name)) {
+            return {};
+        }
+        return time_trial_table.at(map).at(time_trial_actor_name);
     }
 }

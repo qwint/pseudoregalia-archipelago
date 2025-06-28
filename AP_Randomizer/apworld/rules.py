@@ -1,7 +1,9 @@
 from BaseClasses import CollectionState
 from typing import Dict, Callable, TYPE_CHECKING
 from worlds.generic.Rules import add_rule, set_rule, CollectionRule
-from .constants.difficulties import NORMAL
+from .constants.difficulties import NORMAL, EXPERT, LUNATIC
+from .constants.versions import MAP_PATCH
+from .locations import location_table
 
 if TYPE_CHECKING:
     from . import PseudoregaliaWorld
@@ -26,13 +28,27 @@ class PseudoregaliaRulesHelpers:
         self.region_rules = {}
         self.location_rules = {}
 
+        # memoize functions that differ based on options
+        if world.options.game_version == MAP_PATCH:
+            self.can_gold_ultra = self.can_slidejump
+            self.can_gold_slide_ultra = lambda state: False
+        else:
+            self.can_gold_ultra = self.has_slide
+            self.can_gold_slide_ultra = self.has_slide
+
         logic_level = world.options.logic_level.value
-        if bool(world.options.obscure_logic):
+        if logic_level in (EXPERT, LUNATIC):
             self.knows_obscure = lambda state: True
             self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
+            self.navigate_darkrooms = lambda state: True
+        elif bool(world.options.obscure_logic):
+            self.knows_obscure = lambda state: True
+            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
+            self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player) or self.has_breaker(state)
         else:
             self.knows_obscure = lambda state: False
-            self.can_attack = lambda state: self.has_breaker(state)
+            self.can_attack = self.has_breaker
+            self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player)
 
         if logic_level == NORMAL:
             self.required_small_keys = 7
@@ -93,12 +109,20 @@ class PseudoregaliaRulesHelpers:
         return state.count("Small Key", self.player) >= self.required_small_keys
 
     def navigate_darkrooms(self, state) -> bool:
-        # TODO: Update this to check obscure tricks for breaker only when logic rework nears completion
-        return self.has_breaker(state) or state.has("Ascendant Light", self.player)
+        """Used on entry into the dungeon darkrooms."""
+        raise Exception("navigate_darkrooms() was not set")
 
     def can_slidejump(self, state) -> bool:
         return (state.has_all({"Slide", "Solar Wind"}, self.player)
                 or state.count("Progressive Slide", self.player) >= 2)
+
+    def can_gold_ultra(self, state) -> bool:
+        """Used when a gold ultra is needed and it is possible to solar ultra."""
+        raise Exception("can_gold_ultra() was not set")
+
+    def can_gold_slide_ultra(self, state) -> bool:
+        """Used when a gold ultra is needed but it is not possible to solar ultra."""
+        raise Exception("can_gold_slide_ultra() was not set")
 
     def can_strikebreak(self, state) -> bool:
         return (state.has_all({"Dream Breaker", "Strikebreak"}, self.player)
@@ -115,7 +139,6 @@ class PseudoregaliaRulesHelpers:
     def set_pseudoregalia_rules(self) -> None:
         world = self.world
         multiworld = self.world.multiworld
-        split_kicks = bool(world.options.split_sun_greaves)
 
         for name, rules in self.region_rules.items():
             entrance = multiworld.get_entrance(name, self.player)
@@ -125,11 +148,8 @@ class PseudoregaliaRulesHelpers:
                 else:
                     add_rule(entrance, rule, "or")
         for name, rules in self.location_rules.items():
-            if name.startswith("Listless Library"):
-                if split_kicks and name.endswith("Greaves"):
-                    continue
-                if not split_kicks and name[-1].isdigit():
-                    continue
+            if not location_table[name].can_create(world.options):
+                continue
             location = multiworld.get_location(name, self.player)
             for index, rule in enumerate(rules):
                 if index == 0:

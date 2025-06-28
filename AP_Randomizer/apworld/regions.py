@@ -10,7 +10,8 @@ class RegionExit(NamedTuple):
 
 region_table: Dict[str, List[str]] = {
     "Menu":
-        ["Dungeon Mirror"],
+        ["Castle Main"],
+
     "Dungeon Mirror":
         ["Dungeon Slide"],
     "Dungeon Slide":
@@ -70,11 +71,14 @@ region_table: Dict[str, List[str]] = {
     "Keep Main":
         ["Keep Locked Room",
          "Keep Sunsetter",
+         "Keep Throne Room",
          "Keep => Underbelly",
          "Theatre Outside Scythe Corridor",],
     "Keep Locked Room":
         ["Keep Sunsetter"],
     "Keep Sunsetter":
+        [],
+    "Keep Throne Room":
         [],
     "Keep => Underbelly":
         ["Keep Main",
@@ -86,7 +90,7 @@ region_table: Dict[str, List[str]] = {
          "Theatre Pillar => Bailey",],
     "Bailey Upper":
         ["Bailey Lower",
-         "Underbelly Little Guy",
+         "Underbelly => Bailey",
          "Tower Remains",],
     "Tower Remains":
         ["The Great Door",],
@@ -100,10 +104,9 @@ region_table: Dict[str, List[str]] = {
          "Underbelly => Dungeon",
          "Underbelly Ascendant Light"],
     "Underbelly Ascendant Light":
-        ["Underbelly Light Pillar",
-         "Underbelly => Dungeon"],
+        ["Underbelly => Dungeon"],
     "Underbelly Main Lower":
-        ["Underbelly Little Guy",
+        ["Underbelly => Bailey",
          "Underbelly Hole",
          "Underbelly By Heliacal",
          "Underbelly Main Upper"],
@@ -113,7 +116,7 @@ region_table: Dict[str, List[str]] = {
          "Underbelly By Heliacal"],
     "Underbelly By Heliacal":
         ["Underbelly Main Upper"],
-    "Underbelly Little Guy":
+    "Underbelly => Bailey":
         ["Bailey Upper",
          "Bailey Lower",
          "Underbelly Main Lower",],

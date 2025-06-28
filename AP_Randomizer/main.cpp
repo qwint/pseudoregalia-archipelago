@@ -28,6 +28,7 @@ public:
     bool returncheck_hooked = false;
     bool toggleslidejump_hooked = false;
     bool deathlink_hooked = false;
+    bool manageresult_hooked = false;
     bool copytext_hooked = false;
     bool sendmessage_hooked = false;
 
@@ -93,6 +94,9 @@ public:
             auto deathlink = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
                 Client::SendDeathLink();
                 };
+            auto spawntimetrialcollectible = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
+                Engine::SpawnTimeTrialCollectibleIfBeaten(context.Context);
+                };
 
             if (!returncheck_hooked
                 && actor->GetName().starts_with(STR("BP_APCollectible"))) {
@@ -132,6 +136,7 @@ public:
                 }
                 Engine::SpawnCollectibles();
                 Engine::SyncItems();
+                Client::SetZoneData();
             }
 
             if (actor->GetName().starts_with(L"BP_PlayerGoatMain")) {
@@ -146,6 +151,19 @@ public:
                     }
                     Unreal::UObjectGlobals::RegisterHook(death_function, EmptyFunction, deathlink, nullptr);
                     deathlink_hooked = true;
+                }
+            }
+
+            if (actor->GetName().starts_with(L"BP_TimeTrial")) {
+                if (!manageresult_hooked) {
+                    UFunction* manageresult_function = actor->GetFunctionByName(L"manageResult");
+                    if (!manageresult_function) {
+                        Log(L"Could not find function \"manageResult\" in BP_TimeTrial.", LogType::Error);
+                        return;
+                    }
+                    Log(L"Establishing hook for manageResult");
+                    Unreal::UObjectGlobals::RegisterHook(manageresult_function, EmptyFunction, spawntimetrialcollectible, nullptr);
+                    manageresult_hooked = true;
                 }
             }
             });
@@ -177,34 +195,41 @@ public:
                 UnrealConsole::ProcessInput(input);
                 };
 
-            if (!copytext_hooked
-                && object->GetName().starts_with(STR("AP_DeluxeConsole"))) {
-                UFunction* copy_function = object->GetFunctionByName(STR("AP_CopyToClipboard"));
-                if (!copy_function) {
-                    // For some reason this always fails once so don't bother displaying an error.
-                    Logger::Log(L"Could not find function \"AP_CopyToClipboard\" in AP_DeluxeConsole.");
-                    return object;
+            // I'm not sure why, but this triggers on an object with the name "AP_DeluxeConsole_C" and one with a name
+            // like "AP_DeluxeConsole_C_{bunch of numbers}". it seems like the one with the numbers is the "real" one,
+            // as the other one doesn't have all the functions that the console actually has. it might have to do with
+            // how widgets work, but I don't know the details.
+            if (object->GetName().starts_with(L"AP_DeluxeConsole_C_")) {
+                if (!copytext_hooked) {
+                    UFunction* copy_function = object->GetFunctionByName(STR("AP_CopyToClipboard"));
+                    if (!copy_function) {
+                        // For some reason this always fails once so don't bother displaying an error.
+                        Logger::Log(L"Could not find function \"AP_CopyToClipboard\" in AP_DeluxeConsole.");
+                        return object;
+                    }
+                    else {
+                        Logger::Log(L"Registering hook for AP_CopyToClipboard.");
+                    }
+                    Unreal::UObjectGlobals::RegisterHook(copy_function, copytext, EmptyFunction, nullptr);
+                    copytext_hooked = true;
                 }
-                else {
-                    Logger::Log(L"Registering hook for AP_CopyToClipboard.");
+
+                if (!sendmessage_hooked) {
+                    UFunction* send_function = object->GetFunctionByName(STR("AP_SendMessage"));
+                    if (!send_function) {
+                        Log(L"Could not find function \"AP_SendMessage\" in AP_DeluxeConsole.");
+                        return object;
+                    }
+                    else {
+                        Log(L"Registering hook for AP_SendMessage.");
+                    }
+                    Unreal::UObjectGlobals::RegisterHook(send_function, sendmessage, EmptyFunction, nullptr);
+                    sendmessage_hooked = true;
                 }
-                Unreal::UObjectGlobals::RegisterHook(copy_function, copytext, EmptyFunction, nullptr);
-                copytext_hooked = true;
+
+                Engine::InitializeConsole(object);
             }
 
-            if (!sendmessage_hooked
-                && object->GetName().starts_with(STR("AP_DeluxeConsole"))) {
-                UFunction* send_function = object->GetFunctionByName(STR("AP_SendMessage"));
-                if (!send_function) {
-                    Log(L"Could not find function \"AP_SendMessage\" in AP_DeluxeConsole.");
-                    return object;
-                }
-                else {
-                    Log(L"Registering hook for AP_SendMessage.");
-                }
-                Unreal::UObjectGlobals::RegisterHook(send_function, sendmessage, EmptyFunction, nullptr);
-                sendmessage_hooked = true;
-            }
             return object;
             });
 

@@ -4,15 +4,23 @@
 namespace Logger {
 	enum class LogType {
 		Default,
-		Popup,
 		Console,
 		System,
 		Warning,
 		Error
 	};
 
-	void Log(std::wstring, LogType = LogType::Default, bool = true);
-	void Log(std::string, LogType = LogType::Default, bool = true);
+	struct ItemPopup {
+		std::wstring preamble;
+		std::wstring item;
+		std::wstring info;
+	};
+
+	void ShowPopup(std::string);
+	void ShowPopup(std::wstring);
+	void ShowPopup(ItemPopup);
+	void Log(std::wstring, LogType = LogType::Default);
+	void Log(std::string, LogType = LogType::Default);
 	void OnTick();
 	void ToggleMessageMute();
 	void ToggleMessageHide();

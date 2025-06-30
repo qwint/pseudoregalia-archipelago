@@ -12,6 +12,8 @@ namespace Settings {
 	using std::string;
 	using std::ifstream;
 	using std::unordered_map;
+	using std::pair;
+	using std::list;
 
 	namespace {
 		// if you run from the executable directory
@@ -19,10 +21,10 @@ namespace Settings {
 		// if you run from the game directory
 		const string settings_filename2 = "pseudoregalia/Binaries/Win64/Mods/AP_Randomizer/settings.toml";
 
-		ItemDisplay item_display;
-		Popups popups;
-		bool simplify_item_popup_font;
-		bool death_link;
+		ItemDisplay item_display = ItemDisplay::Full;
+		PopupsInitialState popups_initial_state = PopupsInitialState::ShowWithSound;
+		bool popups_simplify_item_font = false;
+		bool death_link = false;
 
 		template<class E> E ParseSetting(toml::table, string, unordered_map<string, E>, string);
 		bool ParseSetting(toml::table, string, bool);
@@ -44,75 +46,76 @@ namespace Settings {
 		}
 		catch (const toml::parse_error& err) {
 			Log("Failed to parse settings: " + string(err.description()));
+			Log("Using default settings");
 			return;
 		}
 
 		Log("Loading settings");
 		item_display = ParseSetting(
 			settings_table,
-			"item_display",
+			"settings.item_display",
 			unordered_map<string, ItemDisplay>{
 				{ "full", ItemDisplay::Full },
 				{ "generic_non_pseudo", ItemDisplay::GenericNonPseudo },
 				{ "generic_all", ItemDisplay::GenericAll },
 			},
 			"full");
-		popups = ParseSetting(
+		death_link = ParseSetting(settings_table, "settings.death_link", false);
+		popups_initial_state = ParseSetting(
 			settings_table,
-			"popups",
-			unordered_map<string, Popups>{
-				{ "show_with_sound", Popups::ShowWithSound },
-				{ "show_muted", Popups::ShowMuted },
-				{ "hide", Popups::Hide },
-			},
+			"settings.popups.initial_state",
+			unordered_map<string, PopupsInitialState>{
+				{ "show_with_sound", PopupsInitialState::ShowWithSound },
+				{ "show_muted", PopupsInitialState::ShowMuted },
+				{ "hide", PopupsInitialState::Hide },
+		},
 			"show_with_sound");
-		simplify_item_popup_font = ParseSetting(settings_table, "simplify_item_popup_font", false);
-		death_link = ParseSetting(settings_table, "death_link", false);
+		popups_simplify_item_font = ParseSetting(settings_table, "settings.popups.simplify_item_font", false);
 	}
 
 	ItemDisplay GetItemDisplay() {
 		return item_display;
 	}
 
-	Popups GetPopups() {
-		return popups;
-	}
-
-	bool GetSimplifyItemPopupFont() {
-		return simplify_item_popup_font;
-	}
-
 	bool GetDeathLink() {
 		return death_link;
 	}
 
+	PopupsInitialState GetPopupsInitialState() {
+		return popups_initial_state;
+	}
+
+	bool GetPopupsSimplifyItemFont() {
+		return popups_simplify_item_font;
+	}
+
 	namespace {
-		template<class E> E ParseSetting(toml::table settings_table, string setting_name, unordered_map<string, E> option_map, string default_option) {
-			optional<string> option = settings_table["settings"][setting_name].value<string>();
+		template<class E> E ParseSetting(toml::table settings_table, string setting_path, unordered_map<string, E> option_map, string default_option) {
+			optional<string> option = settings_table.at_path(setting_path).value<string>();
 			if (option) {
 				if (option_map.contains(*option)) {
-					Log(setting_name + " set to " + *option);
+					Log(setting_path + " = " + *option);
 					return option_map.at(*option);
 				}
 
-				Log("Unknown option " + *option + " for " + setting_name + ", using default option " + default_option);
+				Log(setting_path + " = " + default_option + " (using default, unknown option " + *option + ")");
 				return option_map.at(default_option);
 			}
 
-			Log("Using default option " + default_option + " for " + setting_name);
+			Log(setting_path + " = " + default_option + " (using default, setting missing or not a string)");
 			return option_map.at(default_option);
 		}
 
-		bool ParseSetting(toml::table settings_table, string setting_name, bool default_option) {
-			optional<bool> option = settings_table["settings"][setting_name].value<bool>();
+		bool ParseSetting(toml::table settings_table, string setting_path, bool default_option) {
+			optional<bool> option = settings_table.at_path(setting_path).value<bool>();
 			if (option) {
 				string option_string = *option ? "true" : "false";
-				Log(setting_name + " set to " + option_string);
+				Log(setting_path + " = " + option_string);
 				return *option;
 			}
 
 			string default_option_string = default_option ? "true" : "false";
-			Log("Using default option " + default_option_string + " for " + setting_name);
+			Log(setting_path + " = " + default_option_string + " (using default, setting missing or not a bool)");
 			return default_option;
 		}
 	}

@@ -122,7 +122,7 @@ namespace Logger {
 					FText(popup.item),
 					FText(popup.info),
 					messages_muted,
-					Settings::GetSimplifyItemPopupFont(),
+					Settings::GetPopupsSimplifyItemFont(),
 				});
 				Engine::ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_PrintItemMessage", params);
 			}
@@ -152,11 +152,11 @@ namespace Logger {
 	}
 
 	void Logger::Init() {
-		switch (Settings::GetPopups()) {
-		case Settings::Popups::ShowMuted:
+		switch (Settings::GetPopupsInitialState()) {
+		case Settings::PopupsInitialState::ShowMuted:
 			messages_muted = true;
 			break;
-		case Settings::Popups::Hide:
+		case Settings::PopupsInitialState::Hide:
 			messages_hidden = true;
 			break;
 		}

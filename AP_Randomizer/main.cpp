@@ -40,6 +40,7 @@ public:
         //ModIntendedSDKVersion = STR("2.6");
 
         Settings::Load();
+        Logger::Init();
     }
 
     ~AP_Randomizer()

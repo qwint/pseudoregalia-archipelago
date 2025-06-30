@@ -4,6 +4,7 @@
 #include "Logger.hpp"
 #include "Engine.hpp"
 #include "Timer.hpp"
+#include "Settings.hpp"
 #include "StringOps.hpp"
 
 namespace Logger {
@@ -145,6 +146,17 @@ namespace Logger {
 		}
 		else {
 			Log(L"Popups are no longer hidden.", LogType::System);
+		}
+	}
+
+	void Logger::Init() {
+		switch (Settings::GetPopups()) {
+		case Settings::Popups::ShowMuted:
+			messages_muted = true;
+			break;
+		case Settings::Popups::Hide:
+			messages_hidden = true;
+			break;
 		}
 	}
 

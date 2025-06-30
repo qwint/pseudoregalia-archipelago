@@ -18,6 +18,7 @@ namespace Settings {
 		const string settings_filename2 = "pseudoregalia/Binaries/Win64/Mods/AP_Randomizer/settings.toml";
 
 		ItemDisplay item_display = ItemDisplay::Full;
+		Popups popups = Popups::ShowWithSound;
 		bool death_link = false;
 	}
 
@@ -59,6 +60,30 @@ namespace Settings {
 				Log("Using default option full for item_display");
 			}
 
+			// popups
+			optional<string> popups_setting = settings_table["settings"]["popups"].value<string>();
+			if (popups_setting) {
+				string setting_value = popups_setting.value();
+				if (setting_value == "show_with_sound") {
+					popups = Popups::ShowWithSound;
+					Log("popups set to " + setting_value);
+				}
+				else if (setting_value == "show_muted") {
+					popups = Popups::ShowMuted;
+					Log("popups set to " + setting_value);
+				}
+				else if (setting_value == "hide") {
+					popups = Popups::Hide;
+					Log("popups set to " + setting_value);
+				}
+				else {
+					Log("Unknown option " + setting_value + " for popups, using default option show_with_sound");
+				}
+			}
+			else {
+				Log("Using default option show_with_sound for popups");
+			}
+
 			// death_link
 			optional<bool> death_link_setting = settings_table["settings"]["death_link"].value<bool>();
 			if (death_link_setting) {
@@ -77,6 +102,10 @@ namespace Settings {
 
 	ItemDisplay GetItemDisplay() {
 		return item_display;
+	}
+
+	Popups GetPopups() {
+		return popups;
 	}
 
 	bool GetDeathLink() {

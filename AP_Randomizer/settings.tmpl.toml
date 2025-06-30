@@ -11,6 +11,14 @@
 # "generic_all": All items look the same.
 item_display = "full"
 
+# "popups" determines the initial state of item and death link popups.
+# This can be changed at any time with the /popups command.
+#
+# "show_with_sound": popups are displayed with an accompanying sound.
+# "show_muted": popups are displayed with no sound.
+# "hide": popups are not displayed.
+popups = "show_with_sound"
+
 # "death_link" configures whether to opt in to the death link system.
 #
 # true: When you die, everyone dies. Of course the reverse is true too.

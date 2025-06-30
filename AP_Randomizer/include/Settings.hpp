@@ -16,5 +16,6 @@ namespace Settings {
     void Load();
     ItemDisplay GetItemDisplay();
     Popups GetPopups();
+    bool GetSimplifyItemPopupFont();
     bool GetDeathLink();
 }

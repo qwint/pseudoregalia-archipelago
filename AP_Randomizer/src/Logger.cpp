@@ -114,6 +114,7 @@ namespace Logger {
 					FText item;
 					FText info;
 					bool mute_sound;
+					bool simplify_item_popup_font;
 				};
 				ItemPopup popup = get<ItemPopup>(front);
 				std::shared_ptr<void> params(new PrintItemToPlayerInfo{
@@ -121,6 +122,7 @@ namespace Logger {
 					FText(popup.item),
 					FText(popup.info),
 					messages_muted,
+					Settings::GetSimplifyItemPopupFont(),
 				});
 				Engine::ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_PrintItemMessage", params);
 			}

@@ -19,6 +19,7 @@ namespace Settings {
 
 		ItemDisplay item_display = ItemDisplay::Full;
 		Popups popups = Popups::ShowWithSound;
+		bool simplify_item_popup_font = false;
 		bool death_link = false;
 	}
 
@@ -90,6 +91,17 @@ namespace Settings {
 			Log("Using default option show_with_sound for popups");
 		}
 
+		// simplify_item_popup_font
+		optional<bool> simplify_item_popup_font_setting = settings_table["settings"]["simplify_item_popup_font"].value<bool>();
+		if (simplify_item_popup_font_setting) {
+			simplify_item_popup_font = simplify_item_popup_font_setting.value();
+			string setting_string = simplify_item_popup_font_setting.value() ? "true" : "false";
+			Log("simplify_item_popup_font set to " + setting_string);
+		}
+		else {
+			Log("Using default option false for simplify_item_popup_font");
+		}
+
 		// death_link
 		optional<bool> death_link_setting = settings_table["settings"]["death_link"].value<bool>();
 		if (death_link_setting) {
@@ -108,6 +120,10 @@ namespace Settings {
 
 	Popups GetPopups() {
 		return popups;
+	}
+
+	bool GetSimplifyItemPopupFont() {
+		return simplify_item_popup_font;
 	}
 
 	bool GetDeathLink() {

@@ -19,6 +19,9 @@ item_display = "full"
 # "hide": popups are not displayed.
 popups = "show_with_sound"
 
+# "simplify_item_popup_font" configures whether to use a simpler font for the item text in item popups.
+simplify_item_popup_font = false
+
 # "death_link" configures whether to opt in to the death link system.
 #
 # true: When you die, everyone dies. Of course the reverse is true too.

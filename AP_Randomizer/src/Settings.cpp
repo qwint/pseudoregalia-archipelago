@@ -88,15 +88,14 @@ namespace Settings {
 
 	namespace {
 		template<class E> E ParseSetting(toml::table settings_table, string setting_name, unordered_map<string, E> option_map, string default_option) {
-			optional<string> setting = settings_table["settings"][setting_name].value<string>();
-			if (setting) {
-				string setting_value = setting.value();
-				if (option_map.contains(setting_value)) {
-					Log(setting_name + " set to " + setting_value);
-					return option_map.at(setting_value);
+			optional<string> option = settings_table["settings"][setting_name].value<string>();
+			if (option) {
+				if (option_map.contains(*option)) {
+					Log(setting_name + " set to " + *option);
+					return option_map.at(*option);
 				}
 
-				Log("Unknown option " + setting_value + " for " + setting_name + ", using default option " + default_option);
+				Log("Unknown option " + *option + " for " + setting_name + ", using default option " + default_option);
 				return option_map.at(default_option);
 			}
 
@@ -105,15 +104,15 @@ namespace Settings {
 		}
 
 		bool ParseSetting(toml::table settings_table, string setting_name, bool default_option) {
-			optional<bool> setting = settings_table["settings"][setting_name].value<bool>();
-			if (setting) {
-				string setting_string = setting.value() ? "true" : "false";
-				Log(setting_name + " set to " + setting_string);
-				return setting.value();
+			optional<bool> option = settings_table["settings"][setting_name].value<bool>();
+			if (option) {
+				string option_string = *option ? "true" : "false";
+				Log(setting_name + " set to " + option_string);
+				return *option;
 			}
 
-			string default_value_string = default_option ? "true" : "false";
-			Log("Using default option " + default_value_string + " for " + setting_name);
+			string default_option_string = default_option ? "true" : "false";
+			Log("Using default option " + default_option_string + " for " + setting_name);
 			return default_option;
 		}
 	}

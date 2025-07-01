@@ -69,4 +69,5 @@ namespace GameData {
 	void Interact(std::wstring);
 	void ReadNote(std::wstring);
 	void FinishNote();
+	std::optional<std::wstring> GetNoteText(std::wstring);
 }

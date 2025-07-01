@@ -102,6 +102,18 @@ namespace GameData {
             }},
         };
 
+        // map -> note actor name -> text
+        const unordered_map<Map, unordered_map<wstring, wstring>> note_text_table = {
+            {Map::Library, {
+                {L"BP_Note_C_3", L"I got some new shoes today, the seller said they're supposed to be great for parkour?\r\n\r\n\"These kicks will have you moving around like a laserbeam in a hall of mirrors!\r\n\r\nForget what you know,\r\ncarefully consider the angle of your jump before you make it.\r\nOnly by reflecting will you become a master of movement!\"\r\n\r\nHe really didn't need to give me all that though, i just thought they looked cool..."},
+            }},
+            {Map::Underbelly, {
+                {L"BP_Note_C_7", L"someone is here.\r\n\r\nit's not just another part of the dream\r\n\r\nSOMEONE IS HERE"},
+                {L"BP_Note_C_3", L"this was supposed to be an escape\r\n\r\ni didn't want ANYONE ELSE IN HERE!"},
+                {L"BP_Note_C_5", L"STOP READING MY THOUGHTS\r\n\r\nWHO GAVE YOU THE RIGHT\r\n\r\n\r\n\r\nGET THE HELL OUT OF MY HEAD!!!"},
+            }},
+        };
+
         const unordered_map<wstring, Map> map_names = {
             {L"TitleScreen",            Map::TitleScreen},
             {L"ZONE_Dungeon",           Map::Dungeon},
@@ -697,6 +709,17 @@ namespace GameData {
         Log(L"Note finished: " + *note_being_read);
         Interact(*note_being_read);
         note_being_read = {};
+    }
+
+    optional<wstring> GetNoteText(wstring note_actor_name) {
+        Map map = Engine::GetCurrentMap();
+        if (!note_text_table.contains(map)) {
+            return {};
+        }
+        if (!note_text_table.at(map).contains(note_actor_name)) {
+            return {};
+        }
+        return note_text_table.at(map).at(note_actor_name);
     }
 
     namespace {

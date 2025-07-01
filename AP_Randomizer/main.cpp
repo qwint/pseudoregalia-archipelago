@@ -229,8 +229,11 @@ public:
                     note_tryinteract_hooked = true;
                 }
 
-                FText* inText = static_cast<FText*>(actor->GetValuePtrByPropertyName(L"inText"));
-                inText->SetString(FString(L"I got some new shoes today, the seller said they're supposed to be great for parkour?\r\n\r\n\"These kicks will have you moving around like a laserbeam in a hall of mirrors!\r\n\r\nForget what you know,\r\ncarefully consider the angle of your jump before you make it.\r\nOnly by reflecting will you become a master of movement!\"\r\n\r\nHe really didn't need to give me all that though, i just thought they looked cool..."));
+                std::optional<std::wstring> note_text = GameData::GetNoteText(actor->GetName());
+                if (note_text) {
+                    FText* inText = static_cast<FText*>(actor->GetValuePtrByPropertyName(L"inText"));
+                    inText->SetString(FString(note_text->c_str()));
+                }
             }
             });
 

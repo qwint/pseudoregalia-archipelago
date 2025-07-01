@@ -31,6 +31,11 @@ public:
     bool manageresult_hooked = false;
     bool copytext_hooked = false;
     bool sendmessage_hooked = false;
+    bool npc_endinteract_hooked = false;
+    bool chair_tryinteract_hooked = false;
+    bool book_endinteract_hooked = false;
+    bool note_tryinteract_hooked = false;
+    bool finishnote_hooked = false;
 
     AP_Randomizer() : CppUserModBase() {
         ModName = STR("AP_Randomizer");
@@ -97,6 +102,12 @@ public:
             auto spawntimetrialcollectible = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
                 Engine::SpawnTimeTrialCollectibleIfBeaten(context.Context);
                 };
+            auto interact = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
+                GameData::Interact(context.Context->GetName());
+            };
+            auto readnote = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
+                GameData::ReadNote(context.Context->GetName());
+            };
 
             if (!returncheck_hooked
                 && actor->GetName().starts_with(STR("BP_APCollectible"))) {
@@ -166,6 +177,61 @@ public:
                     manageresult_hooked = true;
                 }
             }
+
+            if (actor->GetFullName().starts_with(L"BP_NPC_C ")) {
+                if (!npc_endinteract_hooked) {
+                    UFunction* endinteract_function = actor->GetFunctionByName(L"BPI_EndInteract");
+                    if (!endinteract_function) {
+                        Log(L"Could not find function \"BPI_EndInteract\" in BP_NPC.", LogType::Error);
+                        return;
+                    }
+                    Log("Establishing hook for BPI_EndInteract");
+                    Unreal::UObjectGlobals::RegisterHook(endinteract_function, EmptyFunction, interact, nullptr);
+                    npc_endinteract_hooked = true;
+                }
+            }
+
+            if (actor->GetFullName().starts_with(L"BP_RestChair_C ")) {
+                if (!chair_tryinteract_hooked) {
+                    UFunction* tryinteract_function = actor->GetFunctionByName(L"BPI_TryInteract");
+                    if (!tryinteract_function) {
+                        Log(L"Could not find function \"BPI_TryInteract\" in BP_RestChair.", LogType::Error);
+                        return;
+                    }
+                    Log("Establishing hook for BPI_TryInteract");
+                    Unreal::UObjectGlobals::RegisterHook(tryinteract_function, EmptyFunction, interact, nullptr);
+                    chair_tryinteract_hooked = true;
+                }
+            }
+
+            if (actor->GetFullName().starts_with(L"BP_ExamineTextPopup_C ")) {
+                if (!book_endinteract_hooked) {
+                    UFunction* endinteract_function = actor->GetFunctionByName(L"BPI_EndInteract");
+                    if (!endinteract_function) {
+                        Log(L"Could not find function \"BPI_EndInteract\" in BP_ExamineTextPopup_C.", LogType::Error);
+                        return;
+                    }
+                    Log("Establishing hook for BPI_EndInteract");
+                    Unreal::UObjectGlobals::RegisterHook(endinteract_function, EmptyFunction, interact, nullptr);
+                    book_endinteract_hooked = true;
+                }
+            }
+
+            if (actor->GetFullName().starts_with(L"BP_Note_C ")) {
+                if (!note_tryinteract_hooked) {
+                    UFunction* tryinteract_function = actor->GetFunctionByName(L"BPI_TryInteract");
+                    if (!tryinteract_function) {
+                        Log(L"Could not find function \"BPI_TryInteract\" in BP_Note_C.", LogType::Error);
+                        return;
+                    }
+                    Log("Establishing hook for BPI_TryInteract");
+                    Unreal::UObjectGlobals::RegisterHook(tryinteract_function, EmptyFunction, readnote, nullptr);
+                    note_tryinteract_hooked = true;
+                }
+
+                FText* inText = static_cast<FText*>(actor->GetValuePtrByPropertyName(L"inText"));
+                inText->SetString(FString(L"I got some new shoes today, the seller said they're supposed to be great for parkour?\r\n\r\n\"These kicks will have you moving around like a laserbeam in a hall of mirrors!\r\n\r\nForget what you know,\r\ncarefully consider the angle of your jump before you make it.\r\nOnly by reflecting will you become a master of movement!\"\r\n\r\nHe really didn't need to give me all that though, i just thought they looked cool..."));
+            }
             });
 
         Hook::RegisterStaticConstructObjectPostCallback([&](const FStaticConstructObjectParameters& params, UObject* object) -> UObject* {
@@ -194,6 +260,9 @@ public:
                 FText input = context.GetParams<FText>();
                 UnrealConsole::ProcessInput(input);
                 };
+            auto finishnote = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
+                GameData::FinishNote();
+            };
 
             // I'm not sure why, but this triggers on an object with the name "AP_DeluxeConsole_C" and one with a name
             // like "AP_DeluxeConsole_C_{bunch of numbers}". it seems like the one with the numbers is the "real" one,
@@ -228,6 +297,24 @@ public:
                 }
 
                 Engine::InitializeConsole(object);
+            }
+
+            if (object->GetName().starts_with(L"UI_Note_C_")) {
+                if (!finishnote_hooked) {
+                    UFunction* click_button_function = object->GetFunctionByName(L"BndEvt__UI_Note_UI_GenericButton_K2Node_ComponentBoundEvent_0_CommonButtonBaseClicked__DelegateSignature");
+                    UFunction* text_advance_function = object->GetFunctionByName(L"BPI_TextAdvance");
+                    UFunction* close_self_function = object->GetFunctionByName(L"Close Self");
+                    if (!click_button_function || !text_advance_function || !close_self_function) {
+                        Log(L"Could not find functions in UI_Note", LogType::Error);
+                        return object;
+                    }
+
+                    Log("Registering hooks for UI_Note");
+                    Unreal::UObjectGlobals::RegisterHook(click_button_function, EmptyFunction, finishnote, nullptr);
+                    Unreal::UObjectGlobals::RegisterHook(text_advance_function, EmptyFunction, finishnote, nullptr);
+                    Unreal::UObjectGlobals::RegisterHook(close_self_function, EmptyFunction, finishnote, nullptr);
+                    finishnote_hooked = true;
+                }
             }
 
             return object;

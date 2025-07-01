@@ -232,6 +232,220 @@ location_table = {
         region="Castle Main",
         can_create=lambda options: options.game_version == MAP_PATCH),
 
+    "Dilapidated Dungeon - Mirror Room Goatling": PseudoregaliaLocationData(
+        code=2365810063,
+        region="Dungeon Mirror",
+    ),
+    "Dilapidated Dungeon - Rambling Goatling": PseudoregaliaLocationData(
+        code=2365810064,
+        region="Dungeon Mirror",
+    ),
+    "Dilapidated Dungeon - Unwelcoming Goatling": PseudoregaliaLocationData(
+        code=2365810065,
+        region="Dungeon Strong Eyes",
+    ),
+    "Dilapidated Dungeon - Repentant Goatling": PseudoregaliaLocationData(
+        code=2365810066,
+        region="Dungeon Strong Eyes",
+    ),
+    "Dilapidated Dungeon - Defeatist Goatling": PseudoregaliaLocationData(
+        code=2365810067,
+        region="Dungeon Strong Eyes",
+    ),
+    "Castle Sansa - Crystal Licker Goatling": PseudoregaliaLocationData(
+        code=2365810068,
+        region="Castle Main",
+    ),
+    "Castle Sansa - Gazebo Goatling": PseudoregaliaLocationData(
+        code=2365810069,
+        region="Castle Main",
+    ),
+    "Castle Sansa - Bubble Girl Goatling": PseudoregaliaLocationData(
+        code=2365810070,
+        region="Castle Main",
+    ),
+    "Castle Sansa - Trapped Goatling": PseudoregaliaLocationData(
+        code=2365810071,
+        region="Castle By Scythe Corridor",
+    ),
+    "Castle Sansa - Memento Goatling": PseudoregaliaLocationData(
+        code=2365810072,
+        region="Castle Main",
+        can_create=lambda options: options.game_version == MAP_PATCH,
+    ),
+    "Castle Sansa - Goatling Near Library": PseudoregaliaLocationData(
+        code=2365810073,
+        region="Castle Main",
+        can_create=lambda options: options.game_version == MAP_PATCH,
+    ),
+    "Sansa Keep - Furniture-less Goatling": PseudoregaliaLocationData(
+        code=2365810074,
+        region="Keep Main",
+    ),
+    "Sansa Keep - cyuiyce Goatling": PseudoregaliaLocationData(
+        code=2365810075,
+        region="Keep Main",
+    ),
+    "Twilight Theatre - 20 Bean Casserole Goatling": PseudoregaliaLocationData(
+        code=2365810076,
+        region="Castle => Theatre (Front)",
+    ),
+    "Twilight Theatre - Theatre Goer Goatling 1": PseudoregaliaLocationData(
+        code=2365810077,
+        region="Castle => Theatre (Front)",
+    ),
+    "Twilight Theatre - Theatre Goer Goatling 2": PseudoregaliaLocationData(
+        code=2365810078,
+        region="Castle => Theatre (Front)",
+    ),
+    "Twilight Theatre - Theatre Manager Goatling": PseudoregaliaLocationData(
+        code=2365810079,
+        region="Castle => Theatre (Front)",
+    ),
+    "Twilight Theatre - Murderous Goatling": PseudoregaliaLocationData(
+        code=2365810080,
+        region="Castle => Theatre (Front)",
+    ),
+    "Empty Bailey - Alley Goatling": PseudoregaliaLocationData(
+        code=2365810081,
+        region="Castle => Theatre (Front)",
+    ),
+
+    "Castle Sansa - Stool Near Crystal 1": PseudoregaliaLocationData(
+        code=2365810082,
+        region="Castle Main",
+    ),
+    "Castle Sansa - Stool Near Crystal 2": PseudoregaliaLocationData(
+        code=2365810083,
+        region="Castle Main",
+    ),
+    "Castle Sansa - Stool Near Crystal 3": PseudoregaliaLocationData(
+        code=2365810084,
+        region="Castle Main",
+    ),
+    "Castle Sansa - Gazebo Stool": PseudoregaliaLocationData(
+        code=2365810085,
+        region="Castle Main",
+    ),
+    "Sansa Keep - cyuiyce Stool": PseudoregaliaLocationData(
+        code=2365810086,
+        region="Keep Main",
+    ),
+    "Sansa Keep - Path to Throne Stool": PseudoregaliaLocationData(
+        code=2365810087,
+        region="Keep Throne Room",  # TODO (fillersanity): this region keeps logic more simple but might not be ideal
+    ),
+    "Sansa Keep - The Throne": PseudoregaliaLocationData(
+        code=2365810088,
+        region="Keep Throne Room",
+    ),
+    "Listless Library - Hay Bale Near Entrance": PseudoregaliaLocationData(
+        code=2365810089,
+        region="Library Main",
+    ),
+    "Listless Library - Hay Bale Near Eggs": PseudoregaliaLocationData(
+        code=2365810090,
+        region="Library Top",
+    ),
+    "Listless Library - Hay Bale in the Back": PseudoregaliaLocationData(
+        code=2365810091,
+        region="Library Greaves",  # TODO (fillersanity): make new region between greaves and top
+    ),
+    "Twilight Theatre - Stool Near Bookcase": PseudoregaliaLocationData(
+        code=2365810092,
+        region="Theatre Outside Scythe Corridor",
+    ),
+    "Twilight Theatre - Stool Around a Table 1": PseudoregaliaLocationData(
+        code=2365810093,
+        region="Theatre Outside Scythe Corridor",
+    ),
+    "Twilight Theatre - Stool Around a Table 2": PseudoregaliaLocationData(
+        code=2365810094,
+        region="Theatre Outside Scythe Corridor",
+    ),
+    "Twilight Theatre - Stool Around a Table 3": PseudoregaliaLocationData(
+        code=2365810095,
+        region="Theatre Outside Scythe Corridor",
+    ),
+    "Twilight Theatre - Stage Left Stool": PseudoregaliaLocationData(
+        code=2365810096,
+        region="Theatre Main",
+    ),
+    "Twilight Theatre - Stage Right Stool": PseudoregaliaLocationData(
+        code=2365810097,
+        region="Theatre Main",
+    ),
+
+    "Listless Library - A Book About a Princess": PseudoregaliaLocationData(
+        code=2365810098,
+        region="Library Main",
+    ),
+    "Listless Library - A Book About Cooking": PseudoregaliaLocationData(
+        code=2365810099,
+        region="Library Main",
+    ),
+    "Listless Library - A Book Full of Plays": PseudoregaliaLocationData(
+        code=2365810100,
+        region="Library Main",
+    ),
+    "Listless Library - A Book About Reading": PseudoregaliaLocationData(
+        code=2365810101,
+        region="Library Main",
+    ),
+    "Listless Library - A Book About Aquatic Life": PseudoregaliaLocationData(
+        code=2365810102,
+        region="Library Main",
+    ),
+    "Listless Library - A Book About a Jester": PseudoregaliaLocationData(
+        code=2365810103,
+        region="Library Main",
+    ),
+    "Listless Library - A Book About Loss": PseudoregaliaLocationData(
+        code=2365810104,
+        region="Library Main",
+    ),
+    "Listless Library - A Book on Musical Theory": PseudoregaliaLocationData(
+        code=2365810105,
+        region="Library Main",
+    ),
+    "Listless Library - A Book About a Girl": PseudoregaliaLocationData(
+        code=2365810106,
+        region="Library Main",
+    ),
+    "Listless Library - A Book About a Thimble": PseudoregaliaLocationData(
+        code=2365810107,
+        region="Library Main",
+    ),
+    "Listless Library - A Book About a Monster": PseudoregaliaLocationData(
+        code=2365810108,
+        region="Library Greaves",
+    ),
+    "Listless Library - A Book About Revenge": PseudoregaliaLocationData(
+        code=2365810109,
+        region="Library Greaves",
+    ),
+    "Listless Library - A Book About a Restaurant": PseudoregaliaLocationData(
+        code=2365810110,
+        region="Library Top",
+    ),
+
+    "Listless Library - Note Near Eggs": PseudoregaliaLocationData(
+        code=2365810111,
+        region="Library Top",
+    ),
+    "The Underbelly - Note on a Ledge": PseudoregaliaLocationData(
+        code=2365810112,
+        region="Underbelly => Bailey",
+    ),
+    "The Underbelly - Note in the Big Room": PseudoregaliaLocationData(
+        code=2365810113,
+        region="Underbelly Main Lower",
+    ),
+    "The Underbelly - Note Behind a Locked Door": PseudoregaliaLocationData(
+        code=2365810114,
+        region="Underbelly By Heliacal",
+    ),    
+
     "D S T RT ED M M O   Y": PseudoregaliaLocationData(
         region="The Great Door",
         locked_item="Something Worth Being Awake For"),

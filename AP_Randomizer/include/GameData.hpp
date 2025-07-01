@@ -66,4 +66,7 @@ namespace GameData {
 	bool SlideJumpDisabled();
 	bool CanHaveTimeTrial(Map);
 	std::optional<TimeTrial> GetTimeTrial(Map, std::wstring);
+	void Interact(std::wstring);
+	void ReadNote(std::wstring);
+	void FinishNote();
 }

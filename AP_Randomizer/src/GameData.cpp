@@ -3,6 +3,7 @@
 #include "Logger.hpp"
 #include "Settings.hpp"
 #include "Client.hpp"
+#include "Engine.hpp"
 
 namespace GameData {
     using std::unordered_map;
@@ -16,6 +17,9 @@ namespace GameData {
     // Private members
     namespace {
         ItemType GetItemType(int64_t);
+        optional<int64_t> GetInteractableLocation(wstring);
+
+        optional<wstring> note_being_read = {};
 
         int health_pieces;
         int small_keys;
@@ -27,6 +31,76 @@ namespace GameData {
         unordered_map<string, int> options;
         bool slidejump_owned;
         bool slidejump_disabled;
+
+        // map -> interactable actor name -> location id
+        const unordered_map<Map, unordered_map<wstring, int64_t>> interactable_table = {
+            {Map::Dungeon, {
+                {L"BP_NPC_C_1", 2365810063}, // Mirror Room Goatling
+                {L"BP_NPC_C_6", 2365810064}, // Rambling Goatling
+                {L"BP_NPC_C_8", 2365810065}, // Unwelcoming Goatling
+                {L"BP_NPC_C_2", 2365810066}, // Repentant Goatling
+                {L"BP_NPC_C_4", 2365810067}, // Defeatist Goatling
+            }},
+            {Map::Castle, {
+                {L"BP_NPC_C_2", 2365810068}, // Crystal Licker Goatling
+                {L"BP_NPC_C_3", 2365810069}, // Gazebo Goatling
+                {L"BP_NPC_C_1", 2365810070}, // Bubble Girl Goatling
+                {L"BP_NPC_C_4", 2365810071}, // Trapped Goatling
+                {L"BP_NPC_C_5", 2365810072}, // Memento Goatling
+                {L"BP_NPC_Child_C_1", 2365810073}, // Goatling Near Library
+                {L"BP_RestChair_C_3", 2365810082}, // Stool Near Crystal 1
+                {L"BP_RestChair_C_1", 2365810083}, // Stool Near Crystal 2
+                {L"BP_RestChair_C_2", 2365810084}, // Stool Near Crystal 3
+                {L"BP_RestChair_C_4", 2365810085}, // Gazebo Stool
+            }},
+            {Map::Keep, {
+                {L"BP_NPC_C_1", 2365810074}, // Furniture-less Goatling
+                {L"BP_NPC_C_2", 2365810075}, // cyuiyce Goatling
+                {L"BP_RestChair_C_1", 2365810086}, // cyuiyce Stool
+                {L"BP_RestChair_C_3", 2365810087}, // Path to Throne Stool
+                {L"BP_RestChair_C_4", 2365810088}, // The Throne
+            }},
+            {Map::Library, {
+                {L"BP_RestChair_C_2", 2365810089}, // Hay Bale Near Entrance
+                {L"BP_RestChair_C_3", 2365810090}, // Hay Bale Near Eggs
+                {L"BP_RestChair_C_4", 2365810091}, // Hay Bale in the Back
+                {L"BP_ExamineTextPopup_C_2", 2365810098}, // A Book About a Princess
+                {L"BP_ExamineTextPopup_C_3", 2365810099}, // A Book About Cooking
+                {L"BP_ExamineTextPopup_C_4", 2365810100}, // A Book Full of Plays
+                {L"BP_ExamineTextPopup_C_5", 2365810101}, // A Book About Reading
+                {L"BP_ExamineTextPopup_C_1", 2365810102}, // A Book About Aquatic Life
+                {L"BP_ExamineTextPopup_C_9", 2365810103}, // A Book About a Jester
+                {L"BP_ExamineTextPopup_C_0", 2365810104}, // A Book About Loss
+                {L"BP_ExamineTextPopup_C_7", 2365810105}, // A Book on Musical Theory
+                {L"BP_ExamineTextPopup_C_6", 2365810106}, // A Book About a Girl
+                {L"BP_ExamineTextPopup_C_8", 2365810107}, // A Book About a Thimble
+                {L"BP_Note_C_2", 2365810108}, // A Book About a Monster
+                {L"BP_Note_C_5", 2365810109}, // A Book About Revenge
+                {L"BP_ExamineTextPopup_C_10", 2365810110}, // A Book About a Restaurant
+                {L"BP_Note_C_3", 2365810111}, // Note Near Eggs
+            }},
+            {Map::Theatre, {
+                {L"BP_NPC_C_10", 2365810076}, // 20 Bean Casserole Goatling
+                {L"BP_NPC_C_3", 2365810077}, // Theatre Goer Goatling 1
+                {L"BP_NPC_C_8", 2365810078}, // Theatre Goer Goatling 2
+                {L"BP_NPC_C_9", 2365810079}, // Theatre Manager Goatling
+                {L"BP_NPC_C_0", 2365810080}, // Murderous Goatling
+                {L"BP_RestChair_C_7", 2365810092}, // Stool Near Bookcase
+                {L"BP_RestChair_C_4", 2365810093}, // Stool Around a Table 1
+                {L"BP_RestChair_C_5", 2365810094}, // Stool Around a Table 2
+                {L"BP_RestChair_C_1", 2365810095}, // Stool Around a Table 3
+                {L"BP_RestChair_C_2", 2365810096}, // Stage Left Stool
+                {L"BP_RestChair_C_3", 2365810097}, // Stage Right Stool
+            }},
+            {Map::Bailey, {
+                {L"BP_NPC_C_1", 2365810081}, // Alley Goatling
+            }},
+            {Map::Underbelly, {
+                {L"BP_Note_C_7", 2365810112}, // Note on a Ledge
+                {L"BP_Note_C_3", 2365810113}, // Note in the Big Room
+                {L"BP_Note_C_5", 2365810114}, // Note Behind a Locked Door
+            }},
+        };
 
         const unordered_map<wstring, Map> map_names = {
             {L"TitleScreen",            Map::TitleScreen},
@@ -593,5 +667,48 @@ namespace GameData {
             return {};
         }
         return time_trial_table.at(map).at(time_trial_actor_name);
+    }
+
+    void Interact(wstring actor_name) {
+        std::optional<int64_t> location_id = GameData::GetInteractableLocation(actor_name);
+        if (!location_id) {
+            Log(L"No location id found for interactable actor " + actor_name); // TODO add zone to log
+            return;
+        }
+        if (!Client::IsMissingLocation(*location_id)) {
+            Log(L"Interactable location " + std::to_wstring(*location_id) + L" is not missing.");
+            return;
+        }
+        Log(L"Sending check for interactable location " + std::to_wstring(*location_id));
+        Client::SendCheck(*location_id);
+    }
+
+    void ReadNote(wstring name) {
+        Log(L"Note being read: " + name);
+        note_being_read = name;
+    }
+
+    void FinishNote() {
+        if (!note_being_read) {
+            Log(L"No note is being read.");
+            return;
+        }
+
+        Log(L"Note finished: " + *note_being_read);
+        Interact(*note_being_read);
+        note_being_read = {};
+    }
+
+    namespace {
+        optional<int64_t> GetInteractableLocation(wstring interactable_actor_name) {
+            Map map = Engine::GetCurrentMap();
+            if (!interactable_table.contains(map)) {
+                return {};
+            }
+            if (!interactable_table.at(map).contains(interactable_actor_name)) {
+                return {};
+            }
+            return interactable_table.at(map).at(interactable_actor_name);
+        }
     }
 }

@@ -101,6 +101,34 @@ class RandomizeTimeTrials(Toggle):
     display_name = "Randomize Time Trials"
 
 
+class Goatsanity(Toggle):
+    """
+    Adds goatlings as locations. Talk to a goatling to get the item.
+    This option adds 19 locations on map patch and 17 locations on full gold.
+    """
+
+
+class Sitsanity(Toggle):
+    """
+    Adds places Sybil can sit as locations. Sit down to get the item.
+    This option adds 16 locations.
+    """
+
+
+class Booksanity(Toggle):
+    """
+    Adds books in the library as locations. Read the book to get the item.
+    This option adds 13 locations.
+    """
+
+
+class Notesanity(Toggle):
+    """
+    Adds notes as locations. Read the note to get the item.
+    This option adds 4 locations.
+    """
+
+
 @dataclass
 class PseudoregaliaOptions(PerGameCommonOptions):
     game_version: GameVersion
@@ -112,4 +140,8 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     start_with_breaker: StartWithBreaker
     start_with_map: StartWithMap
     randomize_time_trials: RandomizeTimeTrials
+    goatsanity: Goatsanity
+    sitsanity: Sitsanity
+    booksanity: Booksanity
+    notesanity: Notesanity
 

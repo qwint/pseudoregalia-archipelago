@@ -1,7 +1,7 @@
 from worlds.AutoWorld import World
 from BaseClasses import Region
 from .items import PseudoregaliaItem, item_table, item_groups
-from .locations import PseudoregaliaLocation, location_table
+from .locations import PseudoregaliaLocation, location_table, zone_order
 from .regions import region_table
 from .options import PseudoregaliaOptions
 from .rules_normal import PseudoregaliaNormalRules
@@ -57,7 +57,8 @@ class PseudoregaliaWorld(World):
         for region_name in region_table.keys():
             self.multiworld.regions.append(Region(region_name, self.player, self.multiworld))
 
-        for loc_name, loc_data in location_table.items():
+        locations = sorted(location_table.items(), key=lambda pair: zone_order[pair[0].split(" - ")[0]])
+        for loc_name, loc_data in locations:
             if not loc_data.can_create(self.options):
                 continue
             region = self.multiworld.get_region(loc_data.region, self.player)

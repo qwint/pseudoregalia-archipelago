@@ -24,6 +24,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Theatre Main -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.has_plunge(state) and self.knows_obscure(state)
+                or self.get_kicks(state, 1) and self.can_slidejump(state)
                 or self.has_gem(state),
             "Theatre Main -> Castle => Theatre (Front)": lambda state:
                 self.has_gem(state)
@@ -128,10 +129,20 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Library Main -> Library Top": lambda state:
                 self.kick_or_plunge(state, 4)
                 or self.knows_obscure(state) and self.get_kicks(state, 1) and self.has_plunge(state),
-            "Library Greaves -> Library Top": lambda state:
+            "Library Greaves -> Library Back": lambda state:
+                self.can_attack(state)
+                and (
+                    self.has_gem(state)
+                    or self.get_kicks(state, 2)),
+            "Library Back -> Library Greaves": lambda state:
+                self.can_attack(state)
+                and (
+                    self.has_gem(state)
+                    or self.get_kicks(state, 1)),
+            "Library Back -> Library Top": lambda state:
                 self.has_gem(state)
                 or self.get_kicks(state, 2),
-            "Library Top -> Library Greaves": lambda state:
+            "Library Top -> Library Back": lambda state:
                 self.has_gem(state) and self.kick_or_plunge(state, 1)
                 or self.get_kicks(state, 3) and self.has_plunge(state)
                 or self.get_kicks(state, 3) and self.can_bounce(state),
@@ -286,7 +297,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1)
                 or self.has_gem(state),
-            # "Twilight Theatre - Murderous Goat": lambda state: True,
+            # "Twilight Theatre - Tucked Behind Boxes": lambda state: True,
             "Twilight Theatre - Center Stage": lambda state:
                 self.can_soulcutter(state) and self.has_gem(state)
                 and self.has_plunge(state) and self.can_slidejump(state),  # cross the gap on right side
@@ -449,6 +460,96 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and self.has_gem(state) and self.can_slidejump(state),
 
             # "Castle Sansa - Memento": lambda state: True,
+
+            # "Dilapidated Dungeon - Mirror Room Goatling": lambda state: True,
+            "Dilapidated Dungeon - Rambling Goatling": lambda state:
+                self.can_attack(state),
+            # "Dilapidated Dungeon - Unwelcoming Goatling": lambda state: True,
+            # "Dilapidated Dungeon - Repentant Goatling": lambda state: True,
+            # "Dilapidated Dungeon - Defeatist Goatling": lambda state: True,
+            # "Castle Sansa - Crystal Licker Goatling": lambda state: True,
+            # "Castle Sansa - Gazebo Goatling": lambda state: True,
+            "Castle Sansa - Bubblephobic Goatling": lambda state:
+                self.get_kicks(state, 2)
+                or self.has_plunge(state)
+                and (
+                    self.has_gem(state)
+                    or self.get_kicks(state, 1)
+                    or self.can_bounce(state)
+                    or self.can_slidejump(state)
+                    or self.knows_obscure(state)),
+            "Castle Sansa - Trapped Goatling": lambda state:
+                self.can_attack(state),
+            # "Castle Sansa - Memento Goatling": lambda state: True,
+            # "Castle Sansa - Goatling Near Library": lambda state: True,
+            # "Sansa Keep - Furniture-less Goatling": lambda state: True,
+            "Sansa Keep - cyuiyce Goatling": lambda state:
+                self.has_gem(state)
+                or self.kick_or_plunge(state, 2),
+            # "Twilight Theatre - 20 Bean Casserole Goatling": lambda state: True,
+            # "Twilight Theatre - Theatre Goer Goatling 1": lambda state: True,
+            # "Twilight Theatre - Theatre Goer Goatling 2": lambda state: True,
+            # "Twilight Theatre - Theatre Manager Goatling": lambda state: True,
+            "Twilight Theatre - Murderous Goatling": lambda state:
+                self.get_kicks(state, 2)
+                or self.get_kicks(state, 1) and self.has_plunge(state) and self.knows_obscure(state)
+                or self.get_kicks(state, 1) and self.can_slidejump(state)
+                or self.has_gem(state),
+            "Empty Bailey - Alley Goatling": lambda state:
+                self.has_slide(state),
+
+            # "Castle Sansa - Stool Near Crystal 1": lambda state: True,
+            # "Castle Sansa - Stool Near Crystal 2": lambda state: True,
+            # "Castle Sansa - Stool Near Crystal 3": lambda state: True,
+            # "Castle Sansa - Gazebo Stool": lambda state: True,
+            "Sansa Keep - cyuiyce Stool": lambda state:
+                self.has_gem(state)
+                or self.kick_or_plunge(state, 2),
+            # "Sansa Keep - Path to Throne Stool": lambda state: True,
+            # "Sansa Keep - The Throne": lambda state: True,
+            # "Listless Library - Hay Bale Near Entrance": lambda state: True,
+            # "Listless Library - Hay Bale Near Eggs": lambda state: True,
+            # "Listless Library - Hay Bale in the Back": lambda state: True,
+            # TODO: logic for the next 4 checks could be filled out, for now it's fine
+            # "Twilight Theatre - Stool Near Bookcase": lambda state: True,
+            # "Twilight Theatre - Stool Around a Table 1": lambda state: True,
+            # "Twilight Theatre - Stool Around a Table 2": lambda state: True,
+            # "Twilight Theatre - Stool Around a Table 3": lambda state: True,
+            "Twilight Theatre - Stage Left Stool": lambda state:
+                self.has_gem(state),
+            "Twilight Theatre - Stage Right Stool": lambda state:
+                self.can_soulcutter(state)
+                and (
+                    self.get_kicks(state, 1)
+                    or self.has_gem(state, 1)
+                    or self.knows_obscure(state) and self.can_slidejump(state) and self.has_plunge(state)
+                    or self.knows_obscure(state) and self.can_slidejump(state) and self.can_bounce(state)),
+
+            # "Listless Library - A Book About a Princess": lambda state: True,
+            # "Listless Library - A Book About Cooking": lambda state: True,
+            # "Listless Library - A Book Full of Plays": lambda state: True,
+            # "Listless Library - A Book About Reading": lambda state: True,
+            # "Listless Library - A Book About Aquatic Life": lambda state: True,
+            # "Listless Library - A Book About a Jester": lambda state: True,
+            # "Listless Library - A Book About Loss": lambda state: True,
+            # "Listless Library - A Book on Musical Theory": lambda state: True,
+            # "Listless Library - A Book About a Girl": lambda state: True,
+            # "Listless Library - A Book About a Thimble": lambda state: True,
+            # "Listless Library - A Book About a Monster": lambda state: True,
+            # "Listless Library - A Book About Revenge": lambda state: True,
+            # "Listless Library - A Book About a Restaurant": lambda state: True,
+
+            # "Listless Library - Note Near Eggs": lambda state: True,
+            "The Underbelly - Note on a Ledge": lambda state:
+                self.get_kicks(state, 1)
+                or self.has_plunge(state)
+                or self.has_gem(state)
+                or self.can_bounce(state),
+            "The Underbelly - Note in the Big Room": lambda state:
+                self.get_kicks(state, 4) and self.has_plunge(state)
+                or self.get_kicks(state, 2) and self.can_slidejump(state),
+            "The Underbelly - Note Behind a Locked Door": lambda state:
+                self.has_small_keys(state),
         }
 
         # logic differences due to geometry changes between versions

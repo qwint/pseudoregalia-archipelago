@@ -126,7 +126,7 @@ location_table = {
     "Twilight Theatre - Locked Door": PseudoregaliaLocationData(
         code=2365810033,
         region="Theatre Main",),
-    "Twilight Theatre - Murderous Goat": PseudoregaliaLocationData(
+    "Twilight Theatre - Tucked Behind Boxes": PseudoregaliaLocationData(
         code=2365810034,
         region="Theatre Main",),
     "Twilight Theatre - Corner Beam": PseudoregaliaLocationData(
@@ -355,7 +355,7 @@ location_table = {
     ),
     "Sansa Keep - Path to Throne Stool": PseudoregaliaLocationData(
         code=2365810087,
-        region="Keep Throne Room",  # TODO (fillersanity): this region keeps logic more simple but might not be ideal
+        region="Keep Throne Room",  # TODO: could define some real logic here, but this mostly works
         can_create=lambda options: bool(options.sitsanity),
     ),
     "Sansa Keep - The Throne": PseudoregaliaLocationData(
@@ -375,7 +375,7 @@ location_table = {
     ),
     "Listless Library - Hay Bale in the Back": PseudoregaliaLocationData(
         code=2365810091,
-        region="Library Greaves",  # TODO (fillersanity): make new region between greaves and top
+        region="Library Back",
         can_create=lambda options: bool(options.sitsanity),
     ),
     "Twilight Theatre - Stool Near Bookcase": PseudoregaliaLocationData(

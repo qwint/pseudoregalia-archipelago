@@ -65,9 +65,11 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Library Main -> Library Top": lambda state:
                 self.has_plunge(state)
                 or self.has_slide(state),
-            "Library Greaves -> Library Top": lambda state:
+            "Library Greaves -> Library Back": lambda state:
+                self.can_attack(state) and self.has_slide(state),
+            "Library Back -> Library Top": lambda state:
                 self.has_slide(state),
-            "Library Top -> Library Greaves": lambda state:
+            "Library Top -> Library Back": lambda state:
                 self.get_kicks(state, 2),
             "Keep Main -> Keep Throne Room": lambda state:
                 self.has_breaker(state)
@@ -226,6 +228,24 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "The Underbelly - Surrounded By Holes": lambda state:
                 self.can_soulcutter(state) and self.has_slide(state)
                 or self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state),
+
+            "Castle Sansa - Bubblephobic Goatling": lambda state:
+                self.has_slide(state),
+            "Sansa Keep - cyuiyce Goatling": lambda state:
+                self.has_slide(state)
+                or self.has_plunge(state),
+
+            "Sansa Keep - cyuiyce Stool": lambda state:
+                self.has_slide(state)
+                or self.has_plunge(state),
+            "Twilight Theatre - Stage Right Stool": lambda state:
+                self.can_soulcutter(state) and self.has_slide(state),
+
+            "The Underbelly - Note on a Ledge": lambda state:
+                self.has_slide(state),
+            "The Underbelly - Note in the Big Room": lambda state:
+                self.has_slide(state)
+                or self.has_gem(state),
         }
 
         # logic differences due to geometry changes between versions

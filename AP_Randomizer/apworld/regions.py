@@ -64,9 +64,12 @@ region_table: Dict[str, List[str]] = {
     "Library Locked":
         [],
     "Library Greaves":
-        ["Library Top"],
+        ["Library Back"],
     "Library Top":
-        ["Library Greaves"],
+        ["Library Back"],
+    "Library Back":
+        ["Library Greaves",
+         "Library Top"],
 
     "Keep Main":
         ["Keep Locked Room",

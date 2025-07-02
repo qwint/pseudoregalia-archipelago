@@ -26,7 +26,7 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                 self.can_slidejump(state),
             "Library Main -> Library Top": lambda state:
                 self.get_kicks(state, 1),
-            "Library Top -> Library Greaves": lambda state:
+            "Library Top -> Library Back": lambda state:
                 self.can_bounce(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Keep Main -> Keep Throne Room": lambda state:
                 self.has_breaker(state) and self.has_slide(state) and self.kick_or_plunge(state, 3)

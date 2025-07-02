@@ -51,9 +51,11 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Library Main -> Library Top": lambda state:
                 self.has_gem(state)
                 or self.knows_obscure(state) and self.kick_or_plunge(state, 2),
-            "Library Greaves -> Library Top": lambda state:
+            "Library Greaves -> Library Back": lambda state:
+                self.can_attack(state) and self.get_kicks(state, 1),
+            "Library Back -> Library Top": lambda state:
                 self.get_kicks(state, 1),
-            "Library Top -> Library Greaves": lambda state:
+            "Library Top -> Library Back": lambda state:
                 self.has_gem(state)
                 or self.get_kicks(state, 3)
                 or self.get_kicks(state, 2) and self.has_plunge(state) and self.can_bounce(state),
@@ -201,6 +203,25 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                     or self.kick_or_plunge(state, 3)),
             "The Underbelly - Surrounded By Holes": lambda state:
                 self.has_plunge(state) and self.has_gem(state),
+
+            "Castle Sansa - Bubblephobic Goatling": lambda state:
+                self.get_kicks(state, 1)
+                or self.has_gem(state),
+            "Sansa Keep - cyuiyce Goatling": lambda state:
+                self.get_kicks(state, 1),
+            "Twilight Theatre - Murderous Goatling": lambda state:
+                self.get_kicks(state, 1),
+
+            "Sansa Keep - cyuiyce Stool": lambda state:
+                self.get_kicks(state, 1),
+            "Twilight Theatre - Stage Right Stool": lambda state:
+                self.knows_obscure(state) and self.can_soulcutter(state) and self.can_slidejump(state),
+
+            "The Underbelly - Note on a Ledge": lambda state:
+                self.can_slidejump(state),
+            "The Underbelly - Note in the Big Room": lambda state:
+                self.kick_or_plunge(state, 2)
+                or self.has_gem(state) and self.get_kicks(state, 1),
         }
 
         # logic differences due to geometry changes between versions

@@ -44,7 +44,7 @@ namespace GameData {
             {Map::Castle, {
                 {L"BP_NPC_C_2", 2365810068}, // Crystal Licker Goatling
                 {L"BP_NPC_C_3", 2365810069}, // Gazebo Goatling
-                {L"BP_NPC_C_1", 2365810070}, // Bubble Girl Goatling
+                {L"BP_NPC_C_1", 2365810070}, // Bubblephobic Goatling
                 {L"BP_NPC_C_4", 2365810071}, // Trapped Goatling
                 {L"BP_NPC_C_5", 2365810072}, // Memento Goatling
                 {L"BP_NPC_Child_C_1", 2365810073}, // Goatling Near Library

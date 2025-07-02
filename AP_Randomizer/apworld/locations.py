@@ -260,7 +260,7 @@ location_table = {
         code=2365810069,
         region="Castle Main",
     ),
-    "Castle Sansa - Bubble Girl Goatling": PseudoregaliaLocationData(
+    "Castle Sansa - Bubblephobic Goatling": PseudoregaliaLocationData(
         code=2365810070,
         region="Castle Main",
     ),

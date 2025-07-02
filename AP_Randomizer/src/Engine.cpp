@@ -232,6 +232,33 @@ namespace Engine {
 		}
 	}
 
+	void HealPlayer() {
+		GameData::Map map = GetCurrentMap();
+		if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) {
+			// don't try to heal unless in a gameplay level
+			return;
+		}
+
+		shared_ptr<void> Amount(new double(10));
+		ExecuteBlueprintFunction(L"BP_PlayerGoatMain_C", L"healPlayer", Amount);
+	}
+
+	void GivePlayerPower() {
+		GameData::Map map = GetCurrentMap();
+		if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) {
+			// don't try to give power unless in a gameplay level
+			return;
+		}
+
+		struct ChangePowerAmountInfo {
+			double A;
+			bool forceUpdatePowerLevel;
+		};
+		shared_ptr<void> power_params(new ChangePowerAmountInfo{ 10, false });
+		ExecuteBlueprintFunction(L"BP_PlayerGoatMain_C", L"changePowerAmount", power_params);
+		ExecuteBlueprintFunction(L"BP_PlayerGoatMain_C", L"updatePlayerCurrentStatValues", nullptr);
+	}
+
 
 	// Private functions
 	namespace {

@@ -13,6 +13,7 @@ namespace GameData {
 		HealthPiece,
 		SmallKey,
 		MajorKey,
+		Filler,
 		Unknown
 	};
 
@@ -70,4 +71,5 @@ namespace GameData {
 	void ReadNote(std::wstring);
 	void FinishNote();
 	std::optional<std::wstring> GetNoteText(std::wstring);
+	void ReceiveItemOnce(int64_t);
 }

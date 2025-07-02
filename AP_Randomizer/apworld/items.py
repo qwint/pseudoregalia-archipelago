@@ -169,6 +169,17 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         precollect=lambda options: 1 if options.start_with_map else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
 
+    "Healing": PseudoregaliaItemData(
+        code=2365810037,
+        frequency=0,
+        classification=ItemClassification.filler,
+    ),
+    "Magic Power": PseudoregaliaItemData(
+        code=2365810038,
+        frequency=0,
+        classification=ItemClassification.filler,
+    ),
+
     "Something Worth Being Awake For": PseudoregaliaItemData(
         classification=ItemClassification.progression),
 }

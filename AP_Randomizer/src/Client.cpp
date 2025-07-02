@@ -44,6 +44,7 @@ namespace Client {
         void ReceiveItems(const list<APClient::NetworkItem>&);
         MessageInfo ProcessMessageText(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
+        void ReceiveItemOnce(const APClient::PrintJSONArgs&);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
         // If people report random crashes, especially when disconnecting, I'll revisit it.
@@ -166,6 +167,7 @@ namespace Client {
 
                 if (args.type == "ItemSend") {
                     Log(plain_text, LogType::Popup, info.mentions_player);
+                    ReceiveItemOnce(args);
                 }
                 else {
                     Log(plain_text, LogType::Console);
@@ -349,6 +351,18 @@ namespace Client {
             }
 
             return MessageInfo{ console_text, mentions_player };
+        }
+
+        void ReceiveItemOnce(const APClient::PrintJSONArgs& args) {
+            if (args.receiving == nullptr || args.item == nullptr) {
+                return;
+            }
+
+            if (*args.receiving != ap->get_player_number()) {
+                return;
+            }
+
+            GameData::ReceiveItemOnce(args.item->item);
         }
 
         void ReceiveDeathLink(const json& data) {

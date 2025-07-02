@@ -172,6 +172,9 @@ namespace GameData {
             {2365810035, ItemType::MinorAbility},
 
             {2365810036, ItemType::MinorAbility},
+
+            {2365810037, ItemType::Filler},
+            {2365810038, ItemType::Filler},
         };
 
         const unordered_map<int64_t, wstring> lookup_item_id_to_upgrade = {
@@ -345,6 +348,9 @@ namespace GameData {
         case ItemType::SmallKey:
             lookup_location_id_to_classification[location_id] = Classification::SmallKey;
             break;
+        case ItemType::Filler:
+            lookup_location_id_to_classification[location_id] = Classification::GenericFiller;
+            break;
         }
     }
 
@@ -454,7 +460,7 @@ namespace GameData {
                 {2365810032, Collectible(FVector(5200, 1550, 700))},
             // Locked Door
                 {2365810033, Collectible(FVector(-1460, -2550, 2240))},
-            // Murderous Goat
+            // Tucked Behind Boxes
                 {2365810034, Collectible(FVector(255, 1150, 50))},
             // Corner Beam
                 {2365810035, Collectible(FVector(-14100, -150, 1950))},
@@ -625,6 +631,9 @@ namespace GameData {
             // Remove prefix digits from id to assign directly to major_keys array
             major_keys[id - 2365810021] = true;
             break;
+        case ItemType::Filler:
+            // filler does something immediate, so it should only be handled when receiving a PrintJSON with the item
+            break;
         default:
             Log(L"You were sent an item, but its id wasn't recognized. Verify that you're playing on the same version this seed was generated on.");
             break;
@@ -721,6 +730,18 @@ namespace GameData {
         }
         return note_text_table.at(map).at(note_actor_name);
     }
+
+    void ReceiveItemOnce(int64_t item_id) {
+        switch (item_id) {
+        case 2365810037: // Healing
+            Engine::HealPlayer();
+            break;
+        case 2365810038: // Magic Power
+            Engine::GivePlayerPower();
+            break;
+        }
+    }
+
 
     namespace {
         optional<int64_t> GetInteractableLocation(wstring interactable_actor_name) {

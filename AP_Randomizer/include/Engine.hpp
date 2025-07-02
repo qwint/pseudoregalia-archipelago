@@ -19,4 +19,6 @@ namespace Engine {
 	void PrintToConsole(std::wstring, std::wstring, std::optional<UObject*> = {});
 	void SaveMessage(std::wstring, std::wstring);
 	void InitializeConsole(UObject*);
+	void HealPlayer();
+	void GivePlayerPower();
 }

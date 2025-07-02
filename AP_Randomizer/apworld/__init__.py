@@ -12,7 +12,6 @@ from typing import Dict, Any
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
 from .constants.versions import FULL_GOLD
 
-
 class PseudoregaliaWorld(World):
     game = "Pseudoregalia"
     required_client_version = (0, 7, 0)
@@ -24,8 +23,13 @@ class PseudoregaliaWorld(World):
     options_dataclass = PseudoregaliaOptions
     options: PseudoregaliaOptions
 
+    filler = ("Healing", "Magic Power")
+    filler_index = 0
+
     def get_filler_item_name(self) -> str:
-        return "Health Piece"
+        filler_item_name = self.filler[self.filler_index]
+        self.filler_index = (self.filler_index + 1) % len(self.filler)
+        return filler_item_name
 
     def create_item(self, name: str) -> PseudoregaliaItem:
         data = item_table[name]

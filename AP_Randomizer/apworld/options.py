@@ -106,6 +106,7 @@ class Goatsanity(Toggle):
     Adds goatlings as locations. Talk to a goatling to get the item.
     This option adds 19 locations on map patch and 17 locations on full gold.
     """
+    display_name = "Goatsanity"
 
 
 class Sitsanity(Toggle):
@@ -113,6 +114,7 @@ class Sitsanity(Toggle):
     Adds places Sybil can sit as locations. Sit down to get the item.
     This option adds 16 locations.
     """
+    display_name = "Sitsanity"
 
 
 class Booksanity(Toggle):
@@ -120,6 +122,7 @@ class Booksanity(Toggle):
     Adds books in the library as locations. Read the book to get the item.
     This option adds 13 locations.
     """
+    display_name = "Booksanity"
 
 
 class Notesanity(Toggle):
@@ -127,6 +130,7 @@ class Notesanity(Toggle):
     Adds notes as locations. Read the note to get the item.
     This option adds 4 locations.
     """
+    display_name = "Notesanity"
 
 
 @dataclass

@@ -331,12 +331,12 @@ location_table = {
     ),
     "Twilight Theatre - Murderous Goatling": PseudoregaliaLocationData(
         code=2365810080,
-        region="Castle => Theatre (Front)",
+        region="Theatre Main",
         can_create=lambda options: bool(options.goatsanity),
     ),
     "Empty Bailey - Alley Goatling": PseudoregaliaLocationData(
         code=2365810081,
-        region="Castle => Theatre (Front)",
+        region="Bailey Lower",
         can_create=lambda options: bool(options.goatsanity),
     ),
 

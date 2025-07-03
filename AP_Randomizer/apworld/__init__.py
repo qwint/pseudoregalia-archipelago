@@ -84,10 +84,10 @@ class PseudoregaliaWorld(World):
             "progressive_slide": bool(self.options.progressive_slide),
             "split_sun_greaves": bool(self.options.split_sun_greaves),
             "randomize_time_trials": bool(self.options.randomize_time_trials),
-            "goatsanity": bool(self.options.goatsanity),
-            "sitsanity": bool(self.options.sitsanity),
-            "booksanity": bool(self.options.booksanity),
-            "notesanity": bool(self.options.notesanity),
+            "goats": bool(self.options.goats),
+            "chairs": bool(self.options.chairs),
+            "books": bool(self.options.books),
+            "notes": bool(self.options.notes),
         }
 
     def set_rules(self):

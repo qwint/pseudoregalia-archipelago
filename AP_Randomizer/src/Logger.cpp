@@ -4,6 +4,7 @@
 #include "Logger.hpp"
 #include "Engine.hpp"
 #include "Timer.hpp"
+#include "Settings.hpp"
 #include "StringOps.hpp"
 
 namespace Logger {
@@ -12,13 +13,16 @@ namespace Logger {
 	using RC::Unreal::FText;
 	using std::wstring;
 	using std::string;
+	using std::list;
+	using std::variant;
+	using std::holds_alternative;
+	using std::get;
 
 	// Private members
 	namespace {
-		void PrintToPlayer(wstring);
-		void PrintToPlayer(string);
+		void PrintToPlayer(variant<wstring, ItemPopup>);
 
-		std::list<wstring> message_queue;
+		list<variant<wstring, ItemPopup>> message_queue;
 		bool popups_locked;
 		// Just over 3 seconds is long enough to ensure only 2 popups can be on screen at once
 		const float popup_delay_seconds(3.2f);
@@ -26,21 +30,26 @@ namespace Logger {
 		bool messages_muted;
 	} // End private members
 
-
-	void Logger::Log(string text, LogType type, bool popup_is_relevant) {
-		Log(StringOps::ToWide(text), type, popup_is_relevant);
+	void ShowPopup(string text) {
+		ShowPopup(StringOps::ToWide(text));
 	}
 
-	void Logger::Log(wstring text, LogType type, bool popup_is_relevant) {
-		switch (type) {
-		case LogType::Popup: {
-			send<LogLevel::Verbose>(L"[APRandomizer] Message: " + text + L"\n");
-			if (popup_is_relevant) {
-				PrintToPlayer(text);
-			}
-			break;
-		}
+	void ShowPopup(wstring text) {
+		send<LogLevel::Verbose>(L"[APRandomizer] Message: " + text + L"\n");
+		PrintToPlayer(text);
+	}
 
+	void ShowPopup(ItemPopup popup) {
+		send<LogLevel::Verbose>(L"[APRandomizer] Message: " + popup.preamble + L" " + popup.item + L" " + popup.info + L"\n");
+		PrintToPlayer(popup);
+	}
+
+	void Logger::Log(string text, LogType type) {
+		Log(StringOps::ToWide(text), type);
+	}
+
+	void Logger::Log(wstring text, LogType type) {
+		switch (type) {
 		case LogType::Console: {
 			send<LogLevel::Default>(L"[APRandomizer] Console: " + text + L"\n");
 			break;
@@ -88,14 +97,35 @@ namespace Logger {
 		}
 
 		if (!message_queue.empty()) {
-			struct PrintToPlayerInfo {
-				FText text;
-				bool mute_sound;
-			};
-			FText new_text(message_queue.front());
+			variant<wstring, ItemPopup> front = message_queue.front();
 			message_queue.pop_front();
-			std::shared_ptr<void> params(new PrintToPlayerInfo{ new_text, messages_muted });
-			Engine::ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_PrintMessage", params);
+			if (holds_alternative<wstring>(front)) {
+				struct PrintToPlayerInfo {
+					FText text;
+					bool mute_sound;
+				};
+				FText new_text(get<wstring>(front));
+				std::shared_ptr<void> params(new PrintToPlayerInfo{ new_text, messages_muted });
+				Engine::ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_PrintMessage", params);
+			}
+			else {
+				struct PrintItemToPlayerInfo {
+					FText preamble;
+					FText item;
+					FText info;
+					bool mute_sound;
+					bool simplify_item_popup_font;
+				};
+				ItemPopup popup = get<ItemPopup>(front);
+				std::shared_ptr<void> params(new PrintItemToPlayerInfo{
+					FText(popup.preamble),
+					FText(popup.item),
+					FText(popup.info),
+					messages_muted,
+					Settings::GetPopupsSimplifyItemFont(),
+				});
+				Engine::ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_PrintItemMessage", params);
+			}
 			Timer::RunTimerInGame(popup_delay_seconds, &popups_locked);
 		}
 	}
@@ -121,17 +151,24 @@ namespace Logger {
 		}
 	}
 
+	void Logger::Init() {
+		switch (Settings::GetPopupsInitialState()) {
+		case Settings::PopupsInitialState::ShowMuted:
+			messages_muted = true;
+			break;
+		case Settings::PopupsInitialState::Hide:
+			messages_hidden = true;
+			break;
+		}
+	}
+
 
 	// Private functions
 	namespace {
-		void PrintToPlayer(wstring message) {
+		void PrintToPlayer(variant<wstring, ItemPopup> message) {
 			if (!messages_hidden) {
 				message_queue.push_back(message);
 			}
-		}
-
-		void PrintToPlayer(string message) {
-			PrintToPlayer(StringOps::ToWide(message));
 		}
 	} // End private functions
 }

@@ -7,7 +7,15 @@ namespace Settings {
         GenericAll,
     };
 
+    enum class PopupsInitialState {
+        ShowWithSound,
+        ShowMuted,
+        Hide,
+    };
+
     void Load();
     ItemDisplay GetItemDisplay();
     bool GetDeathLink();
+    PopupsInitialState GetPopupsInitialState();
+    bool GetPopupsSimplifyItemFont();
 }

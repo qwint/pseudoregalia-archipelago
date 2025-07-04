@@ -615,7 +615,7 @@ namespace GameData {
         case ItemType::MinorAbility:
             upgrade_table[lookup_item_id_to_upgrade.at(id)]++;
             if (!slidejump_owned) {
-                if (lookup_item_id_to_upgrade.at(id) == L"SlideJump"
+                if (upgrade_table[L"slide"] && upgrade_table[L"SlideJump"]
                     || upgrade_table[L"progressiveSlide"] >= 2) {
                     slidejump_owned = true;
                 }
@@ -653,10 +653,10 @@ namespace GameData {
 
         slidejump_disabled = !slidejump_disabled;
         if (slidejump_disabled) {
-            Log(L"Solar wind is now OFF.", LogType::System);
+            Log(L"Solar wind is now OFF.");
         }
         else {
-            Log(L"Solar wind is now ON.", LogType::System);
+            Log(L"Solar wind is now ON.");
         }
         return true;
     }

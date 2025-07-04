@@ -23,7 +23,9 @@
 
 namespace Client {
     using std::string;
+    using std::wstring;
     using std::list;
+    using std::optional;
 
     namespace Hashes {
         using StringOps::HashNstring;
@@ -34,15 +36,11 @@ namespace Client {
 
     // Private members
     namespace {
-        struct MessageInfo {
-            string markdown_text;
-            bool mentions_player;
-        };
-
         typedef nlohmann::json json;
         typedef APClient::State ConnectionStatus;
         void ReceiveItems(const list<APClient::NetworkItem>&);
-        MessageInfo ProcessMessageText(const APClient::PrintJSONArgs&);
+        string ProcessMessageText(const APClient::PrintJSONArgs&);
+        optional<Logger::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
         void ReceiveItemOnce(const APClient::PrintJSONArgs&);
 
@@ -159,15 +157,18 @@ namespace Client {
             ap->set_print_json_handler([](const APClient::PrintJSONArgs& args) {
                 using RC::Unreal::FText;
                 string plain_text = ap->render_json(args.data);
-                MessageInfo info = ProcessMessageText(args);
+                string markdown_text = ProcessMessageText(args);
                 Logger::PrintToConsole(
-                    StringOps::ToWide(info.markdown_text),
+                    StringOps::ToWide(markdown_text),
                     StringOps::ToWide(plain_text)
                 );
 
                 if (args.type == "ItemSend") {
-                    Log(plain_text, LogType::Popup, info.mentions_player);
                     ReceiveItemOnce(args);
+                    optional<Logger::ItemPopup> item_popup = BuildItemPopup(args);
+                    if (item_popup) {
+                        Logger::ShowPopup(*item_popup);
+                    }
                 }
                 else {
                     Log(plain_text, LogType::Console);
@@ -275,7 +276,7 @@ namespace Client {
             {"source", ap->get_slot()},
         };
         ap->Bounce(data, {}, {}, { "DeathLink" });
-        Log(RandomOwnDeathlink(), LogType::Popup);
+        Logger::ShowPopup(RandomOwnDeathlink());
         Log("Sending bounce: " + data.dump());
         Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
     }
@@ -300,9 +301,8 @@ namespace Client {
 
     // Private functions
     namespace {
-        MessageInfo ProcessMessageText(const APClient::PrintJSONArgs& args) {
+        string ProcessMessageText(const APClient::PrintJSONArgs& args) {
             string console_text;
-            bool mentions_player = false;
 
             // This loop is basically the logic of APClient::render_json(), adapted to use RichTextBlock markdown.
             for (const auto& node : args.data) {
@@ -312,7 +312,6 @@ namespace Client {
                     int id = std::stoi(node.text);
                     string player_name = ap->get_player_alias(id);
                     if (id == ap->get_player_number()) {
-                        mentions_player = true;
                         console_text += "<Self>" + player_name + "</>";
                     }
                     else {
@@ -350,7 +349,43 @@ namespace Client {
                 }
             }
 
-            return MessageInfo{ console_text, mentions_player };
+            return console_text;
+        }
+
+        optional<Logger::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs& args) {
+            if (args.receiving == nullptr || args.item == nullptr) {
+                // I don't think this is reachable because of the way apclientpp validates packets, but it felt weird
+                // not to check just in case
+                Log("Received ItemSend PrintJSON packet that was missing receiving or item.");
+                return {};
+            }
+
+            int32_t receiver = *args.receiving;
+            int32_t finder = args.item->player;
+            int32_t player = ap->get_player_number();
+            if (finder != player && receiver != player) {
+                return {};
+            }
+
+            Logger::ItemPopup item_popup = {
+                .item = StringOps::ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver))),
+            };
+            wstring location = StringOps::ToWide(ap->get_location_name(args.item->location, ap->get_player_game(finder)));
+            if (finder == player && receiver == player) {
+                item_popup.preamble = L"Found ";
+                item_popup.info = L"at " + location;
+            }
+            else if (finder == player) {
+                item_popup.preamble = L"Sent ";
+                wstring receiver_name = StringOps::ToWide(ap->get_player_alias(receiver));
+                item_popup.info = L"to " + receiver_name + L" (" + location + L")";
+            }
+            else {
+                item_popup.preamble = L"Received ";
+                wstring finder_name = StringOps::ToWide(ap->get_player_alias(finder));
+                item_popup.info = L"from " + finder_name + L" (" + location + L")";
+            }
+            return item_popup;
         }
 
         void ReceiveItemOnce(const APClient::PrintJSONArgs& args) {
@@ -374,7 +409,7 @@ namespace Client {
 
             if (!data.contains("data")) {
                 // Should only execute if the received death link data was not properly filled out.
-                Log("You were assassinated by a mysterious villain...", LogType::Popup);
+                Logger::ShowPopup(L"You were assassinated by a mysterious villain...");
                 Engine::VaporizeGoat();
                 Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
                 return;
@@ -384,15 +419,15 @@ namespace Client {
 
             if (details.contains("cause")) {
                 string cause(details["cause"]);
-                Log(cause, LogType::Popup);
+                Logger::ShowPopup(cause);
             }
             else if (details.contains("source")) {
                 string source(details["source"]);
-                Log("You were brutally murdered by " + source + ".", LogType::Popup);
+                Logger::ShowPopup("You were brutally murdered by " + source + ".");
             }
             else {
                 // Should only execute if the received death link data was not properly filled out.
-                Log("You were assassinated by a mysterious villain...", LogType::Popup);
+                Logger::ShowPopup("You were assassinated by a mysterious villain...");
             }
             Engine::VaporizeGoat();
             Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);

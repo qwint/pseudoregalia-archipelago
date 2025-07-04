@@ -40,7 +40,7 @@ namespace Logger {
 	}
 
 	void ShowPopup(ItemPopup popup) {
-		send<LogLevel::Verbose>(L"[APRandomizer] Message: " + popup.preamble + L" " + popup.item + L" " + popup.info + L"\n");
+		send<LogLevel::Verbose>(L"[APRandomizer] Message: " + popup.preamble + popup.item + L" " + popup.info + L"\n");
 		PrintToPlayer(popup);
 	}
 

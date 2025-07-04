@@ -128,7 +128,8 @@ namespace Client {
             // Executes as a response to LocationScouts.
             ap->set_location_info_handler([](const list<APClient::NetworkItem>& items) {
                 for (const auto& item : items) {
-                    if (ap->get_player_game(item.player) == ap->get_game()) {
+                    if (ap->get_player_game(item.player) == ap->get_game() && !GameData::IsInteractable(item.location)) {
+                        // interactable locations should have classification set by item classification only
                         GameData::SetPseudoItemClassification(item.location, item.item);
                     }
                     else if (item.flags & APClient::FLAG_ADVANCEMENT) {

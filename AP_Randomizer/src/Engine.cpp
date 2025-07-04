@@ -7,6 +7,7 @@
 #include "Engine.hpp"
 #include "Logger.hpp"
 #include "Client.hpp"
+#include "Settings.hpp"
 
 namespace Engine {
 	using namespace RC::Unreal; // Give Engine easy access to Unreal objects
@@ -129,6 +130,10 @@ namespace Engine {
 		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(map);
 		for (const auto& [id, collectible] : collectible_map) {
 			SpawnCollectible(id, collectible.GetPosition(GameData::GetOptions()));
+		}
+
+		if (Settings::GetInteractableAuraDisplay() == Settings::InteractableAuraDisplay::None) {
+			return;
 		}
 		std::unordered_map<wstring, GameData::Interactable> interactable_map = GameData::GetInteractablesOfZone(map);
 		for (const auto& [name, interactable] : interactable_map) {
@@ -349,15 +354,16 @@ namespace Engine {
 			}
 			UObject* object = UObjectGlobals::FindObject(class_name.c_str(), name.c_str());
 			if (!object) {
-				Log(L"No object found for collectible with id " + to_wstring(id));
+				Log(L"No object found for interactable with id " + to_wstring(id));
 				return;
 			}
 			Log(L"Spawning interactable aura with id " + to_wstring(id));
 			struct InteractableAuraSpawnInfo {
 				UObject* follow;
 				int64_t interactableId;
+				int32_t classification;
 			};
-			shared_ptr<void> interactable_aura_info(new InteractableAuraSpawnInfo{ object, id });
+			shared_ptr<void> interactable_aura_info(new InteractableAuraSpawnInfo{ object, id, GameData::GetClassification(id) });
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SpawnInteractableAura", interactable_aura_info);
 		}
 

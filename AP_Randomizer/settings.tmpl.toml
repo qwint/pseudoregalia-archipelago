@@ -11,6 +11,13 @@
 # "generic_all": All items look the same.
 item_display = "full"
 
+# How auras around interactables are displayed in your game.
+#
+# "classification": Unchecked interactables have a different aura based on their classification.
+# "generic": Unchecked interactables all have the same aura.
+# "none": Unchecked interactables have no aura.
+interactable_aura_display = "classification"
+
 # Whether to opt in to the death link system.
 #
 # true: When you die, everyone dies. Of course the reverse is true too.

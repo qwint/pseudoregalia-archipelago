@@ -35,7 +35,7 @@ namespace GameData {
         // map -> interactable actor name -> location id
         unordered_map<Map, unordered_map<wstring, Interactable>> interactable_table = {
             {Map::Dungeon, {
-                {L"BP_NPC_C_1", {2365810063, L"BP_NPC_C"}}, // Mirror Room Goatling
+                {L"BP_NPC_C_1", {2365810063, L"BP_NPC_Child_C"}}, // Mirror Room Goatling
                 {L"BP_NPC_C_6", {2365810064, L"BP_NPC_C"}}, // Rambling Goatling
                 {L"BP_NPC_C_8", {2365810065, L"BP_NPC_C"}}, // Unwelcoming Goatling
                 {L"BP_NPC_C_2", {2365810066, L"BP_NPC_C"}}, // Repentant Goatling
@@ -324,6 +324,16 @@ namespace GameData {
                 const int64_t location_id = time_trial.first;
                 if (Client::IsMissingLocation(location_id)) {
                     location_ids.push_back(location_id);
+                }
+            }
+        }
+        if (Settings::GetInteractableAuraDisplay() == Settings::InteractableAuraDisplay::Classification) {
+            for (const auto& [_, zone_map] : interactable_table) {
+                for (const auto& [_, interactable] : zone_map) {
+                    const int64_t location_id = interactable.first;
+                    if (Client::IsMissingLocation(location_id)) {
+                        location_ids.push_back(location_id);
+                    }
                 }
             }
         }
@@ -745,6 +755,11 @@ namespace GameData {
             Engine::GivePlayerPower();
             break;
         }
+    }
+
+    bool IsInteractable(int64_t location_id) {
+        // this works for now since locations are separated by collectible/interactable at this location id
+        return location_id >= 2365810063;
     }
 
 

@@ -75,4 +75,5 @@ namespace GameData {
 	void FinishNote();
 	std::optional<std::wstring> GetNoteText(std::wstring);
 	void ReceiveItemOnce(int64_t);
+	bool IsInteractable(int64_t);
 }

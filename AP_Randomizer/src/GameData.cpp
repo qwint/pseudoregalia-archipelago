@@ -17,7 +17,7 @@ namespace GameData {
     // Private members
     namespace {
         ItemType GetItemType(int64_t);
-        optional<Interactable> GetInteractableLocation(wstring);
+        optional<Interactable> GetInteractable(wstring);
 
         optional<wstring> note_being_read = {};
 
@@ -32,73 +32,73 @@ namespace GameData {
         bool slidejump_owned;
         bool slidejump_disabled;
 
-        // map -> interactable actor name -> location id
+        // map -> actor name -> location id + actor class name
         unordered_map<Map, unordered_map<wstring, Interactable>> interactable_table = {
             {Map::Dungeon, {
-                {L"BP_NPC_C_1", {2365810063, L"BP_NPC_Child_C"}}, // Mirror Room Goatling
-                {L"BP_NPC_C_6", {2365810064, L"BP_NPC_C"}}, // Rambling Goatling
-                {L"BP_NPC_C_8", {2365810065, L"BP_NPC_C"}}, // Unwelcoming Goatling
-                {L"BP_NPC_C_2", {2365810066, L"BP_NPC_C"}}, // Repentant Goatling
-                {L"BP_NPC_C_4", {2365810067, L"BP_NPC_C"}}, // Defeatist Goatling
+                {L"BP_NPC_C_1", {2365810066, L"BP_NPC_Child_C"}}, // Mirror Room Goatling
+                {L"BP_NPC_C_6", {2365810067, L"BP_NPC_C"}}, // Rambling Goatling
+                {L"BP_NPC_C_8", {2365810068, L"BP_NPC_C"}}, // Unwelcoming Goatling
+                {L"BP_NPC_C_2", {2365810069, L"BP_NPC_C"}}, // Repentant Goatling
+                {L"BP_NPC_C_4", {2365810070, L"BP_NPC_C"}}, // Defeatist Goatling
             }},
             {Map::Castle, {
-                {L"BP_NPC_C_2", {2365810068, L"BP_NPC_C"}}, // Crystal Licker Goatling
-                {L"BP_NPC_C_3", {2365810069, L"BP_NPC_C"}}, // Gazebo Goatling
-                {L"BP_NPC_C_1", {2365810070, L"BP_NPC_C"}}, // Bubblephobic Goatling
-                {L"BP_NPC_C_4", {2365810071, L"BP_NPC_C"}}, // Trapped Goatling
-                {L"BP_NPC_C_5", {2365810072, L"BP_NPC_C"}}, // Memento Goatling
-                {L"BP_NPC_Child_C_1", {2365810073, L"BP_NPC_Child_C"}}, // Goatling Near Library
-                {L"BP_RestChair_C_3", {2365810082, L"BP_RestChair_C"}}, // Stool Near Crystal 1
-                {L"BP_RestChair_C_1", {2365810083, L"BP_RestChair_C"}}, // Stool Near Crystal 2
-                {L"BP_RestChair_C_2", {2365810084, L"BP_RestChair_C"}}, // Stool Near Crystal 3
-                {L"BP_RestChair_C_4", {2365810085, L"BP_RestChair_C"}}, // Gazebo Stool
+                {L"BP_NPC_C_2", {2365810071, L"BP_NPC_C"}}, // Crystal Licker Goatling
+                {L"BP_NPC_C_3", {2365810072, L"BP_NPC_C"}}, // Gazebo Goatling
+                {L"BP_NPC_C_1", {2365810073, L"BP_NPC_C"}}, // Bubblephobic Goatling
+                {L"BP_NPC_C_4", {2365810074, L"BP_NPC_C"}}, // Trapped Goatling
+                {L"BP_NPC_C_5", {2365810075, L"BP_NPC_C"}}, // Memento Goatling
+                {L"BP_NPC_Child_C_1", {2365810076, L"BP_NPC_Child_C"}}, // Goatling Near Library
+                {L"BP_RestChair_C_3", {2365810085, L"BP_RestChair_C"}}, // Stool Near Crystal 1
+                {L"BP_RestChair_C_1", {2365810086, L"BP_RestChair_C"}}, // Stool Near Crystal 2
+                {L"BP_RestChair_C_2", {2365810087, L"BP_RestChair_C"}}, // Stool Near Crystal 3
+                {L"BP_RestChair_C_4", {2365810088, L"BP_RestChair_C"}}, // Gazebo Stool
             }},
             {Map::Keep, {
-                {L"BP_NPC_C_1", {2365810074, L"BP_NPC_C"}}, // Furniture-less Goatling
-                {L"BP_NPC_C_2", {2365810075, L"BP_NPC_C"}}, // cyuiyce Goatling
-                {L"BP_RestChair_C_1", {2365810086, L"BP_RestChair_C"}}, // cyuiyce Stool
-                {L"BP_RestChair_C_3", {2365810087, L"BP_RestChair_C"}}, // Path to Throne Stool
-                {L"BP_RestChair_C_4", {2365810088, L"BP_RestChair_C"}}, // The Throne
+                {L"BP_NPC_C_1", {2365810077, L"BP_NPC_C"}}, // Furniture-less Goatling
+                {L"BP_NPC_C_2", {2365810078, L"BP_NPC_C"}}, // cyuiyce Goatling
+                {L"BP_RestChair_C_1", {2365810089, L"BP_RestChair_C"}}, // cyuiyce Stool
+                {L"BP_RestChair_C_3", {2365810090, L"BP_RestChair_C"}}, // Path to Throne Stool
+                {L"BP_RestChair_C_4", {2365810091, L"BP_RestChair_C"}}, // The Throne
             }},
             {Map::Library, {
-                {L"BP_RestChair_C_2", {2365810089, L"BP_RestChair_C"}}, // Hay Bale Near Entrance
-                {L"BP_RestChair_C_3", {2365810090, L"BP_RestChair_C"}}, // Hay Bale Near Eggs
-                {L"BP_RestChair_C_4", {2365810091, L"BP_RestChair_C"}}, // Hay Bale in the Back
-                {L"BP_ExamineTextPopup_C_2", {2365810098, L"BP_ExamineTextPopup_C"}}, // A Book About a Princess
-                {L"BP_ExamineTextPopup_C_3", {2365810099, L"BP_ExamineTextPopup_C"}}, // A Book About Cooking
-                {L"BP_ExamineTextPopup_C_4", {2365810100, L"BP_ExamineTextPopup_C"}}, // A Book Full of Plays
-                {L"BP_ExamineTextPopup_C_5", {2365810101, L"BP_ExamineTextPopup_C"}}, // A Book About Reading
-                {L"BP_ExamineTextPopup_C_1", {2365810102, L"BP_ExamineTextPopup_C"}}, // A Book About Aquatic Life
-                {L"BP_ExamineTextPopup_C_9", {2365810103, L"BP_ExamineTextPopup_C"}}, // A Book About a Jester
-                {L"BP_ExamineTextPopup_C_0", {2365810104, L"BP_ExamineTextPopup_C"}}, // A Book About Loss
-                {L"BP_ExamineTextPopup_C_7", {2365810105, L"BP_ExamineTextPopup_C"}}, // A Book on Musical Theory
-                {L"BP_ExamineTextPopup_C_6", {2365810106, L"BP_ExamineTextPopup_C"}}, // A Book About a Girl
-                {L"BP_ExamineTextPopup_C_8", {2365810107, L"BP_ExamineTextPopup_C"}}, // A Book About a Thimble
-                {L"BP_Note_C_2", {2365810108, L"BP_ExamineTextPopup_C"}}, // A Book About a Monster
-                {L"BP_Note_C_5", {2365810109, L"BP_ExamineTextPopup_C"}}, // A Book About Revenge
-                {L"BP_ExamineTextPopup_C_10", {2365810110, L"BP_ExamineTextPopup_C"}}, // A Book About a Restaurant
-                {L"BP_Note_C_3", {2365810111, L"BP_Note_C"}}, // Note Near Eggs
+                {L"BP_RestChair_C_2", {2365810092, L"BP_RestChair_C"}}, // Hay Bale Near Entrance
+                {L"BP_RestChair_C_3", {2365810093, L"BP_RestChair_C"}}, // Hay Bale Near Eggs
+                {L"BP_RestChair_C_4", {2365810094, L"BP_RestChair_C"}}, // Hay Bale in the Back
+                {L"BP_ExamineTextPopup_C_2", {2365810101, L"BP_ExamineTextPopup_C"}}, // A Book About a Princess
+                {L"BP_ExamineTextPopup_C_3", {2365810102, L"BP_ExamineTextPopup_C"}}, // A Book About Cooking
+                {L"BP_ExamineTextPopup_C_4", {2365810103, L"BP_ExamineTextPopup_C"}}, // A Book Full of Plays
+                {L"BP_ExamineTextPopup_C_5", {2365810104, L"BP_ExamineTextPopup_C"}}, // A Book About Reading
+                {L"BP_ExamineTextPopup_C_1", {2365810105, L"BP_ExamineTextPopup_C"}}, // A Book About Aquatic Life
+                {L"BP_ExamineTextPopup_C_9", {2365810106, L"BP_ExamineTextPopup_C"}}, // A Book About a Jester
+                {L"BP_ExamineTextPopup_C_0", {2365810107, L"BP_ExamineTextPopup_C"}}, // A Book About Loss
+                {L"BP_ExamineTextPopup_C_7", {2365810108, L"BP_ExamineTextPopup_C"}}, // A Book on Musical Theory
+                {L"BP_ExamineTextPopup_C_6", {2365810109, L"BP_ExamineTextPopup_C"}}, // A Book About a Girl
+                {L"BP_ExamineTextPopup_C_8", {2365810110, L"BP_ExamineTextPopup_C"}}, // A Book About a Thimble
+                {L"BP_Note_C_2", {2365810111, L"BP_ExamineTextPopup_C"}}, // A Book About a Monster
+                {L"BP_Note_C_5", {2365810112, L"BP_ExamineTextPopup_C"}}, // A Book About Revenge
+                {L"BP_ExamineTextPopup_C_10", {2365810113, L"BP_ExamineTextPopup_C"}}, // A Book About a Restaurant
+                {L"BP_Note_C_3", {2365810114, L"BP_Note_C"}}, // Note Near Eggs
             }},
             {Map::Theatre, {
-                {L"BP_NPC_C_10", {2365810076, L"BP_NPC_C"}}, // 20 Bean Casserole Goatling
-                {L"BP_NPC_C_3", {2365810077, L"BP_NPC_C"}}, // Theatre Goer Goatling 1
-                {L"BP_NPC_C_8", {2365810078, L"BP_NPC_C"}}, // Theatre Goer Goatling 2
-                {L"BP_NPC_C_9", {2365810079, L"BP_NPC_C"}}, // Theatre Manager Goatling
-                {L"BP_NPC_C_0", {2365810080, L"BP_NPC_C"}}, // Murderous Goatling
-                {L"BP_RestChair_C_7", {2365810092, L"BP_RestChair_C"}}, // Stool Near Bookcase
-                {L"BP_RestChair_C_4", {2365810093, L"BP_RestChair_C"}}, // Stool Around a Table 1
-                {L"BP_RestChair_C_5", {2365810094, L"BP_RestChair_C"}}, // Stool Around a Table 2
-                {L"BP_RestChair_C_1", {2365810095, L"BP_RestChair_C"}}, // Stool Around a Table 3
-                {L"BP_RestChair_C_2", {2365810096, L"BP_RestChair_C"}}, // Stage Left Stool
-                {L"BP_RestChair_C_3", {2365810097, L"BP_RestChair_C"}}, // Stage Right Stool
+                {L"BP_NPC_C_10", {2365810079, L"BP_NPC_C"}}, // 20 Bean Casserole Goatling
+                {L"BP_NPC_C_3", {2365810080, L"BP_NPC_C"}}, // Theatre Goer Goatling 1
+                {L"BP_NPC_C_8", {2365810081, L"BP_NPC_C"}}, // Theatre Goer Goatling 2
+                {L"BP_NPC_C_9", {2365810082, L"BP_NPC_C"}}, // Theatre Manager Goatling
+                {L"BP_NPC_C_0", {2365810083, L"BP_NPC_C"}}, // Murderous Goatling
+                {L"BP_RestChair_C_7", {2365810095, L"BP_RestChair_C"}}, // Stool Near Bookcase
+                {L"BP_RestChair_C_4", {2365810096, L"BP_RestChair_C"}}, // Stool Around a Table 1
+                {L"BP_RestChair_C_5", {2365810097, L"BP_RestChair_C"}}, // Stool Around a Table 2
+                {L"BP_RestChair_C_1", {2365810098, L"BP_RestChair_C"}}, // Stool Around a Table 3
+                {L"BP_RestChair_C_2", {2365810099, L"BP_RestChair_C"}}, // Stage Left Stool
+                {L"BP_RestChair_C_3", {2365810100, L"BP_RestChair_C"}}, // Stage Right Stool
             }},
             {Map::Bailey, {
-                {L"BP_NPC_C_1", {2365810081, L"BP_NPC_C"}}, // Alley Goatling
+                {L"BP_NPC_C_1", {2365810084, L"BP_NPC_C"}}, // Alley Goatling
             }},
             {Map::Underbelly, {
-                {L"BP_Note_C_7", {2365810112, L"BP_Note_C"}}, // Note on a Ledge
-                {L"BP_Note_C_3", {2365810113, L"BP_Note_C"}}, // Note in the Big Room
-                {L"BP_Note_C_5", {2365810114, L"BP_Note_C"}}, // Note Behind a Locked Door
+                {L"BP_Note_C_7", {2365810115, L"BP_Note_C"}}, // Note on a Ledge
+                {L"BP_Note_C_3", {2365810116, L"BP_Note_C"}}, // Note in the Big Room
+                {L"BP_Note_C_5", {2365810117, L"BP_Note_C"}}, // Note Behind a Locked Door
             }},
         };
 
@@ -173,8 +173,8 @@ namespace GameData {
 
             {2365810036, ItemType::MinorAbility},
 
-            {2365810037, ItemType::Filler},
             {2365810038, ItemType::Filler},
+            {2365810039, ItemType::Filler},
         };
 
         const unordered_map<int64_t, wstring> lookup_item_id_to_upgrade = {
@@ -207,72 +207,6 @@ namespace GameData {
             {2365810034, L"outfitJam"},
             {2365810035, L"outfitPast"},
             {2365810036, L"map"},
-        };
-
-        // This is for location ids, not items, so it can't be combined with the tables above.
-        const unordered_map<int64_t, Map> lookup_location_id_to_zone = {
-            {2365810001, Map::Dungeon},
-            {2365810002, Map::Dungeon},
-            {2365810003, Map::Dungeon},
-            {2365810004, Map::Dungeon},
-            {2365810005, Map::Dungeon},
-            {2365810006, Map::Dungeon},
-            {2365810007, Map::Dungeon},
-            {2365810054, Map::Dungeon},
-            {2365810008, Map::Castle},
-            {2365810009, Map::Castle},
-            {2365810010, Map::Castle},
-            {2365810011, Map::Castle},
-            {2365810012, Map::Castle},
-            {2365810013, Map::Castle},
-            {2365810014, Map::Castle},
-            {2365810015, Map::Castle},
-            {2365810016, Map::Castle},
-            {2365810017, Map::Castle},
-            {2365810018, Map::Castle},
-            {2365810019, Map::Castle},
-            {2365810055, Map::Castle},
-            {2365810062, Map::Castle},
-            {2365810020, Map::Keep},
-            {2365810021, Map::Keep},
-            {2365810022, Map::Keep},
-            {2365810023, Map::Keep},
-            {2365810024, Map::Keep},
-            {2365810025, Map::Keep},
-            {2365810056, Map::Keep},
-            {2365810026, Map::Library},
-            {2365810027, Map::Library},
-            {2365810028, Map::Library},
-            {2365810029, Map::Library},
-            {2365810051, Map::Library},
-            {2365810052, Map::Library},
-            {2365810053, Map::Library},
-            {2365810057, Map::Library},
-            {2365810030, Map::Theatre},
-            {2365810031, Map::Theatre},
-            {2365810032, Map::Theatre},
-            {2365810033, Map::Theatre},
-            {2365810034, Map::Theatre},
-            {2365810035, Map::Theatre},
-            {2365810058, Map::Theatre},
-            {2365810036, Map::Bailey},
-            {2365810037, Map::Bailey},
-            {2365810038, Map::Bailey},
-            {2365810039, Map::Bailey},
-            {2365810040, Map::Bailey},
-            {2365810059, Map::Bailey},
-            {2365810041, Map::Underbelly},
-            {2365810042, Map::Underbelly},
-            {2365810043, Map::Underbelly},
-            {2365810044, Map::Underbelly},
-            {2365810045, Map::Underbelly},
-            {2365810046, Map::Underbelly},
-            {2365810047, Map::Underbelly},
-            {2365810048, Map::Underbelly},
-            {2365810060, Map::Underbelly},
-            {2365810049, Map::Tower},
-            {2365810050, Map::Tower},
-            {2365810061, Map::Tower},
         };
     } // End private members
 
@@ -705,7 +639,7 @@ namespace GameData {
     }
 
     void Interact(wstring actor_name) {
-        std::optional<Interactable> interactable = GameData::GetInteractableLocation(actor_name);
+        std::optional<Interactable> interactable = GameData::GetInteractable(actor_name);
         if (!interactable) {
             Log(L"No interactable found for interactable actor " + actor_name); // TODO add zone to log
             return;
@@ -748,10 +682,10 @@ namespace GameData {
 
     void ReceiveItemOnce(int64_t item_id) {
         switch (item_id) {
-        case 2365810037: // Healing
+        case 2365810038: // Healing
             Engine::HealPlayer();
             break;
-        case 2365810038: // Magic Power
+        case 2365810039: // Magic Power
             Engine::GivePlayerPower();
             break;
         }
@@ -759,12 +693,12 @@ namespace GameData {
 
     bool IsInteractable(int64_t location_id) {
         // this works for now since locations are separated by collectible/interactable at this location id
-        return location_id >= 2365810063;
+        return location_id >= 2365810066;
     }
 
 
     namespace {
-        optional<Interactable> GetInteractableLocation(wstring interactable_actor_name) {
+        optional<Interactable> GetInteractable(wstring interactable_actor_name) {
             Map map = Engine::GetCurrentMap();
             if (!interactable_table.contains(map)) {
                 return {};

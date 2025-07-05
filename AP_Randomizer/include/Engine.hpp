@@ -11,6 +11,7 @@ namespace Engine {
 	void SyncItems();
 	void SpawnCollectibles();
 	void DespawnCollectible(const int64_t);
+	void DespawnInteractable(const int64_t);
 	GameData::Map GetCurrentMap();
 	void ToggleSlideJump();
 	void VaporizeGoat();

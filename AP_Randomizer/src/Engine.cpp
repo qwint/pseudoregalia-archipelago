@@ -171,7 +171,10 @@ namespace Engine {
 			}
 			// It's fine if we don't find the collectible, it could just be in another map or already despawned
 		}
-		collectibles.clear();
+	}
+
+	void DespawnInteractable(const int64_t id) {
+		std::vector<UObject*> collectibles{};
 		UObjectGlobals::FindAllOf(STR("BP_APInteractableAura_C"), collectibles);
 		for (auto const collectible : collectibles) {
 			void* property_ptr = collectible->GetValuePtrByPropertyName(STR("interactableId"));

@@ -42,6 +42,7 @@ namespace Client {
         optional<Logger::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
         void ReceiveItemOnce(const APClient::PrintJSONArgs&);
+        void Despawn(int64_t);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
         // If people report random crashes, especially when disconnecting, I'll revisit it.
@@ -196,7 +197,7 @@ namespace Client {
             ap->set_location_checked_handler([](const list<int64_t>& location_ids) {
                 for (const auto& id : location_ids) {
                     Log(L"Marking location " + std::to_wstring(id) + L" as checked");
-                    Engine::DespawnCollectible(id);
+                    Despawn(id);
                 }
                 });
         } // End callbacks
@@ -219,7 +220,7 @@ namespace Client {
         ap->LocationChecks(id_list);
 
         Log(L"Marking location " + std::to_wstring(id) + L" as checked");
-        Engine::DespawnCollectible(id);
+        Despawn(id);
     }
     
     // Sets the data storage Zone value based on the player's current zone.
@@ -433,6 +434,14 @@ namespace Client {
             }
             Engine::VaporizeGoat();
             Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
+        }
+        
+        void Despawn(int64_t id) {
+            if (GameData::IsInteractable(id)) {
+                Engine::DespawnInteractable(id);
+                return;
+            }
+            Engine::DespawnCollectible(id);
         }
     } // End private functions
 }

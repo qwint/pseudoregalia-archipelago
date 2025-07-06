@@ -306,7 +306,7 @@ location_table = {
         region="Keep Main",
         can_create=lambda options: bool(options.goats),
     ),
-    "Sansa Keep - cyuiyce Goatling": PseudoregaliaLocationData(
+    "Sansa Keep - Northeast Goatling": PseudoregaliaLocationData(
         code=2365810078,
         region="Keep Main",
         can_create=lambda options: bool(options.goats),
@@ -362,7 +362,7 @@ location_table = {
         region="Castle Main",
         can_create=lambda options: bool(options.chairs),
     ),
-    "Sansa Keep - cyuiyce Stool": PseudoregaliaLocationData(
+    "Sansa Keep - Northeast Stool": PseudoregaliaLocationData(
         code=2365810089,
         region="Keep Main",
         can_create=lambda options: bool(options.chairs),

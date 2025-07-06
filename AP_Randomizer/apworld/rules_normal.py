@@ -483,7 +483,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Castle Sansa - Memento Goatling": lambda state: True,
             # "Castle Sansa - Goatling Near Library": lambda state: True,
             # "Sansa Keep - Furniture-less Goatling": lambda state: True,
-            "Sansa Keep - cyuiyce Goatling": lambda state:
+            "Sansa Keep - Northeast Goatling": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 2),
             # "Twilight Theatre - 20 Bean Casserole Goatling": lambda state: True,
@@ -502,7 +502,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Castle Sansa - Stool Near Crystal 2": lambda state: True,
             # "Castle Sansa - Stool Near Crystal 3": lambda state: True,
             # "Castle Sansa - Gazebo Stool": lambda state: True,
-            "Sansa Keep - cyuiyce Stool": lambda state:
+            "Sansa Keep - Northeast Stool": lambda state:
                 self.has_gem(state)
                 or self.kick_or_plunge(state, 2),
             # "Sansa Keep - Path to Throne Stool": lambda state: True,

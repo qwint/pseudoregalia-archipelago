@@ -207,12 +207,12 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Castle Sansa - Bubblephobic Goatling": lambda state:
                 self.get_kicks(state, 1)
                 or self.has_gem(state),
-            "Sansa Keep - cyuiyce Goatling": lambda state:
+            "Sansa Keep - Northeast Goatling": lambda state:
                 self.get_kicks(state, 1),
             "Twilight Theatre - Murderous Goatling": lambda state:
                 self.get_kicks(state, 1),
 
-            "Sansa Keep - cyuiyce Stool": lambda state:
+            "Sansa Keep - Northeast Stool": lambda state:
                 self.get_kicks(state, 1),
             "Twilight Theatre - Stage Right Stool": lambda state:
                 self.knows_obscure(state) and self.can_soulcutter(state) and self.can_slidejump(state),

@@ -15,17 +15,17 @@ class PseudoregaliaLocationData(NamedTuple):
     locked_item: str | None = None
 
 
-zone_order = {
-    "Dilapidated Dungeon": 1,
-    "Castle Sansa": 2,
-    "Sansa Keep": 3,
-    "Listless Library": 4,
-    "Twilight Theatre": 5,
-    "Empty Bailey": 6,
-    "The Underbelly": 7,
-    "Tower Remains": 8,
-    "D S T RT ED M M O   Y": 9,
-}
+zones = (
+    "Dilapidated Dungeon",
+    "Castle Sansa",
+    "Sansa Keep",
+    "Listless Library",
+    "Twilight Theatre",
+    "Empty Bailey",
+    "The Underbelly",
+    "Tower Remains",
+    "D S T RT ED M M O   Y",
+)
 
 location_table = {
     # Sorted by greater region, then subregion

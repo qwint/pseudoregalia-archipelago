@@ -55,8 +55,8 @@ namespace GameData {
             }},
             {Map::Keep, {
                 {L"BP_NPC_C_1", {2365810077, L"BP_NPC_C"}}, // Furniture-less Goatling
-                {L"BP_NPC_C_2", {2365810078, L"BP_NPC_C"}}, // Northeast Goatling
-                {L"BP_RestChair_C_1", {2365810089, L"BP_RestChair_C"}}, // Northeast Stool
+                {L"BP_NPC_C_2", {2365810078, L"BP_NPC_C"}}, // Distorted Goatling
+                {L"BP_RestChair_C_1", {2365810089, L"BP_RestChair_C"}}, // Distorted Stool
                 {L"BP_RestChair_C_3", {2365810090, L"BP_RestChair_C"}}, // Path to Throne Stool
                 {L"BP_RestChair_C_4", {2365810091, L"BP_RestChair_C"}}, // The Throne
             }},

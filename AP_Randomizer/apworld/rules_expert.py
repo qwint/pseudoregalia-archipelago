@@ -231,11 +231,11 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
 
             "Castle Sansa - Bubblephobic Goatling": lambda state:
                 self.has_slide(state),
-            "Sansa Keep - Northeast Goatling": lambda state:
+            "Sansa Keep - Distorted Goatling": lambda state:
                 self.has_slide(state)
                 or self.has_plunge(state),
 
-            "Sansa Keep - Northeast Stool": lambda state:
+            "Sansa Keep - Distorted Stool": lambda state:
                 self.has_slide(state)
                 or self.has_plunge(state),
             "Twilight Theatre - Stage Right Stool": lambda state:

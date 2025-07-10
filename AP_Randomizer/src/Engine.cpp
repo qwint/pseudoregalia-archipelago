@@ -7,6 +7,7 @@
 #include "Engine.hpp"
 #include "Logger.hpp"
 #include "Client.hpp"
+#include "Settings.hpp"
 
 namespace Engine {
 	using namespace RC::Unreal; // Give Engine easy access to Unreal objects
@@ -30,6 +31,7 @@ namespace Engine {
 		void SyncSmallKeys();
 		void SyncAbilities();
 		void SpawnCollectible(int64_t, FVector);
+		void SpawnInteractableAura(wstring, GameData::Interactable);
 		void AddMessages(UObject*);
 
 		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary because
@@ -124,9 +126,18 @@ namespace Engine {
 		// as of 10/11/23 the params struct method I use can't easily represent FVectors or FTransforms in C++.
 		// This might be worked around by storing positions as three separate numbers instead and constructing the vectors in BP,
 		// but I don't think it's worth changing right now since this is just called once each map load.
-		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(GetCurrentMap());
+		GameData::Map map = GetCurrentMap();
+		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(map);
 		for (const auto& [id, collectible] : collectible_map) {
 			SpawnCollectible(id, collectible.GetPosition(GameData::GetOptions()));
+		}
+
+		if (Settings::GetInteractableAuraDisplay() == Settings::InteractableAuraDisplay::None) {
+			return;
+		}
+		std::unordered_map<wstring, GameData::Interactable> interactable_map = GameData::GetInteractablesOfZone(map);
+		for (const auto& [name, interactable] : interactable_map) {
+			SpawnInteractableAura(name, interactable);
 		}
 	}
 
@@ -159,6 +170,20 @@ namespace Engine {
 				break;
 			}
 			// It's fine if we don't find the collectible, it could just be in another map or already despawned
+		}
+	}
+
+	void DespawnInteractable(const int64_t id) {
+		std::vector<UObject*> collectibles{};
+		UObjectGlobals::FindAllOf(STR("BP_APInteractableAura_C"), collectibles);
+		for (auto const collectible : collectibles) {
+			void* property_ptr = collectible->GetValuePtrByPropertyName(STR("interactableId"));
+			int64_t* new_id = static_cast<int64_t*>(property_ptr);
+			if (*new_id == id) {
+				Log(L"Manually despawning interactable aura with id " + to_wstring(id));
+				ExecuteBlueprintFunction(collectible, L"Despawn", nullptr);
+				break;
+			}
 		}
 	}
 
@@ -232,6 +257,33 @@ namespace Engine {
 		}
 	}
 
+	void HealPlayer() {
+		GameData::Map map = GetCurrentMap();
+		if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) {
+			// don't try to heal unless in a gameplay level
+			return;
+		}
+
+		shared_ptr<void> Amount(new double(10));
+		ExecuteBlueprintFunction(L"BP_PlayerGoatMain_C", L"healPlayer", Amount);
+	}
+
+	void GivePlayerPower() {
+		GameData::Map map = GetCurrentMap();
+		if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) {
+			// don't try to give power unless in a gameplay level
+			return;
+		}
+
+		struct ChangePowerAmountInfo {
+			double A;
+			bool forceUpdatePowerLevel;
+		};
+		shared_ptr<void> power_params(new ChangePowerAmountInfo{ 10, false });
+		ExecuteBlueprintFunction(L"BP_PlayerGoatMain_C", L"changePowerAmount", power_params);
+		ExecuteBlueprintFunction(L"BP_PlayerGoatMain_C", L"updatePlayerCurrentStatValues", nullptr);
+	}
+
 
 	// Private functions
 	namespace {
@@ -295,6 +347,27 @@ namespace Engine {
 			shared_ptr<void> collectible_info(new CollectibleSpawnInfo{ id, position, GameData::GetClassification(id) });
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SpawnCollectible", collectible_info);
 			spawned_collectibles.insert(id);
+		}
+
+		void SpawnInteractableAura(wstring name, GameData::Interactable interactable) {
+			auto& [id, class_name] = interactable;
+			if (!Client::IsMissingLocation(id)) {
+				Log(L"Interactable aura with id " + to_wstring(id) + L" was not spawned because it is not a missing location");
+				return;
+			}
+			UObject* object = UObjectGlobals::FindObject(class_name.c_str(), name.c_str());
+			if (!object) {
+				Log(L"No object found for interactable with id " + to_wstring(id));
+				return;
+			}
+			Log(L"Spawning interactable aura with id " + to_wstring(id));
+			struct InteractableAuraSpawnInfo {
+				UObject* follow;
+				int64_t interactableId;
+				int32_t classification;
+			};
+			shared_ptr<void> interactable_aura_info(new InteractableAuraSpawnInfo{ object, id, GameData::GetClassification(id) });
+			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SpawnInteractableAura", interactable_aura_info);
 		}
 
 		void AddMessages(UObject* console) {

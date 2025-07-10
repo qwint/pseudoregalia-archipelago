@@ -3,6 +3,7 @@
 #include "Logger.hpp"
 #include "Settings.hpp"
 #include "Client.hpp"
+#include "Engine.hpp"
 
 namespace GameData {
     using std::unordered_map;
@@ -16,6 +17,9 @@ namespace GameData {
     // Private members
     namespace {
         ItemType GetItemType(int64_t);
+        optional<Interactable> GetInteractable(wstring);
+
+        optional<wstring> note_being_read = {};
 
         int health_pieces;
         int small_keys;
@@ -27,6 +31,88 @@ namespace GameData {
         unordered_map<string, int> options;
         bool slidejump_owned;
         bool slidejump_disabled;
+
+        // map -> actor name -> location id + actor class name
+        unordered_map<Map, unordered_map<wstring, Interactable>> interactable_table = {
+            {Map::Dungeon, {
+                {L"BP_NPC_C_1", {2365810066, L"BP_NPC_Child_C"}}, // Mirror Room Goatling
+                {L"BP_NPC_C_6", {2365810067, L"BP_NPC_C"}}, // Rambling Goatling
+                {L"BP_NPC_C_8", {2365810068, L"BP_NPC_C"}}, // Unwelcoming Goatling
+                {L"BP_NPC_C_2", {2365810069, L"BP_NPC_C"}}, // Repentant Goatling
+                {L"BP_NPC_C_4", {2365810070, L"BP_NPC_C"}}, // Defeatist Goatling
+            }},
+            {Map::Castle, {
+                {L"BP_NPC_C_2", {2365810071, L"BP_NPC_C"}}, // Crystal Licker Goatling
+                {L"BP_NPC_C_3", {2365810072, L"BP_NPC_C"}}, // Gazebo Goatling
+                {L"BP_NPC_C_1", {2365810073, L"BP_NPC_C"}}, // Bubblephobic Goatling
+                {L"BP_NPC_C_4", {2365810074, L"BP_NPC_C"}}, // Trapped Goatling
+                {L"BP_NPC_C_5", {2365810075, L"BP_NPC_C"}}, // Memento Goatling
+                {L"BP_NPC_Child_C_1", {2365810076, L"BP_NPC_Child_C"}}, // Goatling Near Library
+                {L"BP_RestChair_C_3", {2365810085, L"BP_RestChair_C"}}, // Stool Near Crystal 1
+                {L"BP_RestChair_C_1", {2365810086, L"BP_RestChair_C"}}, // Stool Near Crystal 2
+                {L"BP_RestChair_C_2", {2365810087, L"BP_RestChair_C"}}, // Stool Near Crystal 3
+                {L"BP_RestChair_C_4", {2365810088, L"BP_RestChair_C"}}, // Gazebo Stool
+            }},
+            {Map::Keep, {
+                {L"BP_NPC_C_1", {2365810077, L"BP_NPC_C"}}, // Furniture-less Goatling
+                {L"BP_NPC_C_2", {2365810078, L"BP_NPC_C"}}, // Distorted Goatling
+                {L"BP_RestChair_C_1", {2365810089, L"BP_RestChair_C"}}, // Distorted Stool
+                {L"BP_RestChair_C_3", {2365810090, L"BP_RestChair_C"}}, // Path to Throne Stool
+                {L"BP_RestChair_C_4", {2365810091, L"BP_RestChair_C"}}, // The Throne
+            }},
+            {Map::Library, {
+                {L"BP_RestChair_C_2", {2365810092, L"BP_RestChair_C"}}, // Hay Bale Near Entrance
+                {L"BP_RestChair_C_3", {2365810093, L"BP_RestChair_C"}}, // Hay Bale Near Eggs
+                {L"BP_RestChair_C_4", {2365810094, L"BP_RestChair_C"}}, // Hay Bale in the Back
+                {L"BP_ExamineTextPopup_C_2", {2365810101, L"BP_ExamineTextPopup_C"}}, // A Book About a Princess
+                {L"BP_ExamineTextPopup_C_3", {2365810102, L"BP_ExamineTextPopup_C"}}, // A Book About Cooking
+                {L"BP_ExamineTextPopup_C_4", {2365810103, L"BP_ExamineTextPopup_C"}}, // A Book Full of Plays
+                {L"BP_ExamineTextPopup_C_5", {2365810104, L"BP_ExamineTextPopup_C"}}, // A Book About Reading
+                {L"BP_ExamineTextPopup_C_1", {2365810105, L"BP_ExamineTextPopup_C"}}, // A Book About Aquatic Life
+                {L"BP_ExamineTextPopup_C_9", {2365810106, L"BP_ExamineTextPopup_C"}}, // A Book About a Jester
+                {L"BP_ExamineTextPopup_C_0", {2365810107, L"BP_ExamineTextPopup_C"}}, // A Book About Loss
+                {L"BP_ExamineTextPopup_C_7", {2365810108, L"BP_ExamineTextPopup_C"}}, // A Book on Musical Theory
+                {L"BP_ExamineTextPopup_C_6", {2365810109, L"BP_ExamineTextPopup_C"}}, // A Book About a Girl
+                {L"BP_ExamineTextPopup_C_8", {2365810110, L"BP_ExamineTextPopup_C"}}, // A Book About a Thimble
+                {L"BP_Note_C_2", {2365810111, L"BP_ExamineTextPopup_C"}}, // A Book About a Monster
+                {L"BP_Note_C_5", {2365810112, L"BP_ExamineTextPopup_C"}}, // A Book About Revenge
+                {L"BP_ExamineTextPopup_C_10", {2365810113, L"BP_ExamineTextPopup_C"}}, // A Book About a Restaurant
+                {L"BP_Note_C_3", {2365810114, L"BP_Note_C"}}, // Note Near Eggs
+            }},
+            {Map::Theatre, {
+                {L"BP_NPC_C_10", {2365810079, L"BP_NPC_C"}}, // 20 Bean Casserole Goatling
+                {L"BP_NPC_C_3", {2365810080, L"BP_NPC_C"}}, // Theatre Goer Goatling 1
+                {L"BP_NPC_C_8", {2365810081, L"BP_NPC_C"}}, // Theatre Goer Goatling 2
+                {L"BP_NPC_C_9", {2365810082, L"BP_NPC_C"}}, // Theatre Manager Goatling
+                {L"BP_NPC_C_0", {2365810083, L"BP_NPC_C"}}, // Murderous Goatling
+                {L"BP_RestChair_C_7", {2365810095, L"BP_RestChair_C"}}, // Stool Near Bookcase
+                {L"BP_RestChair_C_4", {2365810096, L"BP_RestChair_C"}}, // Stool Around a Table 1
+                {L"BP_RestChair_C_5", {2365810097, L"BP_RestChair_C"}}, // Stool Around a Table 2
+                {L"BP_RestChair_C_1", {2365810098, L"BP_RestChair_C"}}, // Stool Around a Table 3
+                {L"BP_RestChair_C_2", {2365810099, L"BP_RestChair_C"}}, // Stage Left Stool
+                {L"BP_RestChair_C_3", {2365810100, L"BP_RestChair_C"}}, // Stage Right Stool
+            }},
+            {Map::Bailey, {
+                {L"BP_NPC_C_1", {2365810084, L"BP_NPC_C"}}, // Alley Goatling
+            }},
+            {Map::Underbelly, {
+                {L"BP_Note_C_7", {2365810115, L"BP_Note_C"}}, // Note on a Ledge
+                {L"BP_Note_C_3", {2365810116, L"BP_Note_C"}}, // Note in the Big Room
+                {L"BP_Note_C_5", {2365810117, L"BP_Note_C"}}, // Note Behind a Locked Door
+            }},
+        };
+
+        // map -> note actor name -> text
+        const unordered_map<Map, unordered_map<wstring, wstring>> note_text_table = {
+            {Map::Library, {
+                {L"BP_Note_C_3", L"I got some new shoes today, the seller said they're supposed to be great for parkour?\r\n\r\n\"These kicks will have you moving around like a laserbeam in a hall of mirrors!\r\n\r\nForget what you know,\r\ncarefully consider the angle of your jump before you make it.\r\nOnly by reflecting will you become a master of movement!\"\r\n\r\nHe really didn't need to give me all that though, i just thought they looked cool..."},
+            }},
+            {Map::Underbelly, {
+                {L"BP_Note_C_7", L"someone is here.\r\n\r\nit's not just another part of the dream\r\n\r\nSOMEONE IS HERE"},
+                {L"BP_Note_C_3", L"this was supposed to be an escape\r\n\r\ni didn't want ANYONE ELSE IN HERE!"},
+                {L"BP_Note_C_5", L"STOP READING MY THOUGHTS\r\n\r\nWHO GAVE YOU THE RIGHT\r\n\r\n\r\n\r\nGET THE HELL OUT OF MY HEAD!!!"},
+            }},
+        };
 
         const unordered_map<wstring, Map> map_names = {
             {L"TitleScreen",            Map::TitleScreen},
@@ -86,6 +172,9 @@ namespace GameData {
             {2365810035, ItemType::MinorAbility},
 
             {2365810036, ItemType::MinorAbility},
+
+            {2365810038, ItemType::Filler},
+            {2365810039, ItemType::Filler},
         };
 
         const unordered_map<int64_t, wstring> lookup_item_id_to_upgrade = {
@@ -119,72 +208,6 @@ namespace GameData {
             {2365810035, L"outfitPast"},
             {2365810036, L"map"},
         };
-
-        // This is for location ids, not items, so it can't be combined with the tables above.
-        const unordered_map<int64_t, Map> lookup_location_id_to_zone = {
-            {2365810001, Map::Dungeon},
-            {2365810002, Map::Dungeon},
-            {2365810003, Map::Dungeon},
-            {2365810004, Map::Dungeon},
-            {2365810005, Map::Dungeon},
-            {2365810006, Map::Dungeon},
-            {2365810007, Map::Dungeon},
-            {2365810054, Map::Dungeon},
-            {2365810008, Map::Castle},
-            {2365810009, Map::Castle},
-            {2365810010, Map::Castle},
-            {2365810011, Map::Castle},
-            {2365810012, Map::Castle},
-            {2365810013, Map::Castle},
-            {2365810014, Map::Castle},
-            {2365810015, Map::Castle},
-            {2365810016, Map::Castle},
-            {2365810017, Map::Castle},
-            {2365810018, Map::Castle},
-            {2365810019, Map::Castle},
-            {2365810055, Map::Castle},
-            {2365810062, Map::Castle},
-            {2365810020, Map::Keep},
-            {2365810021, Map::Keep},
-            {2365810022, Map::Keep},
-            {2365810023, Map::Keep},
-            {2365810024, Map::Keep},
-            {2365810025, Map::Keep},
-            {2365810056, Map::Keep},
-            {2365810026, Map::Library},
-            {2365810027, Map::Library},
-            {2365810028, Map::Library},
-            {2365810029, Map::Library},
-            {2365810051, Map::Library},
-            {2365810052, Map::Library},
-            {2365810053, Map::Library},
-            {2365810057, Map::Library},
-            {2365810030, Map::Theatre},
-            {2365810031, Map::Theatre},
-            {2365810032, Map::Theatre},
-            {2365810033, Map::Theatre},
-            {2365810034, Map::Theatre},
-            {2365810035, Map::Theatre},
-            {2365810058, Map::Theatre},
-            {2365810036, Map::Bailey},
-            {2365810037, Map::Bailey},
-            {2365810038, Map::Bailey},
-            {2365810039, Map::Bailey},
-            {2365810040, Map::Bailey},
-            {2365810059, Map::Bailey},
-            {2365810041, Map::Underbelly},
-            {2365810042, Map::Underbelly},
-            {2365810043, Map::Underbelly},
-            {2365810044, Map::Underbelly},
-            {2365810045, Map::Underbelly},
-            {2365810046, Map::Underbelly},
-            {2365810047, Map::Underbelly},
-            {2365810048, Map::Underbelly},
-            {2365810060, Map::Underbelly},
-            {2365810049, Map::Tower},
-            {2365810050, Map::Tower},
-            {2365810061, Map::Tower},
-        };
     } // End private members
 
 
@@ -217,6 +240,10 @@ namespace GameData {
         return collectible_table[current_map];
     }
 
+    unordered_map<wstring, Interactable> GetInteractablesOfZone(Map current_map) {
+        return interactable_table[current_map];
+    }
+
     list<int64_t> GameData::GetMissingSpawnableLocations() {
         list<int64_t> location_ids;
         for (const auto& [_, zone_map] : collectible_table) {
@@ -231,6 +258,16 @@ namespace GameData {
                 const int64_t location_id = time_trial.first;
                 if (Client::IsMissingLocation(location_id)) {
                     location_ids.push_back(location_id);
+                }
+            }
+        }
+        if (Settings::GetInteractableAuraDisplay() == Settings::InteractableAuraDisplay::Classification) {
+            for (const auto& [_, zone_map] : interactable_table) {
+                for (const auto& [_, interactable] : zone_map) {
+                    const int64_t location_id = interactable.first;
+                    if (Client::IsMissingLocation(location_id)) {
+                        location_ids.push_back(location_id);
+                    }
                 }
             }
         }
@@ -258,6 +295,9 @@ namespace GameData {
             break;
         case ItemType::SmallKey:
             lookup_location_id_to_classification[location_id] = Classification::SmallKey;
+            break;
+        case ItemType::Filler:
+            lookup_location_id_to_classification[location_id] = Classification::GenericFiller;
             break;
         }
     }
@@ -368,7 +408,7 @@ namespace GameData {
                 {2365810032, Collectible(FVector(5200, 1550, 700))},
             // Locked Door
                 {2365810033, Collectible(FVector(-1460, -2550, 2240))},
-            // Murderous Goat
+            // Tucked Behind Boxes
                 {2365810034, Collectible(FVector(255, 1150, 50))},
             // Corner Beam
                 {2365810035, Collectible(FVector(-14100, -150, 1950))},
@@ -523,7 +563,7 @@ namespace GameData {
         case ItemType::MinorAbility:
             upgrade_table[lookup_item_id_to_upgrade.at(id)]++;
             if (!slidejump_owned) {
-                if (lookup_item_id_to_upgrade.at(id) == L"SlideJump"
+                if (upgrade_table[L"slide"] && upgrade_table[L"SlideJump"]
                     || upgrade_table[L"progressiveSlide"] >= 2) {
                     slidejump_owned = true;
                 }
@@ -538,6 +578,9 @@ namespace GameData {
         case ItemType::MajorKey:
             // Remove prefix digits from id to assign directly to major_keys array
             major_keys[id - 2365810021] = true;
+            break;
+        case ItemType::Filler:
+            // filler does something immediate, so it should only be handled when receiving a PrintJSON with the item
             break;
         default:
             Log(L"You were sent an item, but its id wasn't recognized. Verify that you're playing on the same version this seed was generated on.");
@@ -558,10 +601,10 @@ namespace GameData {
 
         slidejump_disabled = !slidejump_disabled;
         if (slidejump_disabled) {
-            Log(L"Solar wind is now OFF.", LogType::System);
+            Log(L"Solar wind is now OFF.");
         }
         else {
-            Log(L"Solar wind is now ON.", LogType::System);
+            Log(L"Solar wind is now ON.");
         }
         return true;
     }
@@ -593,5 +636,77 @@ namespace GameData {
             return {};
         }
         return time_trial_table.at(map).at(time_trial_actor_name);
+    }
+
+    void Interact(wstring actor_name) {
+        std::optional<Interactable> interactable = GameData::GetInteractable(actor_name);
+        if (!interactable) {
+            Log(L"No interactable found for interactable actor " + actor_name); // TODO add zone to log
+            return;
+        }
+        int64_t location_id = interactable->first;
+        if (!Client::IsMissingLocation(location_id)) {
+            Log(L"Interactable location " + std::to_wstring(location_id) + L" is not missing.");
+            return;
+        }
+        Log(L"Sending check for interactable location " + std::to_wstring(location_id));
+        Client::SendCheck(location_id);
+    }
+
+    void ReadNote(wstring name) {
+        Log(L"Note being read: " + name);
+        note_being_read = name;
+    }
+
+    void FinishNote() {
+        if (!note_being_read) {
+            Log(L"No note is being read.");
+            return;
+        }
+
+        Log(L"Note finished: " + *note_being_read);
+        Interact(*note_being_read);
+        note_being_read = {};
+    }
+
+    optional<wstring> GetNoteText(wstring note_actor_name) {
+        Map map = Engine::GetCurrentMap();
+        if (!note_text_table.contains(map)) {
+            return {};
+        }
+        if (!note_text_table.at(map).contains(note_actor_name)) {
+            return {};
+        }
+        return note_text_table.at(map).at(note_actor_name);
+    }
+
+    void ReceiveItemOnce(int64_t item_id) {
+        switch (item_id) {
+        case 2365810038: // Healing
+            Engine::HealPlayer();
+            break;
+        case 2365810039: // Magic Power
+            Engine::GivePlayerPower();
+            break;
+        }
+    }
+
+    bool IsInteractable(int64_t location_id) {
+        // this works for now since locations are separated by collectible/interactable at this location id
+        return location_id >= 2365810066;
+    }
+
+
+    namespace {
+        optional<Interactable> GetInteractable(wstring interactable_actor_name) {
+            Map map = Engine::GetCurrentMap();
+            if (!interactable_table.contains(map)) {
+                return {};
+            }
+            if (!interactable_table.at(map).contains(interactable_actor_name)) {
+                return {};
+            }
+            return interactable_table.at(map).at(interactable_actor_name);
+        }
     }
 }

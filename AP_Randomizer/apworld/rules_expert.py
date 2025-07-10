@@ -79,6 +79,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                     or self.has_slide(state) and self.get_kicks(state, 3)),
             "Keep Main -> Keep => Underbelly": lambda state:
                 self.has_slide(state),
+            "Keep Main -> Keep (Northeast) => Castle": lambda state:
+                self.has_slide(state),
             "Keep Main -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_slide(state),
             "Underbelly => Dungeon -> Underbelly Ascendant Light": lambda state:
@@ -231,13 +233,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
 
             "Castle Sansa - Bubblephobic Goatling": lambda state:
                 self.has_slide(state),
-            "Sansa Keep - Distorted Goatling": lambda state:
-                self.has_slide(state)
-                or self.has_plunge(state),
 
-            "Sansa Keep - Distorted Stool": lambda state:
-                self.has_slide(state)
-                or self.has_plunge(state),
             "Twilight Theatre - Stage Right Stool": lambda state:
                 self.can_soulcutter(state) and self.has_slide(state),
 

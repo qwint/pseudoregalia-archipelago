@@ -73,6 +73,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                     or self.get_kicks(state, 1) and self.knows_obscure(state))
                 or self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 4)
                 or self.can_bounce(state) and self.get_kicks(state, 3),
+            "Keep Main -> Keep (Northeast) => Castle": lambda state:
+                self.get_kicks(state, 1),
             "Underbelly Light Pillar -> Underbelly Ascendant Light": lambda state:
                 self.knows_obscure(state)
                 and (
@@ -207,13 +209,9 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Castle Sansa - Bubblephobic Goatling": lambda state:
                 self.get_kicks(state, 1)
                 or self.has_gem(state),
-            "Sansa Keep - Distorted Goatling": lambda state:
-                self.get_kicks(state, 1),
             "Twilight Theatre - Murderous Goatling": lambda state:
                 self.get_kicks(state, 1),
 
-            "Sansa Keep - Distorted Stool": lambda state:
-                self.get_kicks(state, 1),
             "Twilight Theatre - Stage Right Stool": lambda state:
                 self.knows_obscure(state) and self.can_soulcutter(state) and self.can_slidejump(state),
 

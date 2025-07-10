@@ -95,6 +95,10 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Castle Main -> Castle Spiral Climb": lambda state:
                 self.get_kicks(state, 2)
                 or self.has_gem(state) and self.has_plunge(state),
+            "Castle Main -> Keep (Northeast) => Castle": lambda state:
+                # TODO: not sure about this logic, idk where doing it with no items should go
+                self.can_attack(state)
+                or self.knows_obscure(state),
             # "Castle Spiral Climb -> Castle Main": lambda state: True,
             "Castle Spiral Climb -> Castle High Climb": lambda state:
                 self.has_gem(state)
@@ -169,6 +173,10 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Keep Main -> Keep => Underbelly": lambda state:
                 self.kick_or_plunge(state, 1)
                 or self.has_gem(state),
+            "Keep Main -> Keep (Northeast) => Castle": lambda state:
+                self.has_gem(state)
+                or self.get_kicks(state, 2)
+                or self.has_plunge(state),
             "Keep Main -> Theatre Outside Scythe Corridor": lambda state:
                 self.has_gem(state)
                 or self.get_kicks(state, 1)
@@ -178,6 +186,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Keep Locked Room -> Keep Sunsetter": lambda state: True,
             # "Keep => Underbelly -> Keep Main": lambda state: True,
             # "Keep => Underbelly -> Underbelly => Keep": lambda state: True,
+            # "Keep (Northeast) => Castle -> Keep Main": lambda state: True,
+            # "Keep (Northeast) => Castle -> Castle Main": lambda state: True,  # TODO: this doesn't really matter right now but is a little questionable for normal
             "Underbelly => Dungeon -> Dungeon Escape Lower": lambda state:
                 self.navigate_darkrooms(state),
             # "Underbelly => Dungeon -> Underbelly Light Pillar": lambda state: True,
@@ -483,9 +493,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Castle Sansa - Memento Goatling": lambda state: True,
             # "Castle Sansa - Goatling Near Library": lambda state: True,
             # "Sansa Keep - Furniture-less Goatling": lambda state: True,
-            "Sansa Keep - Distorted Goatling": lambda state:
-                self.has_gem(state)
-                or self.kick_or_plunge(state, 2),
+            # "Sansa Keep - Distorted Goatling": lambda state: True,
             # "Twilight Theatre - 20 Bean Casserole Goatling": lambda state: True,
             # "Twilight Theatre - Theatre Goer Goatling 1": lambda state: True,
             # "Twilight Theatre - Theatre Goer Goatling 2": lambda state: True,
@@ -502,9 +510,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Castle Sansa - Stool Near Crystal 2": lambda state: True,
             # "Castle Sansa - Stool Near Crystal 3": lambda state: True,
             # "Castle Sansa - Gazebo Stool": lambda state: True,
-            "Sansa Keep - Distorted Stool": lambda state:
-                self.has_gem(state)
-                or self.kick_or_plunge(state, 2),
+            # "Sansa Keep - Distorted Stool": lambda state: True,
             # "Sansa Keep - Path to Throne Stool": lambda state: True,
             # "Sansa Keep - The Throne": lambda state: True,
             # "Listless Library - Hay Bale Near Entrance": lambda state: True,

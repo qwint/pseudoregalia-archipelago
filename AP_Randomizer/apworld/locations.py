@@ -308,7 +308,7 @@ location_table = {
     ),
     "Sansa Keep - Distorted Goatling": PseudoregaliaLocationData(
         code=2365810078,
-        region="Keep Main",
+        region="Keep (Northeast) => Castle",
         can_create=lambda options: bool(options.goats),
     ),
     "Twilight Theatre - 20 Bean Casserole Goatling": PseudoregaliaLocationData(
@@ -364,7 +364,7 @@ location_table = {
     ),
     "Sansa Keep - Distorted Stool": PseudoregaliaLocationData(
         code=2365810089,
-        region="Keep Main",
+        region="Keep (Northeast) => Castle",
         can_create=lambda options: bool(options.chairs),
     ),
     "Sansa Keep - Path to Throne Stool": PseudoregaliaLocationData(

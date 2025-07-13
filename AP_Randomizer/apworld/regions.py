@@ -39,7 +39,8 @@ region_table: Dict[str, List[str]] = {
          "Bailey Lower",
          "Library Main",
          "Castle => Theatre Pillar",
-         "Castle Spiral Climb",],
+         "Castle Spiral Climb",
+         "Keep (Northeast) => Castle"],
     "Castle Spiral Climb":
         ["Castle Main",
          "Castle High Climb",
@@ -64,16 +65,20 @@ region_table: Dict[str, List[str]] = {
     "Library Locked":
         [],
     "Library Greaves":
-        ["Library Top"],
+        ["Library Back"],
     "Library Top":
-        ["Library Greaves"],
+        ["Library Back"],
+    "Library Back":
+        ["Library Greaves",
+         "Library Top"],
 
     "Keep Main":
         ["Keep Locked Room",
          "Keep Sunsetter",
          "Keep Throne Room",
          "Keep => Underbelly",
-         "Theatre Outside Scythe Corridor",],
+         "Theatre Outside Scythe Corridor",
+         "Keep (Northeast) => Castle"],
     "Keep Locked Room":
         ["Keep Sunsetter"],
     "Keep Sunsetter":
@@ -83,6 +88,9 @@ region_table: Dict[str, List[str]] = {
     "Keep => Underbelly":
         ["Keep Main",
          "Underbelly => Keep"],
+    "Keep (Northeast) => Castle":
+        ["Keep Main",
+         "Castle Main"],
 
     "Bailey Lower":
         ["Bailey Upper",

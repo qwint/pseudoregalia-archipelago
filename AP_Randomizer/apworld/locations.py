@@ -15,6 +15,18 @@ class PseudoregaliaLocationData(NamedTuple):
     locked_item: str | None = None
 
 
+zones = (
+    "Dilapidated Dungeon",
+    "Castle Sansa",
+    "Sansa Keep",
+    "Listless Library",
+    "Twilight Theatre",
+    "Empty Bailey",
+    "The Underbelly",
+    "Tower Remains",
+    "D S T RT ED M M O   Y",
+)
+
 location_table = {
     # Sorted by greater region, then subregion
     # Then abilities first
@@ -126,7 +138,7 @@ location_table = {
     "Twilight Theatre - Locked Door": PseudoregaliaLocationData(
         code=2365810033,
         region="Theatre Main",),
-    "Twilight Theatre - Murderous Goat": PseudoregaliaLocationData(
+    "Twilight Theatre - Tucked Behind Boxes": PseudoregaliaLocationData(
         code=2365810034,
         region="Theatre Main",),
     "Twilight Theatre - Corner Beam": PseudoregaliaLocationData(
@@ -231,6 +243,272 @@ location_table = {
         code=2365810062,
         region="Castle Main",
         can_create=lambda options: options.game_version == MAP_PATCH),
+
+    # carve out for 3 split cling locations 63-65
+
+    "Dilapidated Dungeon - Mirror Room Goatling": PseudoregaliaLocationData(
+        code=2365810066,
+        region="Dungeon Mirror",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Dilapidated Dungeon - Rambling Goatling": PseudoregaliaLocationData(
+        code=2365810067,
+        region="Dungeon Mirror",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Dilapidated Dungeon - Unwelcoming Goatling": PseudoregaliaLocationData(
+        code=2365810068,
+        region="Dungeon Strong Eyes",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Dilapidated Dungeon - Repentant Goatling": PseudoregaliaLocationData(
+        code=2365810069,
+        region="Dungeon Strong Eyes",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Dilapidated Dungeon - Defeatist Goatling": PseudoregaliaLocationData(
+        code=2365810070,
+        region="Dungeon Strong Eyes",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Castle Sansa - Crystal Licker Goatling": PseudoregaliaLocationData(
+        code=2365810071,
+        region="Castle Main",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Castle Sansa - Gazebo Goatling": PseudoregaliaLocationData(
+        code=2365810072,
+        region="Castle Main",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Castle Sansa - Bubblephobic Goatling": PseudoregaliaLocationData(
+        code=2365810073,
+        region="Castle Main",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Castle Sansa - Trapped Goatling": PseudoregaliaLocationData(
+        code=2365810074,
+        region="Castle By Scythe Corridor",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Castle Sansa - Memento Goatling": PseudoregaliaLocationData(
+        code=2365810075,
+        region="Castle Main",
+        can_create=lambda options: options.randomize_goats and options.game_version == MAP_PATCH,
+    ),
+    "Castle Sansa - Goatling Near Library": PseudoregaliaLocationData(
+        code=2365810076,
+        region="Castle Main",
+        can_create=lambda options: options.randomize_goats and options.game_version == MAP_PATCH,
+    ),
+    "Sansa Keep - Furniture-less Goatling": PseudoregaliaLocationData(
+        code=2365810077,
+        region="Keep Main",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Sansa Keep - Distorted Goatling": PseudoregaliaLocationData(
+        code=2365810078,
+        region="Keep (Northeast) => Castle",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Twilight Theatre - 20 Bean Casserole Goatling": PseudoregaliaLocationData(
+        code=2365810079,
+        region="Castle => Theatre (Front)",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Twilight Theatre - Theatre Goer Goatling 1": PseudoregaliaLocationData(
+        code=2365810080,
+        region="Castle => Theatre (Front)",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Twilight Theatre - Theatre Goer Goatling 2": PseudoregaliaLocationData(
+        code=2365810081,
+        region="Castle => Theatre (Front)",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Twilight Theatre - Theatre Manager Goatling": PseudoregaliaLocationData(
+        code=2365810082,
+        region="Castle => Theatre (Front)",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Twilight Theatre - Murderous Goatling": PseudoregaliaLocationData(
+        code=2365810083,
+        region="Theatre Main",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+    "Empty Bailey - Alley Goatling": PseudoregaliaLocationData(
+        code=2365810084,
+        region="Bailey Lower",
+        can_create=lambda options: bool(options.randomize_goats),
+    ),
+
+    "Castle Sansa - Stool Near Crystal 1": PseudoregaliaLocationData(
+        code=2365810085,
+        region="Castle Main",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Castle Sansa - Stool Near Crystal 2": PseudoregaliaLocationData(
+        code=2365810086,
+        region="Castle Main",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Castle Sansa - Stool Near Crystal 3": PseudoregaliaLocationData(
+        code=2365810087,
+        region="Castle Main",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Castle Sansa - Gazebo Stool": PseudoregaliaLocationData(
+        code=2365810088,
+        region="Castle Main",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Sansa Keep - Distorted Stool": PseudoregaliaLocationData(
+        code=2365810089,
+        region="Keep (Northeast) => Castle",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Sansa Keep - Path to Throne Stool": PseudoregaliaLocationData(
+        code=2365810090,
+        region="Keep Throne Room",  # TODO: could define some real logic here, but this mostly works
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Sansa Keep - The Throne": PseudoregaliaLocationData(
+        code=2365810091,
+        region="Keep Throne Room",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Listless Library - Hay Bale Near Entrance": PseudoregaliaLocationData(
+        code=2365810092,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Listless Library - Hay Bale Near Eggs": PseudoregaliaLocationData(
+        code=2365810093,
+        region="Library Top",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Listless Library - Hay Bale in the Back": PseudoregaliaLocationData(
+        code=2365810094,
+        region="Library Back",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Twilight Theatre - Stool Near Bookcase": PseudoregaliaLocationData(
+        code=2365810095,
+        region="Theatre Outside Scythe Corridor",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Twilight Theatre - Stool Around a Table 1": PseudoregaliaLocationData(
+        code=2365810096,
+        region="Theatre Outside Scythe Corridor",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Twilight Theatre - Stool Around a Table 2": PseudoregaliaLocationData(
+        code=2365810097,
+        region="Theatre Outside Scythe Corridor",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Twilight Theatre - Stool Around a Table 3": PseudoregaliaLocationData(
+        code=2365810098,
+        region="Theatre Outside Scythe Corridor",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Twilight Theatre - Stage Left Stool": PseudoregaliaLocationData(
+        code=2365810099,
+        region="Theatre Main",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+    "Twilight Theatre - Stage Right Stool": PseudoregaliaLocationData(
+        code=2365810100,
+        region="Theatre Main",
+        can_create=lambda options: bool(options.randomize_chairs),
+    ),
+
+    "Listless Library - A Book About a Princess": PseudoregaliaLocationData(
+        code=2365810101,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About Cooking": PseudoregaliaLocationData(
+        code=2365810102,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book Full of Plays": PseudoregaliaLocationData(
+        code=2365810103,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About Reading": PseudoregaliaLocationData(
+        code=2365810104,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About Aquatic Life": PseudoregaliaLocationData(
+        code=2365810105,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About a Jester": PseudoregaliaLocationData(
+        code=2365810106,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About Loss": PseudoregaliaLocationData(
+        code=2365810107,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book on Musical Theory": PseudoregaliaLocationData(
+        code=2365810108,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About a Girl": PseudoregaliaLocationData(
+        code=2365810109,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About a Thimble": PseudoregaliaLocationData(
+        code=2365810110,
+        region="Library Main",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About a Monster": PseudoregaliaLocationData(
+        code=2365810111,
+        region="Library Greaves",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About Revenge": PseudoregaliaLocationData(
+        code=2365810112,
+        region="Library Greaves",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+    "Listless Library - A Book About a Restaurant": PseudoregaliaLocationData(
+        code=2365810113,
+        region="Library Top",
+        can_create=lambda options: bool(options.randomize_books),
+    ),
+
+    "Listless Library - Note Near Eggs": PseudoregaliaLocationData(
+        code=2365810114,
+        region="Library Top",
+        can_create=lambda options: bool(options.randomize_notes),
+    ),
+    "The Underbelly - Note on a Ledge": PseudoregaliaLocationData(
+        code=2365810115,
+        region="Underbelly => Bailey",
+        can_create=lambda options: bool(options.randomize_notes),
+    ),
+    "The Underbelly - Note in the Big Room": PseudoregaliaLocationData(
+        code=2365810116,
+        region="Underbelly Main Lower",
+        can_create=lambda options: bool(options.randomize_notes),
+    ),
+    "The Underbelly - Note Behind a Locked Door": PseudoregaliaLocationData(
+        code=2365810117,
+        region="Underbelly By Heliacal",
+        can_create=lambda options: bool(options.randomize_notes),
+    ),    
 
     "D S T RT ED M M O   Y": PseudoregaliaLocationData(
         region="The Great Door",

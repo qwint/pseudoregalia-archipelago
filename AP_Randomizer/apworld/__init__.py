@@ -1,7 +1,7 @@
 from worlds.AutoWorld import World
 from BaseClasses import Region
 from .items import PseudoregaliaItem, item_table, item_groups
-from .locations import PseudoregaliaLocation, location_table
+from .locations import PseudoregaliaLocation, location_table, zones
 from .regions import region_table
 from .options import PseudoregaliaOptions
 from .rules_normal import PseudoregaliaNormalRules
@@ -11,7 +11,6 @@ from .rules_lunatic import PseudoregaliaLunaticRules
 from typing import Dict, Any
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
 from .constants.versions import FULL_GOLD
-
 
 class PseudoregaliaWorld(World):
     game = "Pseudoregalia"
@@ -24,8 +23,13 @@ class PseudoregaliaWorld(World):
     options_dataclass = PseudoregaliaOptions
     options: PseudoregaliaOptions
 
+    filler = ("Healing", "Magic Power")
+    filler_index = 0
+
     def get_filler_item_name(self) -> str:
-        return "Health Piece"
+        filler_item_name = self.filler[self.filler_index]
+        self.filler_index = (self.filler_index + 1) % len(self.filler)
+        return filler_item_name
 
     def create_item(self, name: str) -> PseudoregaliaItem:
         data = item_table[name]
@@ -57,7 +61,8 @@ class PseudoregaliaWorld(World):
         for region_name in region_table.keys():
             self.multiworld.regions.append(Region(region_name, self.player, self.multiworld))
 
-        for loc_name, loc_data in location_table.items():
+        locations = sorted(location_table.items(), key=lambda loc_pair: zones.index(loc_pair[0].split(" - ")[0]))
+        for loc_name, loc_data in locations:
             if not loc_data.can_create(self.options):
                 continue
             region = self.multiworld.get_region(loc_data.region, self.player)
@@ -79,6 +84,10 @@ class PseudoregaliaWorld(World):
             "progressive_slide": bool(self.options.progressive_slide),
             "split_sun_greaves": bool(self.options.split_sun_greaves),
             "randomize_time_trials": bool(self.options.randomize_time_trials),
+            "randomize_goats": bool(self.options.randomize_goats),
+            "randomize_chairs": bool(self.options.randomize_chairs),
+            "randomize_books": bool(self.options.randomize_books),
+            "randomize_notes": bool(self.options.randomize_notes),
         }
 
     def set_rules(self):

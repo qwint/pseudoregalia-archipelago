@@ -11,6 +11,7 @@ namespace Engine {
 	void SyncItems();
 	void SpawnCollectibles();
 	void DespawnCollectible(const int64_t);
+	void DespawnInteractable(const int64_t);
 	GameData::Map GetCurrentMap();
 	void ToggleSlideJump();
 	void VaporizeGoat();
@@ -19,4 +20,6 @@ namespace Engine {
 	void PrintToConsole(std::wstring, std::wstring, std::optional<UObject*> = {});
 	void SaveMessage(std::wstring, std::wstring);
 	void InitializeConsole(UObject*);
+	void HealPlayer();
+	void GivePlayerPower();
 }

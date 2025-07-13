@@ -101,6 +101,42 @@ class RandomizeTimeTrials(Toggle):
     display_name = "Randomize Time Trials"
 
 
+class RandomizeGoats(Toggle):
+    """
+    Adds goatlings as locations. Talk to the goatling to get the item.
+    This option adds 19 locations on map patch and 17 locations on full gold.
+    For each location added, an essentially useless filler item is also added to the item pool.
+    """
+    display_name = "Randomize Goats"
+
+
+class RandomizeChairs(Toggle):
+    """
+    Adds places Sybil can sit as locations. Sit down to get the item.
+    This option adds 16 locations.
+    For each location added, an essentially useless filler item is also added to the item pool.
+    """
+    display_name = "Randomize Chairs"
+
+
+class RandomizeBooks(Toggle):
+    """
+    Adds books in the library as locations. Read the book to get the item.
+    This option adds 13 locations.
+    For each location added, an essentially useless filler item is also added to the item pool.
+    """
+    display_name = "Randomize Books"
+
+
+class RandomizeNotes(Toggle):
+    """
+    Adds notes as locations. Read the note to get the item.
+    This option adds 4 locations.
+    For each location added, an essentially useless filler item is also added to the item pool.
+    """
+    display_name = "Randomize Notes"
+
+
 @dataclass
 class PseudoregaliaOptions(PerGameCommonOptions):
     game_version: GameVersion
@@ -112,4 +148,8 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     start_with_breaker: StartWithBreaker
     start_with_map: StartWithMap
     randomize_time_trials: RandomizeTimeTrials
+    randomize_goats: RandomizeGoats
+    randomize_chairs: RandomizeChairs
+    randomize_books: RandomizeBooks
+    randomize_notes: RandomizeNotes
 

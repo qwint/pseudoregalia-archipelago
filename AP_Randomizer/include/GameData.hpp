@@ -13,6 +13,7 @@ namespace GameData {
 		HealthPiece,
 		SmallKey,
 		MajorKey,
+		Filler,
 		Unknown
 	};
 
@@ -46,6 +47,8 @@ namespace GameData {
 
 	// encodes the location id and spawn position of a time trial collectible
 	typedef std::pair<int64_t, FVector> TimeTrial;
+	// encodes the location id and actor class name of an interactable location
+	typedef std::pair<int64_t, std::wstring> Interactable;
 
 	void Initialize();
 	void Close();
@@ -56,6 +59,7 @@ namespace GameData {
 	std::unordered_map<std::string, int> GetOptions();
 	std::unordered_map<std::wstring, int> GetUpgradeTable();
 	std::unordered_map<int64_t, Collectible> GetCollectiblesOfZone(Map);
+	std::unordered_map<std::wstring, Interactable> GetInteractablesOfZone(Map);
 	std::list<int64_t> GetMissingSpawnableLocations();
 	void SetPseudoItemClassification(int64_t, int64_t);
 	void SetOffWorldItemClassification(int64_t, Classification);
@@ -66,4 +70,10 @@ namespace GameData {
 	bool SlideJumpDisabled();
 	bool CanHaveTimeTrial(Map);
 	std::optional<TimeTrial> GetTimeTrial(Map, std::wstring);
+	void Interact(std::wstring);
+	void ReadNote(std::wstring);
+	void FinishNote();
+	std::optional<std::wstring> GetNoteText(std::wstring);
+	void ReceiveItemOnce(int64_t);
+	bool IsInteractable(int64_t);
 }

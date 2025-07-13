@@ -61,7 +61,7 @@ class PseudoregaliaWorld(World):
         for region_name in region_table.keys():
             self.multiworld.regions.append(Region(region_name, self.player, self.multiworld))
 
-        locations = sorted(location_table.items(), key=lambda item: zones.index(item[0].split(" - ")[0]))
+        locations = sorted(location_table.items(), key=lambda loc_pair: zones.index(loc_pair[0].split(" - ")[0]))
         for loc_name, loc_data in locations:
             if not loc_data.can_create(self.options):
                 continue

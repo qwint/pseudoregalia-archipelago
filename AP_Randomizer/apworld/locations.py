@@ -251,12 +251,12 @@ location_table = {
         can_create=lambda options: bool(options.split_cling_gem),
     ),
     "Tower Remains - Cling Gem 2": PseudoregaliaLocationData(
-        code=2365810063,
+        code=2365810064,
         region="Tower Remains",
         can_create=lambda options: bool(options.split_cling_gem),
     ),
     "Tower Remains - Cling Gem 3": PseudoregaliaLocationData(
-        code=2365810063,
+        code=2365810065,
         region="Tower Remains",
         can_create=lambda options: bool(options.split_cling_gem),
     ),

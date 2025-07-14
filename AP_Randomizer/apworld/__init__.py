@@ -83,6 +83,7 @@ class PseudoregaliaWorld(World):
             "progressive_breaker": bool(self.options.progressive_breaker),
             "progressive_slide": bool(self.options.progressive_slide),
             "split_sun_greaves": bool(self.options.split_sun_greaves),
+            "split_cling_gem": bool(self.options.split_cling_gem),
             "randomize_time_trials": bool(self.options.randomize_time_trials),
             "randomize_goats": bool(self.options.randomize_goats),
             "randomize_chairs": bool(self.options.randomize_chairs),

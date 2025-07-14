@@ -72,9 +72,6 @@ class PseudoregaliaRulesHelpers:
     def has_plunge(self, state) -> bool:
         return state.has("Sunsetter", self.player)
 
-    def has_gem(self, state) -> bool:
-        return state.has("Cling Gem", self.player)
-
     def can_bounce(self, state) -> bool:
         return self.has_breaker(state) and state.has("Ascendant Light", self.player)
 
@@ -90,6 +87,13 @@ class PseudoregaliaRulesHelpers:
         kicks += state.count("Heliacal Power", self.player)
         kicks += state.count("Air Kick", self.player)
         return kicks >= count
+
+    def get_clings(self, state, count: int) -> bool:
+        clings: int = 0
+        if state.has("Cling Gem", self.player):
+            clings += 6
+        clings += 2 * state.count("Cling Shard", self.player)
+        return clings >= count
 
     def kick_or_plunge(self, state, count: int) -> bool:
         """Used where one air kick can be replaced with sunsetter.

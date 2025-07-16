@@ -387,7 +387,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Listless Library - Upper Back": lambda state:
                 self.can_attack(state)
                 and (
-                    self.get_clings(state, 4) and self.kick_or_plunge(state, 1)
+                    self.get_clings(state, 2) and self.kick_or_plunge(state, 1)
                     or self.kick_or_plunge(state, 2)),
             "Listless Library - Locked Door Across": lambda state:
                 self.get_clings(state, 2)

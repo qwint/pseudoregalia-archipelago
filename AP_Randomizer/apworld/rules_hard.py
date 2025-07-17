@@ -123,7 +123,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
             "Twilight Theatre - Corner Beam": lambda state:
                 self.get_clings(state, 2)
                 and (
-                    self.get_kicks(state, 1)
+                    self.kick_or_plunge(state, 1)
                     or self.can_slidejump(state)),
             "Twilight Theatre - Locked Door": lambda state:
                 self.has_small_keys(state) and self.get_clings(state, 4),

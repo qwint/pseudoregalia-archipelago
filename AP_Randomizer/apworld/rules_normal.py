@@ -20,7 +20,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.get_clings(state, 2) and self.kick_or_plunge(state, 1),
             "Theatre Main -> Theatre Outside Scythe Corridor": lambda state:
-                self.get_clings(state, 4),
+                self.get_clings(state, 6),
             "Theatre Main -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.has_plunge(state) and self.knows_obscure(state)
@@ -43,8 +43,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Theatre Pillar -> Theatre Pillar => Bailey": lambda state: True,
             # "Theatre Pillar -> Castle => Theatre Pillar": lambda state: True,
             "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:
-                self.get_clings(state, 4) and self.kick_or_plunge(state, 3)
-                or self.get_clings(state, 4) and self.can_slidejump(state),
+                self.get_clings(state, 6) and self.kick_or_plunge(state, 3)
+                or self.get_clings(state, 6) and self.can_slidejump(state),
             "Theatre Outside Scythe Corridor -> Dungeon Escape Upper": lambda state:
                 self.navigate_darkrooms(state)
                 and (

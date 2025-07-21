@@ -107,7 +107,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.get_kicks(state, 3)
                 or self.can_slidejump(state) and self.get_kicks(state, 1),
             "Underbelly => Bailey -> Underbelly Main Lower": lambda state: 
-                self.get_clings(state, 4),
+                self.get_clings(state, 2),
             "Underbelly Hole -> Underbelly Main Lower": lambda state:
                 self.has_plunge(state)
                 and (

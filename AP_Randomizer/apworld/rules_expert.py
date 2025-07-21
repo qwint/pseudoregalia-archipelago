@@ -198,9 +198,11 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 or self.can_gold_ultra(state) and self.has_plunge(state),
             "Castle Sansa - Near Theatre Front": lambda state:
                 self.can_gold_slide_ultra(state)
-                or self.has_slide(state) and self.get_kicks(state, 1),
+                or self.has_slide(state) and self.get_kicks(state, 1)
+                or self.get_clings(state, 4),
             "Castle Sansa - High Climb From Courtyard": lambda state:
                 self.can_attack(state) and self.get_kicks(state, 1)
+                or self.get_clings(state, 2) and self.get_kicks(state, 1)
                 or self.has_slide(state),
             "Listless Library - Upper Back": lambda state:
                 self.can_attack(state) and self.has_slide(state),

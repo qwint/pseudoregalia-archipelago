@@ -181,7 +181,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.get_clings(state, 4)
                 or self.get_kicks(state, 2) and self.has_plunge(state),
             "Castle Sansa - Near Theatre Front": lambda state:
-                self.get_clings(state, 6),
+                self.get_clings(state, 6)
+                or self.get_clings(state, 2) and self.get_kicks(state, 1),
             "Castle Sansa - High Climb From Courtyard": lambda state:
                 self.get_clings(state, 6)
                 or self.has_plunge(state) and self.can_slidejump(state),

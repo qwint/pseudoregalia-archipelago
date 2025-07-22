@@ -30,6 +30,7 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                 self.can_bounce(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Keep Main -> Keep Throne Room": lambda state:
                 self.has_breaker(state) and self.has_slide(state) and self.kick_or_plunge(state, 3)
+                or self.get_clings(state, 2)
                 or (
                     self.can_gold_ultra(state)
                     and self.can_bounce(state)

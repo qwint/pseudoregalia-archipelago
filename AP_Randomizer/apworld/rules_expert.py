@@ -74,7 +74,9 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Keep Main -> Keep Throne Room": lambda state:
                 self.has_breaker(state)
                 and (
-                    self.get_clings(state, 6)
+                    self.get_clings(state, 4)
+                    or self.get_clings(state, 2) and self.get_kicks(state, 1)
+                    or self.get_clings(state, 2) and self.can_bounce(state)
                     or self.can_bounce(state) and self.kick_or_plunge(state, 3)
                     or self.has_slide(state) and self.get_kicks(state, 3)),
             "Keep Main -> Keep => Underbelly": lambda state:
@@ -151,7 +153,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Twilight Theatre - Back Of Auditorium": lambda state:
                 self.has_slide(state),  # super annoying ultrahops
             "Twilight Theatre - Center Stage": lambda state:
-                self.can_soulcutter(state) and self.get_clings(state, 6),
+                self.can_soulcutter(state) and self.get_clings(state, 4),
             "Tower Remains - Cling Gem": lambda state:
                 self.has_slide(state),
             "Tower Remains - Cling Gem 1": lambda state:

@@ -173,6 +173,8 @@ namespace GameData {
 
             {2365810036, ItemType::MinorAbility},
 
+            {2365810037, ItemType::MajorAbility},
+
             {2365810038, ItemType::Filler},
             {2365810039, ItemType::Filler},
         };
@@ -185,7 +187,7 @@ namespace GameData {
             {2365810005, L"SlideJump"},
             {2365810006, L"plunge"},
             {2365810007, L"chargeAttack"},
-            {2365810008, L"wallRide"},
+            {2365810008, L"clingGem"}, // game actually uses wallRide, but this is handled in AP_SetUpgrades
             {2365810009, L"Light"},
             {2365810010, L"projectile"},
             {2365810011, L"extraKick"},
@@ -207,6 +209,7 @@ namespace GameData {
             {2365810034, L"outfitJam"},
             {2365810035, L"outfitPast"},
             {2365810036, L"map"},
+            {2365810037, L"clingShard"},
         };
     } // End private members
 
@@ -448,6 +451,12 @@ namespace GameData {
                 {2365810049, Collectible(FVector(13350, 5250, 4150))},
             // Atop The Tower
                 {2365810050, Collectible(FVector(9650, 5250, 7100))},
+            // Cling Gem 1
+                {2365810063, Collectible(FVector(13350, 4750, 4150))},
+            // Cling Gem 2
+                {2365810064, Collectible(FVector(13350, 5250, 4150))},
+            // Cling Gem 3
+                {2365810065, Collectible(FVector(13350, 5750, 4150))},
                     }},
         };
 
@@ -488,7 +497,7 @@ namespace GameData {
             {L"SlideJump", 0},
             {L"plunge", 0},
             {L"chargeAttack", 0},
-            {L"wallRide", 0},
+            {L"clingGem", 0},
             {L"Light", 0},
             {L"projectile", 0},
             {L"extraKick", 0},
@@ -507,6 +516,7 @@ namespace GameData {
             {L"outfitJam", 0},
             {L"outfitPast", 0},
             {L"map", 0},
+            {L"clingShard", 0},
         };
 
         slidejump_owned = false;
@@ -534,7 +544,7 @@ namespace GameData {
             {L"SlideJump", 0},
             {L"plunge", 0},
             {L"chargeAttack", 0},
-            {L"wallRide", 0},
+            {L"clingGem", 0},
             {L"Light", 0},
             {L"projectile", 0},
             {L"extraKick", 0},
@@ -553,6 +563,7 @@ namespace GameData {
             {L"outfitJam", 0},
             {L"outfitPast", 0},
             {L"map", 0},
+            {L"clingShard", 0},
         };
     }
 

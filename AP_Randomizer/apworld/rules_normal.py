@@ -18,16 +18,16 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Bailey Upper -> Underbelly => Bailey": lambda state:
                 self.has_plunge(state),
             "Tower Remains -> The Great Door": lambda state:
-                self.can_attack(state) and self.has_gem(state) and self.kick_or_plunge(state, 1),
+                self.can_attack(state) and self.get_clings(state, 2) and self.kick_or_plunge(state, 1),
             "Theatre Main -> Theatre Outside Scythe Corridor": lambda state:
-                self.has_gem(state),
+                self.get_clings(state, 6),
             "Theatre Main -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1) and self.can_slidejump(state)
-                or self.has_gem(state),
+                or self.get_clings(state, 2),
             "Theatre Main -> Castle => Theatre (Front)": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 1)
                 or self.can_slidejump(state),
             "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:
@@ -38,23 +38,23 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_plunge(state),
             # "Castle => Theatre Pillar -> Castle Main": lambda state: True,
             "Theatre Pillar -> Theatre Main": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.has_plunge(state) and self.get_kicks(state, 3),
             # "Theatre Pillar -> Theatre Pillar => Bailey": lambda state: True,
             # "Theatre Pillar -> Castle => Theatre Pillar": lambda state: True,
             "Theatre Outside Scythe Corridor -> Theatre Main": lambda state:
-                self.has_gem(state) and self.kick_or_plunge(state, 3)
-                or self.has_gem(state) and self.can_slidejump(state),
+                self.get_clings(state, 6) and self.kick_or_plunge(state, 3)
+                or self.get_clings(state, 6) and self.can_slidejump(state),
             "Theatre Outside Scythe Corridor -> Dungeon Escape Upper": lambda state:
                 self.navigate_darkrooms(state)
                 and (
                     self.can_bounce(state)
                     or self.get_kicks(state, 1)
-                    or self.has_gem(state)
+                    or self.get_clings(state, 2)
                     or self.can_slidejump(state)
                     or self.knows_obscure(state) and self.has_plunge(state)),
             "Theatre Outside Scythe Corridor -> Keep Main": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 1)
                 or self.can_bounce(state)
                 or self.can_slidejump(state)
@@ -82,7 +82,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Dungeon Escape Upper -> Theatre Outside Scythe Corridor": lambda state:
                 self.can_bounce(state)
                 or self.get_kicks(state, 1)
-                or self.has_gem(state)
+                or self.get_clings(state, 2)
                 or self.knows_obscure(state) and self.has_plunge(state),
             # "Castle Main -> Dungeon => Castle": lambda state: True,
             # "Castle Main -> Keep Main": lambda state: True,
@@ -90,38 +90,38 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Castle Main -> Library Main": lambda state:
                 self.can_attack(state),
             "Castle Main -> Castle => Theatre Pillar": lambda state:
-                self.has_gem(state) and self.kick_or_plunge(state, 1)
+                self.get_clings(state, 2) and self.kick_or_plunge(state, 1)
                 or self.kick_or_plunge(state, 2),
             "Castle Main -> Castle Spiral Climb": lambda state:
                 self.get_kicks(state, 2)
-                or self.has_gem(state) and self.has_plunge(state),
+                or self.get_clings(state, 2) and self.has_plunge(state),
             "Castle Main -> Keep (Northeast) => Castle": lambda state:
                 # TODO: not sure about this logic, idk where doing it with no items should go
                 self.can_attack(state)
                 or self.knows_obscure(state),
             # "Castle Spiral Climb -> Castle Main": lambda state: True,
             "Castle Spiral Climb -> Castle High Climb": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 3) and self.has_plunge(state)
                 or self.can_attack(state) and self.get_kicks(state, 1),
             "Castle Spiral Climb -> Castle By Scythe Corridor": lambda state:
-                self.has_gem(state),
+                self.get_clings(state, 2),
             "Castle By Scythe Corridor -> Castle Spiral Climb": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 4) and self.has_plunge(state),
             "Castle By Scythe Corridor -> Castle High Climb": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 4)
                 or self.get_kicks(state, 2) and self.has_plunge(state)
                 or self.get_kicks(state, 1) and self.has_plunge(state) and self.can_slidejump(state),
             "Castle By Scythe Corridor -> Castle => Theatre (Front)": lambda state:
-                self.has_gem(state) and self.kick_or_plunge(state, 2),
+                self.get_clings(state, 4) and self.kick_or_plunge(state, 2),
             "Castle => Theatre (Front) -> Castle By Scythe Corridor": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.can_slidejump(state) and self.get_kicks(state, 1)
                 or self.get_kicks(state, 4),
             "Castle => Theatre (Front) -> Castle Moon Room": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.can_slidejump(state) and self.kick_or_plunge(state, 2),
             "Castle => Theatre (Front) -> Theatre Main": lambda state:
                 self.has_plunge(state) and self.get_kicks(state, 1)
@@ -136,18 +136,18 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Library Greaves -> Library Back": lambda state:
                 self.can_attack(state)
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 2)
                     or self.get_kicks(state, 2)),
             "Library Back -> Library Greaves": lambda state:
                 self.can_attack(state)
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 2)
                     or self.get_kicks(state, 1)),
             "Library Back -> Library Top": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 4)
                 or self.get_kicks(state, 2),
             "Library Top -> Library Back": lambda state:
-                self.has_gem(state) and self.kick_or_plunge(state, 1)
+                self.get_clings(state, 2) and self.kick_or_plunge(state, 1)
                 or self.get_kicks(state, 3) and self.has_plunge(state)
                 or self.get_kicks(state, 3) and self.can_bounce(state),
             "Keep Main -> Keep Locked Room": lambda state:
@@ -157,14 +157,14 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_small_keys(state)
                 or self.get_kicks(state, 3)
                 or self.has_plunge(state) and self.get_kicks(state, 1)
-                or self.has_gem(state) and self.has_plunge(state)
-                or self.has_gem(state) and self.get_kicks(state, 1),
+                or self.get_clings(state, 2) and self.has_plunge(state)
+                or self.get_clings(state, 2) and self.get_kicks(state, 1),
             "Keep Main -> Keep Sunsetter": lambda state:
                 # See "Keep Main -> Keep Locked Room".
                 # All other methods would go through Keep Locked Room instead.
-                self.has_gem(state),
+                self.get_clings(state, 2),
             "Keep Main -> Keep Throne Room": lambda state:
-                self.has_breaker(state) and self.has_gem(state)
+                self.has_breaker(state) and self.get_clings(state, 6)
                 and (
                     self.has_plunge(state) and self.get_kicks(state, 1)
                     or self.has_plunge(state) and self.can_bounce(state)
@@ -172,13 +172,13 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.can_bounce(state) and self.kick_or_plunge(state, 4),
             "Keep Main -> Keep => Underbelly": lambda state:
                 self.kick_or_plunge(state, 1)
-                or self.has_gem(state),
+                or self.get_clings(state, 2),
             "Keep Main -> Keep (Northeast) => Castle": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 2)
                 or self.has_plunge(state),
             "Keep Main -> Theatre Outside Scythe Corridor": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 1)
                 or self.can_bounce(state)
                 or self.can_slidejump(state)
@@ -193,7 +193,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Underbelly => Dungeon -> Underbelly Light Pillar": lambda state: True,
             "Underbelly => Dungeon -> Underbelly Ascendant Light": lambda state:
                 self.can_bounce(state)
-                or self.has_gem(state)
+                or self.get_clings(state, 2)
                 or self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.can_slidejump(state)
                 or self.knows_obscure(state) and self.can_attack(state),
@@ -211,7 +211,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     or self.knows_obscure(state) and self.get_kicks(state, 3)),
             "Underbelly Ascendant Light -> Underbelly => Dungeon": lambda state:
                 self.can_bounce(state)
-                or self.has_gem(state)
+                or self.get_clings(state, 2)
                 or self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.can_slidejump(state),
             # "Underbelly Main Lower -> Underbelly => Bailey": lambda state: True,
@@ -231,19 +231,19 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.knows_obscure(state) and self.has_breaker(state)
                 and (
                     self.get_kicks(state, 2)
-                    or self.has_gem(state) and self.get_kicks(state, 1)),
+                    or self.get_clings(state, 2) and self.get_kicks(state, 1)),
             "Underbelly Main Upper -> Underbelly By Heliacal": lambda state:
                 self.has_breaker(state)
                 and (
                     state.has("Ascendant Light", self.player) and self.get_kicks(state, 1)
                     or self.can_slidejump(state) and self.get_kicks(state, 3)
-                    or self.has_gem(state) and self.get_kicks(state, 2)),
+                    or self.get_clings(state, 2) and self.get_kicks(state, 2)),
             "Underbelly By Heliacal -> Underbelly Main Upper": lambda state:
                 self.has_breaker(state) and self.has_plunge(state)
                 or self.knows_obscure(state) and self.has_plunge(state)
                 and (
                     self.get_kicks(state, 1)
-                    or self.has_gem(state)),
+                    or self.get_clings(state, 2)),
             # "Underbelly => Bailey -> Bailey Lower": lambda state: True,
             "Underbelly => Bailey -> Bailey Upper": lambda state:
                 self.knows_obscure(state)
@@ -259,7 +259,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_plunge(state)
                 and (
                     self.can_attack(state)
-                    or self.can_slidejump(state) and self.has_gem(state)
+                    or self.can_slidejump(state) and self.get_clings(state, 2)
                     or self.can_slidejump(state) and self.get_kicks(state, 1)),
             "Underbelly Hole -> Underbelly => Keep": lambda state:
                 self.has_plunge(state) and self.has_slide(state),
@@ -270,7 +270,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_slide(state),  # to consider: damage boosting w/ crouch
             "Empty Bailey - Cheese Bell": lambda state:  # TODO consider to/from center steeple
                 self.get_kicks(state, 3)
-                or self.has_gem(state) and self.kick_or_plunge(state, 2),
+                or self.get_clings(state, 2) and self.kick_or_plunge(state, 2),
             "Empty Bailey - Inside Building": lambda state:
                 self.has_slide(state),
             "Empty Bailey - Center Steeple": lambda state:
@@ -279,7 +279,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 upper_bailey.can_reach(state)
                 and (
                     self.knows_obscure(state)
-                    or self.has_gem(state)
+                    or self.get_clings(state, 2)
                     or self.get_kicks(state, 3))
                 or self.has_breaker(state)   # do the fight
                 and (
@@ -290,12 +290,9 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and (  # we probably already have some of this movement but worth marking it imo
                     self.can_bounce(state)
                     or self.kick_or_plunge(state, 1)
-                    or self.has_gem(state)),
+                    or self.get_clings(state, 2)),
             "Twilight Theatre - Corner Beam": lambda state:
-                self.has_gem(state)
-                and (
-                    self.has_plunge(state)
-                    or self.get_kicks(state, 2))
+                self.get_clings(state, 2) and self.kick_or_plunge(state, 2)
                 or self.has_plunge(state) and self.get_kicks(state, 3) and self.knows_obscure(state)  # use crouch backflip
                 or self.get_kicks(state, 4),
             "Twilight Theatre - Locked Door": lambda state:
@@ -306,72 +303,75 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Twilight Theatre - Back Of Auditorium": lambda state:
                 self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1)
-                or self.has_gem(state),
+                or self.get_clings(state, 2),
             # "Twilight Theatre - Tucked Behind Boxes": lambda state: True,
             "Twilight Theatre - Center Stage": lambda state:
-                self.can_soulcutter(state) and self.has_gem(state)
+                self.can_soulcutter(state) and self.get_clings(state, 6)
                 and self.has_plunge(state) and self.can_slidejump(state),  # cross the gap on right side
                 # potentially more routes
             "Tower Remains - Cling Gem": lambda state:
                 self.kick_or_plunge(state, 2),  # climb the right tower and cross
+            "Tower Remains - Cling Gem 1": lambda state:
+                self.kick_or_plunge(state, 2),
+            "Tower Remains - Cling Gem 2": lambda state:
+                self.kick_or_plunge(state, 2),
+            "Tower Remains - Cling Gem 3": lambda state:
+                self.kick_or_plunge(state, 2),
             # "Tower Remains - Atop The Tower": lambda state: True,
 
             # "Dilapidated Dungeon - Dream Breaker": lambda state: True,
             # "Dilapidated Dungeon - Slide": lambda state: True,
             # "Dilapidated Dungeon - Alcove Near Mirror": lambda state: True,
             "Dilapidated Dungeon - Dark Orbs": lambda state:
-                self.has_gem(state) and self.can_bounce(state)
-                or self.has_gem(state) and self.kick_or_plunge(state, 3)
+                self.get_clings(state, 2) and self.can_bounce(state)
+                or self.get_clings(state, 2) and self.kick_or_plunge(state, 3)
                 or self.get_kicks(state, 2) and self.can_bounce(state)
                 or self.can_slidejump(state) and self.get_kicks(state, 1) and self.can_bounce(state),
             "Dilapidated Dungeon - Past Poles": lambda state:
-                self.has_gem(state) and self.kick_or_plunge(state, 1)
+                self.get_clings(state, 2) and self.kick_or_plunge(state, 1)
                 or self.get_kicks(state, 3),
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.kick_or_plunge(state, 3)
-                or self.knows_obscure(state) and self.can_bounce(state) and self.has_gem(state),
+                or self.knows_obscure(state) and self.can_bounce(state) and self.get_clings(state, 2),
             # "Castle Sansa - Indignation": lambda state: True,
             "Castle Sansa - Alcove Near Dungeon": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 1)
                 or self.can_slidejump(state)
                 or self.knows_obscure(state) and self.has_plunge(state),
             "Castle Sansa - Balcony": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.kick_or_plunge(state, 3)
                 or self.can_slidejump(state) and self.kick_or_plunge(state, 2),
             "Castle Sansa - Corner Corridor": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 4),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.can_bounce(state) and self.has_plunge(state)
                 or self.can_bounce(state) and self.get_kicks(state, 2)
-                or self.has_gem(state) and self.get_kicks(state, 2)
-                or self.has_gem(state) and self.has_plunge(state)
                 or self.get_kicks(state, 4)
-                or self.knows_obscure(state) and self.can_bounce(state) and self.get_kicks(state, 1)
-                or self.knows_obscure(state) and self.has_gem(state) and self.get_kicks(state, 1),
+                or self.knows_obscure(state) and self.can_bounce(state) and self.get_kicks(state, 1),
             "Castle Sansa - Locked Door": lambda state:
                 self.has_small_keys(state),
             "Castle Sansa - Platform In Main Halls": lambda state:
                 self.has_plunge(state)
-                or self.has_gem(state)
+                or self.get_clings(state, 2)
                 or self.get_kicks(state, 2),
             "Castle Sansa - Tall Room Near Wheel Crawlers": lambda state:
-                self.has_gem(state) and self.kick_or_plunge(state, 1)
+                self.get_clings(state, 2) and self.kick_or_plunge(state, 1)
                 or self.get_kicks(state, 2),
             "Castle Sansa - Wheel Crawlers": lambda state:
                 self.can_bounce(state)
-                or self.has_gem(state)
+                or self.get_clings(state, 2)
                 or self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.can_slidejump(state)
                 or self.knows_obscure(state) and self.has_plunge(state),
             "Castle Sansa - High Climb From Courtyard": lambda state:
                 self.get_kicks(state, 2)
-                or self.has_gem(state) and self.has_plunge(state)
+                or self.get_clings(state, 2) and self.has_plunge(state)
                 or self.can_attack(state) and self.get_kicks(state, 1),
             "Castle Sansa - Alcove Near Scythe Corridor": lambda state:
-                self.has_gem(state) and self.get_kicks(state, 1) and self.has_plunge(state)
+                self.get_clings(state, 2) and self.get_kicks(state, 1) and self.has_plunge(state)
                 or self.kick_or_plunge(state, 4),
             "Castle Sansa - Near Theatre Front": lambda state:
                 self.get_kicks(state, 4)
@@ -387,19 +387,19 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Listless Library - Upper Back": lambda state:
                 self.can_attack(state)
                 and (
-                    self.has_gem(state) and self.kick_or_plunge(state, 1)
+                    self.get_clings(state, 2) and self.kick_or_plunge(state, 1)
                     or self.kick_or_plunge(state, 2)),
             "Listless Library - Locked Door Across": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.get_kicks(state, 1)
                 or self.can_slidejump(state),
             "Listless Library - Locked Door Left": lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.can_slidejump(state) and self.get_kicks(state, 1)
                 or self.kick_or_plunge(state, 3),
             "Sansa Keep - Near Theatre": lambda state:
                 self.kick_or_plunge(state, 1)
-                or self.has_gem(state),
+                or self.get_clings(state, 2),
             # "Sansa Keep - Alcove Near Locked Door": lambda state: True,
             "Sansa Keep - Levers Room": lambda state:
                 self.can_attack(state),
@@ -411,7 +411,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                     self.has_slide(state)
                     or self.can_strikebreak(state))
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 2)
                     or self.has_plunge(state) and self.get_kicks(state, 1)
                     or self.get_kicks(state, 3)),
             # "Sansa Keep - Lonely Throne": lambda state: True,
@@ -427,11 +427,11 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.can_slidejump(state) and self.get_kicks(state, 1)
                 or self.knows_obscure(state)
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 2)
                     or self.get_kicks(state, 2)),
             "The Underbelly - Alcove Near Light": lambda state:
                 self.can_attack(state)
-                or self.has_gem(state)
+                or self.get_clings(state, 2)
                 or self.get_kicks(state, 4)
                 or self.get_kicks(state, 3) and self.can_slidejump(state),
             "The Underbelly - Building Near Little Guy": lambda state:
@@ -448,26 +448,26 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
 
             "Dilapidated Dungeon - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state),
+                and self.get_clings(state, 6) and self.can_slidejump(state),
             "Castle Sansa - Time Trial": lambda state:
                 self.has_small_keys(state),
             "Sansa Keep - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state) and self.can_bounce(state),
+                and self.get_clings(state, 6) and self.can_slidejump(state) and self.can_bounce(state),
             "Listless Library - Time Trial": lambda state:
-                self.has_breaker(state) and self.has_plunge(state) and self.has_gem(state),
+                self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3),
             "Twilight Theatre - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state),
+                and self.get_clings(state, 6) and self.can_slidejump(state),
             "Empty Bailey - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state),
+                and self.get_clings(state, 6) and self.can_slidejump(state),
             "The Underbelly - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state),
+                and self.get_clings(state, 6) and self.can_slidejump(state),
             "Tower Remains - Time Trial": lambda state:
                 self.has_breaker(state) and self.has_plunge(state) and self.get_kicks(state, 3)
-                and self.has_gem(state) and self.can_slidejump(state),
+                and self.get_clings(state, 6) and self.can_slidejump(state),
 
             # "Castle Sansa - Memento": lambda state: True,
 
@@ -483,7 +483,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.get_kicks(state, 2)
                 or self.has_plunge(state)
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 2)
                     or self.get_kicks(state, 1)
                     or self.can_bounce(state)
                     or self.can_slidejump(state)
@@ -502,7 +502,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.has_plunge(state) and self.knows_obscure(state)
                 or self.get_kicks(state, 1) and self.can_slidejump(state)
-                or self.has_gem(state),
+                or self.get_clings(state, 2),
             "Empty Bailey - Alley Goatling": lambda state:
                 self.has_slide(state),
 
@@ -522,12 +522,12 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Twilight Theatre - Stool Around a Table 2": lambda state: True,
             # "Twilight Theatre - Stool Around a Table 3": lambda state: True,
             "Twilight Theatre - Stage Left Stool": lambda state:
-                self.has_gem(state),
+                self.get_clings(state, 4),
             "Twilight Theatre - Stage Right Stool": lambda state:
                 self.can_soulcutter(state)
                 and (
                     self.get_kicks(state, 1)
-                    or self.has_gem(state)
+                    or self.get_clings(state, 2)
                     or self.knows_obscure(state) and self.can_slidejump(state) and self.has_plunge(state)
                     or self.knows_obscure(state) and self.can_slidejump(state) and self.can_bounce(state)),
 
@@ -549,7 +549,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "The Underbelly - Note on a Ledge": lambda state:
                 self.get_kicks(state, 1)
                 or self.has_plunge(state)
-                or self.has_gem(state)
+                or self.get_clings(state, 2)
                 or self.can_bounce(state),
             "The Underbelly - Note in the Big Room": lambda state:
                 self.get_kicks(state, 4) and self.has_plunge(state)
@@ -579,12 +579,12 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 and (
                     self.can_bounce(state)
                     or self.can_attack(state) and self.get_kicks(state, 2)
-                    or self.can_attack(state) and self.has_gem(state)))
+                    or self.can_attack(state) and self.get_clings(state, 2)))
             location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
                 self.has_breaker(state)
                 or self.knows_obscure(state)
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 2)
                     or self.get_kicks(state, 1)
                     or self.has_plunge(state)))
         else:
@@ -602,8 +602,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.has_breaker(state)
                 or self.knows_obscure(state)
                 and (
-                    self.has_gem(state) and self.get_kicks(state, 1) and self.has_plunge(state)
-                    or self.has_gem(state) and self.get_kicks(state, 3)))
+                    self.get_clings(state, 2) and self.get_kicks(state, 1) and self.has_plunge(state)
+                    or self.get_clings(state, 2) and self.get_kicks(state, 3)))
 
         self.apply_clauses(region_clauses, location_clauses)
 

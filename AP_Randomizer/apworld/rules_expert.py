@@ -13,7 +13,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 # get to top of tower
                 self.has_slide(state)  # ultras from right tower directly to pole
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 2)
                     or self.get_kicks(state, 2))
                 or self.can_gold_ultra(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             # "Theatre Main -> Theatre Outside Scythe Corridor": lambda state:
@@ -74,7 +74,9 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Keep Main -> Keep Throne Room": lambda state:
                 self.has_breaker(state)
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 4)
+                    or self.get_clings(state, 2) and self.get_kicks(state, 1)
+                    or self.get_clings(state, 2) and self.can_bounce(state)
                     or self.can_bounce(state) and self.kick_or_plunge(state, 3)
                     or self.has_slide(state) and self.get_kicks(state, 3)),
             "Keep Main -> Keep => Underbelly": lambda state:
@@ -92,7 +94,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Underbelly Light Pillar -> Underbelly Ascendant Light": lambda state:
                 self.has_plunge(state) and self.get_kicks(state, 1)
                 or self.has_slide(state) and self.can_attack(state)
-                or self.can_gold_ultra(state) and self.get_kicks(state, 3) and self.has_gem(state),
+                or self.can_gold_ultra(state) and self.get_kicks(state, 3) and self.get_clings(state, 4),
             "Underbelly Ascendant Light -> Underbelly => Dungeon": lambda state:
                 self.get_kicks(state, 1)
                 and (
@@ -102,8 +104,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state),
             "Underbelly Main Lower -> Underbelly Main Upper": lambda state:
                 self.get_kicks(state, 2)
-                or self.get_kicks(state, 1) and self.has_gem(state)
-                or self.has_slide(state) and self.has_gem(state)
+                or self.get_kicks(state, 1) and self.get_clings(state, 2)
+                or self.has_slide(state) and self.get_clings(state, 4)
                 or self.can_gold_slide_ultra(state) and self.get_kicks(state, 1) and self.has_breaker(state),
             "Underbelly Main Upper -> Underbelly Light Pillar": lambda state:
                 self.has_breaker(state)
@@ -113,7 +115,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 or self.has_slide(state)
                 and (
                     self.kick_or_plunge(state, 3)
-                    or self.has_gem(state))
+                    or self.get_clings(state, 6))
                 or self.can_gold_ultra(state) and self.kick_or_plunge(state, 2),
             "Underbelly Main Upper -> Underbelly By Heliacal": lambda state:
                 self.has_breaker(state)
@@ -125,11 +127,11 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 or self.has_breaker(state)
                 and (
                     self.has_slide(state)
-                    or self.has_gem(state)
+                    or self.get_clings(state, 2)
                     or self.get_kicks(state, 1))
                 or self.has_slide(state)
                 and (
-                    self.has_gem(state)
+                    self.get_clings(state, 2)
                     or self.get_kicks(state, 2)),
         }
 
@@ -145,14 +147,20 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state)
                 and (
                     self.kick_or_plunge(state, 2)
-                    or self.has_gem(state)),
+                    or self.get_clings(state, 2)),
             "Twilight Theatre - Locked Door": lambda state:
                 self.has_small_keys(state) and self.has_slide(state),
             "Twilight Theatre - Back Of Auditorium": lambda state:
                 self.has_slide(state),  # super annoying ultrahops
             "Twilight Theatre - Center Stage": lambda state:
-                self.can_soulcutter(state) and self.has_gem(state),
+                self.can_soulcutter(state) and self.get_clings(state, 4),
             "Tower Remains - Cling Gem": lambda state:
+                self.has_slide(state),
+            "Tower Remains - Cling Gem 1": lambda state:
+                self.has_slide(state),
+            "Tower Remains - Cling Gem 2": lambda state:
+                self.has_slide(state),
+            "Tower Remains - Cling Gem 3": lambda state:
                 self.has_slide(state),
 
             "Dilapidated Dungeon - Dark Orbs": lambda state:
@@ -166,14 +174,11 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 or self.can_bounce(state) and self.get_kicks(state, 1)
                 or self.can_gold_ultra(state) and self.kick_or_plunge(state, 1),
             "Castle Sansa - Floater In Courtyard": lambda state:
-                self.can_bounce(state)
-                and (
-                    self.kick_or_plunge(state, 1)
-                    or self.has_slide(state))
+                self.can_bounce(state) and self.has_slide(state)
                 or self.can_gold_ultra(state) and self.get_kicks(state, 1)
                 or self.has_slide(state) and self.kick_or_plunge(state, 2)
                 or self.get_kicks(state, 3)
-                or self.has_gem(state),
+                or self.get_clings(state, 2),
             "Castle Sansa - Platform In Main Halls": lambda state:
                 self.has_slide(state),
             "Castle Sansa - Tall Room Near Wheel Crawlers": lambda state:
@@ -195,9 +200,11 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 or self.can_gold_ultra(state) and self.has_plunge(state),
             "Castle Sansa - Near Theatre Front": lambda state:
                 self.can_gold_slide_ultra(state)
-                or self.has_slide(state) and self.get_kicks(state, 1),
+                or self.has_slide(state) and self.get_kicks(state, 1)
+                or self.get_clings(state, 4),
             "Castle Sansa - High Climb From Courtyard": lambda state:
                 self.can_attack(state) and self.get_kicks(state, 1)
+                or self.get_clings(state, 2) and self.get_kicks(state, 1)
                 or self.has_slide(state),
             "Listless Library - Upper Back": lambda state:
                 self.can_attack(state) and self.has_slide(state),
@@ -226,7 +233,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.get_kicks(state, 1) and self.has_plunge(state)
                     or self.has_slide(state) and self.get_kicks(state, 2)
-                    or self.can_gold_ultra(state) and self.has_gem(state)),
+                    or self.can_gold_ultra(state) and self.get_clings(state, 2)),
             "The Underbelly - Surrounded By Holes": lambda state:
                 self.can_soulcutter(state) and self.has_slide(state)
                 or self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state),
@@ -241,7 +248,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state),
             "The Underbelly - Note in the Big Room": lambda state:
                 self.has_slide(state)
-                or self.has_gem(state),
+                or self.get_clings(state, 6),
         }
 
         # logic differences due to geometry changes between versions
@@ -261,7 +268,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
                 self.has_slide(state))
             location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
-                self.has_gem(state)
+                self.get_clings(state, 2)
                 or self.has_slide(state) and self.get_kicks(state, 1))
 
         self.apply_clauses(region_clauses, location_clauses)

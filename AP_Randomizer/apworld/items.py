@@ -46,7 +46,8 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         can_create=lambda options: not bool(options.progressive_breaker)),
     "Cling Gem": PseudoregaliaItemData(
         code=2365810008,
-        classification=ItemClassification.progression),
+        classification=ItemClassification.progression,
+        can_create=lambda options: not options.split_cling_gem),
     "Ascendant Light": PseudoregaliaItemData(
         code=2365810009,
         classification=ItemClassification.progression),
@@ -169,7 +170,12 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         precollect=lambda options: 1 if options.start_with_map else 0,
         can_create=lambda options: options.game_version == MAP_PATCH),
 
-    # carve out for Split Gem item 37
+    "Cling Shard": PseudoregaliaItemData(
+        code=2365810037,
+        classification=ItemClassification.progression,
+        frequency=3,
+        can_create=lambda options: bool(options.split_cling_gem),
+    ),
 
     "Healing": PseudoregaliaItemData(
         code=2365810038,

@@ -72,9 +72,6 @@ class PseudoregaliaRulesHelpers:
     def has_plunge(self, state) -> bool:
         return state.has("Sunsetter", self.player)
 
-    def has_gem(self, state) -> bool:
-        return state.has("Cling Gem", self.player)
-
     def can_bounce(self, state) -> bool:
         return self.has_breaker(state) and state.has("Ascendant Light", self.player)
 
@@ -83,24 +80,18 @@ class PseudoregaliaRulesHelpers:
         Using sunsetter is considered Obscure Logic by this method."""
         raise Exception("can_attack() was not set")
 
-    def get_kicks(self, state, count: int) -> bool:
-        kicks: int = 0
-        if (state.has("Sun Greaves", self.player)):
-            kicks += 3
-        kicks += state.count("Heliacal Power", self.player)
-        kicks += state.count("Air Kick", self.player)
-        return kicks >= count
+    def get_kicks(self, state: CollectionState, count: int) -> bool:
+        return state.has("Kick Count", self.player, count)
 
-    def kick_or_plunge(self, state, count: int) -> bool:
+    def get_clings(self, state: CollectionState, count: int) -> bool:
+        return state.has("Cling Count", self.player, count)
+
+    def kick_or_plunge(self, state: CollectionState, count: int) -> bool:
         """Used where one air kick can be replaced with sunsetter.
         Input is the number of kicks needed without plunge."""
-        total: int = 0
-        if (state.has("Sun Greaves", self.player)):
-            total += 3
-        if (state.has("Sunsetter", self.player)):
+        total: int = state.count("Kick Count", self.player)
+        if state.has("Sunsetter", self.player):
             total += 1
-        total += state.count("Heliacal Power", self.player)
-        total += state.count("Air Kick", self.player)
         return total >= count
 
     def has_small_keys(self, state) -> bool:

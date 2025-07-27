@@ -61,6 +61,14 @@ class SplitSunGreaves(Toggle):
     display_name = "Split Sun Greaves"
 
 
+class SplitClingGem(Toggle):
+    """
+    Replaces Cling Gem with three Cling Shard items.
+    Each Cling Shard increases your wall run limit by two.
+    """
+    display_name = "Split Cling Gem"
+
+
 class GameVersion(Choice):
     """
     The version of Pseudoregalia you will use when playing the game. Different versions have different logic, locations, and items.
@@ -145,6 +153,7 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     progressive_breaker: ProgressiveBreaker
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves
+    split_cling_gem: SplitClingGem
     start_with_breaker: StartWithBreaker
     start_with_map: StartWithMap
     randomize_time_trials: RandomizeTimeTrials

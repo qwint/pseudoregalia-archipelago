@@ -188,7 +188,8 @@ location_table = {
 
     "Tower Remains - Cling Gem": PseudoregaliaLocationData(
         code=2365810049,
-        region="Tower Remains"),
+        region="Tower Remains",
+        can_create=lambda options: not options.split_cling_gem),
     "Tower Remains - Atop The Tower": PseudoregaliaLocationData(
         code=2365810050,
         region="The Great Door",),
@@ -244,7 +245,21 @@ location_table = {
         region="Castle Main",
         can_create=lambda options: options.game_version == MAP_PATCH),
 
-    # carve out for 3 split cling locations 63-65
+    "Tower Remains - Cling Gem 1": PseudoregaliaLocationData(
+        code=2365810063,
+        region="Tower Remains",
+        can_create=lambda options: bool(options.split_cling_gem),
+    ),
+    "Tower Remains - Cling Gem 2": PseudoregaliaLocationData(
+        code=2365810064,
+        region="Tower Remains",
+        can_create=lambda options: bool(options.split_cling_gem),
+    ),
+    "Tower Remains - Cling Gem 3": PseudoregaliaLocationData(
+        code=2365810065,
+        region="Tower Remains",
+        can_create=lambda options: bool(options.split_cling_gem),
+    ),
 
     "Dilapidated Dungeon - Mirror Room Goatling": PseudoregaliaLocationData(
         code=2365810066,

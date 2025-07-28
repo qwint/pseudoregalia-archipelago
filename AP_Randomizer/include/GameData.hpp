@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
 #include <vector>
-#include "Collectible.hpp"
+#include "Unreal/UnrealCoreStructs.hpp"
 
 namespace GameData {
 	enum class ItemType {
@@ -43,7 +43,7 @@ namespace GameData {
 	};
 
 	// encodes the location id and spawn position of a time trial collectible
-	typedef std::pair<int64_t, FVector> TimeTrial;
+	typedef std::pair<int64_t, RC::Unreal::FVector> TimeTrial;
 	// encodes the location id and actor class name of an interactable location
 	typedef std::pair<int64_t, std::wstring> Interactable;
 
@@ -55,7 +55,7 @@ namespace GameData {
 	void SetOption(std::string, int);
 	std::unordered_map<std::string, int> GetOptions();
 	std::unordered_map<std::wstring, int> GetUpgradeTable();
-	std::unordered_map<int64_t, Collectible> GetCollectiblesOfZone(Map);
+	std::unordered_map<int64_t, RC::Unreal::FVector> GetCollectiblesOfZone(Map);
 	std::unordered_map<std::wstring, Interactable> GetInteractablesOfZone(Map);
 	std::list<int64_t> GetMissingSpawnableLocations();
 	void SetPseudoItemClassification(int64_t, int64_t);

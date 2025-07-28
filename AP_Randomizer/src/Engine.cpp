@@ -127,9 +127,9 @@ namespace Engine {
 		// This might be worked around by storing positions as three separate numbers instead and constructing the vectors in BP,
 		// but I don't think it's worth changing right now since this is just called once each map load.
 		GameData::Map map = GetCurrentMap();
-		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(map);
-		for (const auto& [id, collectible] : collectible_map) {
-			SpawnCollectible(id, collectible.GetPosition());
+		std::unordered_map<int64_t, FVector> collectible_map = GameData::GetCollectiblesOfZone(map);
+		for (const auto& [id, position] : collectible_map) {
+			SpawnCollectible(id, position);
 		}
 
 		if (Settings::GetInteractableAuraDisplay() == Settings::InteractableAuraDisplay::None) {

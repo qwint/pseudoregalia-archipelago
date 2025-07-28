@@ -20,6 +20,8 @@
 
 ### Building the project
 
+1. *THIS IS REALLY BAD BUT I WILL FIX IT EVENTUALLY WHEN I GET AROUND TO UPDATING THE UE4SS DEP.* Go into `RE-UE4SS/deps/third/CMakeLists.txt` and change the `GIT_TAG` of `UE4SS-RE/ImGuiColorTextEdit.git` from `master` to `v1.1.0`. This will make the submodule dirty; just don't commit it.
+
 1. Build the project with CMake:
 
     ```

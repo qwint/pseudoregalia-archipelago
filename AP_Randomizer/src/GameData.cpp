@@ -448,7 +448,7 @@ namespace GameData {
             // Strikebreak Wall
                 {2365810047, Collectible(FVector(11300, 12700, 3107))},
             // Surrounded By Holes
-                {2365810048, Collectible(FVector(33050, 24100, 3850), tuple<FVector, string, int>{FVector(31900, 26250, 3850), "game_version", FULL_GOLD})},
+                {2365810048, Collectible(FVector(33050, 24100, 3850))},
                     }},
             {Map::Tower, unordered_map<int64_t, Collectible> {
             // Cling Gem

@@ -129,7 +129,7 @@ namespace Engine {
 		GameData::Map map = GetCurrentMap();
 		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(map);
 		for (const auto& [id, collectible] : collectible_map) {
-			SpawnCollectible(id, collectible.GetPosition(GameData::GetOptions()));
+			SpawnCollectible(id, collectible.GetPosition());
 		}
 
 		if (Settings::GetInteractableAuraDisplay() == Settings::InteractableAuraDisplay::None) {
@@ -184,26 +184,6 @@ namespace Engine {
 				ExecuteBlueprintFunction(collectible, L"Despawn", nullptr);
 				break;
 			}
-		}
-	}
-
-	void VerifyVersion() {
-		// this implementation assumes players connect after loading into the game. if the connect flow ever changes,
-		// this will need to be updated
-		if (!GameData::CanHaveTimeTrial(GetCurrentMap())) {
-			Log("Unable to verify game version.", LogType::Error);
-			return;
-		}
-
-		int game_version = GameData::GetOptions().at("game_version");
-		std::vector<UObject*> time_trials{};
-		UObjectGlobals::FindAllOf(L"BP_TimeTrial_C", time_trials);
-		bool time_trials_found = time_trials.size() != 0;
-		if (game_version == GameData::MAP_PATCH && !time_trials_found) {
-			Log("Game version map_patch was chosen in the player options, but it seems like you are playing on full gold. Switch to map patch for the intended experience.", LogType::Error);
-		}
-		else if (game_version == GameData::FULL_GOLD && time_trials_found) {
-			Log("Game version full_gold was chosen in the player options, but it seems like you are playing on map patch. Switch to full gold for the intended experience.", LogType::Error);
 		}
 	}
 

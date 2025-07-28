@@ -2,7 +2,6 @@ from BaseClasses import CollectionState
 from typing import Dict, Callable, TYPE_CHECKING
 from worlds.generic.Rules import add_rule, set_rule, CollectionRule
 from .constants.difficulties import NORMAL, EXPERT, LUNATIC
-from .constants.versions import MAP_PATCH
 from .locations import location_table
 
 if TYPE_CHECKING:
@@ -29,12 +28,10 @@ class PseudoregaliaRulesHelpers:
         self.location_rules = {}
 
         # memoize functions that differ based on options
-        if world.options.game_version == MAP_PATCH:
-            self.can_gold_ultra = self.can_slidejump
-            self.can_gold_slide_ultra = lambda state: False
-        else:
+        if world.options.full_gold_slide:
             self.can_gold_ultra = self.has_slide
-            self.can_gold_slide_ultra = self.has_slide
+        else:
+            self.can_gold_ultra = self.can_slidejump
 
         logic_level = world.options.logic_level.value
         if logic_level in (EXPERT, LUNATIC):
@@ -108,12 +105,8 @@ class PseudoregaliaRulesHelpers:
                 or state.count("Progressive Slide", self.player) >= 2)
 
     def can_gold_ultra(self, state) -> bool:
-        """Used when a gold ultra is needed and it is possible to solar ultra."""
+        """Used when a gold ultra is needed."""
         raise Exception("can_gold_ultra() was not set")
-
-    def can_gold_slide_ultra(self, state) -> bool:
-        """Used when a gold ultra is needed but it is not possible to solar ultra."""
-        raise Exception("can_gold_slide_ultra() was not set")
 
     def can_strikebreak(self, state) -> bool:
         return (state.has_all({"Dream Breaker", "Strikebreak"}, self.player)

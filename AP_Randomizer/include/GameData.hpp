@@ -68,6 +68,7 @@ namespace GameData {
 	Map MapNameToEnum(std::wstring);
 	bool ToggleSlideJump();
 	bool SlideJumpDisabled();
+	bool HackCappedModifier();
 	bool CanHaveTimeTrial(Map);
 	std::optional<TimeTrial> GetTimeTrial(Map, std::wstring);
 	void Interact(std::wstring);

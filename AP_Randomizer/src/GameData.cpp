@@ -31,6 +31,7 @@ namespace GameData {
         unordered_map<string, int> options;
         bool slidejump_owned;
         bool slidejump_disabled;
+        bool full_gold_slide;
 
         // map -> actor name -> location id + actor class name
         unordered_map<Map, unordered_map<wstring, Interactable>> interactable_table = {
@@ -232,6 +233,9 @@ namespace GameData {
 
     void GameData::SetOption(string option_name, int value) {
         Log("Set option " + option_name + " to " + std::to_string(value));
+        if (option_name == "full_gold_slide") {
+            full_gold_slide = value;
+        }
         options[option_name] = value;
     }
 
@@ -521,6 +525,7 @@ namespace GameData {
 
         slidejump_owned = false;
         slidejump_disabled = false;
+        full_gold_slide = false;
         small_keys = 0;
         for (bool &k : major_keys) {
             k = false;
@@ -532,6 +537,7 @@ namespace GameData {
         time_trial_table = {};
         slidejump_owned = false;
         slidejump_disabled = false;
+        full_gold_slide = false;
         small_keys = 0;
         for (bool &k : major_keys) {
             k = false;
@@ -622,6 +628,10 @@ namespace GameData {
 
     bool GameData::SlideJumpDisabled() {
         return slidejump_disabled;
+    }
+
+    bool GameData::HackCappedModifier() {
+        return full_gold_slide || slidejump_owned && slidejump_disabled;
     }
 
     bool CanHaveTimeTrial(Map map) {

@@ -315,17 +315,22 @@ namespace Engine {
 				TArray<FName> names;
 				TArray<int> counts;
 				bool slidejump_disabled;
+				bool hack_capped_modifier;
 			};
 			TArray<FName> ue_names;
 			TArray<int> ue_counts;
-			bool toggle = GameData::SlideJumpDisabled();
 
 			for (const auto& [upgrade_name, upgrade_count] : GameData::GetUpgradeTable()) {
 				FName new_name(upgrade_name);
 				ue_names.Add(new_name);
 				ue_counts.Add(upgrade_count);
 			}
-			shared_ptr<void> upgrade_params(new AddUpgradeInfo{ ue_names, ue_counts, toggle });
+			shared_ptr<void> upgrade_params(new AddUpgradeInfo{
+				ue_names,
+				ue_counts,
+				GameData::SlideJumpDisabled(),
+				GameData::HackCappedModifier()
+			});
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SetUpgrades", upgrade_params);
 		}
 

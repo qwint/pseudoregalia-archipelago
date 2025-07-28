@@ -377,8 +377,6 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.can_bounce(state) and self.get_kicks(state, 2)
                 or self.get_kicks(state, 4)
                 or self.knows_obscure(state) and self.can_bounce(state) and self.get_kicks(state, 1),
-            "Castle Sansa - Locked Door": lambda state:
-                self.has_small_keys(state),
             "Castle Sansa - Platform In Main Halls": lambda state:
                 self.has_plunge(state)
                 or self.get_clings(state, 2)

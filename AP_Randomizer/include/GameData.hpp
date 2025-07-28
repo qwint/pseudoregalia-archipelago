@@ -1,12 +1,9 @@
 #pragma once
 #include <map>
 #include <vector>
-#include "Collectible.hpp"
+#include "Unreal/UnrealCoreStructs.hpp"
 
 namespace GameData {
-	const int MAP_PATCH = 1;
-	const int FULL_GOLD = 2;
-
 	enum class ItemType {
 		MajorAbility,
 		MinorAbility,
@@ -46,7 +43,7 @@ namespace GameData {
 	};
 
 	// encodes the location id and spawn position of a time trial collectible
-	typedef std::pair<int64_t, FVector> TimeTrial;
+	typedef std::pair<int64_t, RC::Unreal::FVector> TimeTrial;
 	// encodes the location id and actor class name of an interactable location
 	typedef std::pair<int64_t, std::wstring> Interactable;
 
@@ -58,7 +55,7 @@ namespace GameData {
 	void SetOption(std::string, int);
 	std::unordered_map<std::string, int> GetOptions();
 	std::unordered_map<std::wstring, int> GetUpgradeTable();
-	std::unordered_map<int64_t, Collectible> GetCollectiblesOfZone(Map);
+	std::unordered_map<int64_t, RC::Unreal::FVector> GetCollectiblesOfZone(Map);
 	std::unordered_map<std::wstring, Interactable> GetInteractablesOfZone(Map);
 	std::list<int64_t> GetMissingSpawnableLocations();
 	void SetPseudoItemClassification(int64_t, int64_t);
@@ -68,6 +65,7 @@ namespace GameData {
 	Map MapNameToEnum(std::wstring);
 	bool ToggleSlideJump();
 	bool SlideJumpDisabled();
+	bool HackCappedModifier();
 	bool CanHaveTimeTrial(Map);
 	std::optional<TimeTrial> GetTimeTrial(Map, std::wstring);
 	void Interact(std::wstring);

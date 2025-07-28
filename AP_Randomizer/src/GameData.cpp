@@ -13,6 +13,7 @@ namespace GameData {
     using std::optional;
     using std::pair;
     using std::tuple;
+    using RC::Unreal::FVector;
 
     // Private members
     namespace {
@@ -25,12 +26,13 @@ namespace GameData {
         int small_keys;
         bool major_keys[5];
         unordered_map<wstring, int> upgrade_table;
-        unordered_map<Map, unordered_map<int64_t, Collectible>> collectible_table;
+        unordered_map<Map, unordered_map<int64_t, FVector>> collectible_table;
         unordered_map<Map, unordered_map<wstring, TimeTrial>> time_trial_table;
         unordered_map<int64_t, Classification> lookup_location_id_to_classification;
         unordered_map<string, int> options;
         bool slidejump_owned;
         bool slidejump_disabled;
+        bool full_gold_slide;
 
         // map -> actor name -> location id + actor class name
         unordered_map<Map, unordered_map<wstring, Interactable>> interactable_table = {
@@ -232,6 +234,9 @@ namespace GameData {
 
     void GameData::SetOption(string option_name, int value) {
         Log("Set option " + option_name + " to " + std::to_string(value));
+        if (option_name == "full_gold_slide") {
+            full_gold_slide = value;
+        }
         options[option_name] = value;
     }
 
@@ -239,7 +244,7 @@ namespace GameData {
         return options;
     }
 
-    unordered_map<int64_t, Collectible> GameData::GetCollectiblesOfZone(Map current_map) {
+    unordered_map<int64_t, FVector> GameData::GetCollectiblesOfZone(Map current_map) {
         return collectible_table[current_map];
     }
 
@@ -328,136 +333,78 @@ namespace GameData {
         using std::pair;
 
         collectible_table = {
-            {Map::Dungeon, unordered_map<int64_t, Collectible>{
-            // Dream Breaker
-                {2365810001, Collectible(FVector(-3500.0, 4950.0, -50.0))},
-            // Slide
-                {2365810002, Collectible(FVector(16650, 2600, 2350))},
-            // Alcove Near Mirror
-                {2365810003, Collectible(FVector(1150, -400, 1050))},
-            // Dark Orbs
-                {2365810004, Collectible(FVector(18250, -9750, 4200))},
-            // Past Poles
-                {2365810005, Collectible(FVector(6800, 8850, 3850))},
-            // Rafters
-                {2365810006, Collectible(FVector(7487, 1407, 4250))},
-            // Strong Eyes
-                {2365810007, Collectible(FVector(750, 8850, 2650))},
-                    }},
-            {Map::Castle, unordered_map<int64_t, Collectible> {
-            // Indignation
-                {2365810008, Collectible(FVector(5400, 2100, -550))},
-            // Alcove Near Dungeon
-                {2365810009, Collectible(FVector(1600, 8000, -1400))},
-            // Balcony
-                {2365810010, Collectible(FVector(16400, 3800, 1200))},
-            // Corner Corridor
-                {2365810011, Collectible(FVector(11850, 1000, -300))},
-            // Floater In Courtyard
-                {2365810012, Collectible(FVector(-5000, -600, 2050))},
-            // Locked Door
-                {2365810013, Collectible(FVector(2700, -1700, -500))},
-            // Platform In Main Halls
-                {2365810014, Collectible(FVector(7950, 2750, -200))},
-            // Tall Room Near Wheel Crawlers
-                {2365810015, Collectible(FVector(-4100, -8200, 2950))},
-            // Wheel Crawlers
-                {2365810016, Collectible(FVector(-10050, -3700, 1000))},
-            // High Climb From Courtyard
-                {2365810017, Collectible(FVector(-3150, 11500, 6300))},
-            // Alcove Near Scythe Corridor
-                {2365810018, Collectible(FVector(-9600, 21750, 5400))},
-            // Near Theatre Front
-                {2365810019, Collectible(FVector(3390, 21150, 6600))},
-            // Memento
-                {2365810062, Collectible(FVector(8950, 6450, -175))},
-                    }},
-            {Map::Keep, unordered_map<int64_t, Collectible> {
-            // Strikebreak
-                {2365810020, Collectible(FVector(10050, 1800, 1000))},
-            // Alcove Near Locked Door
-                {2365810021, Collectible(FVector(800, 2500, 1200))},
-            // Levers Room
-                {2365810022, Collectible(FVector(1050, 15700, 1300))},
-            // Lonely Throne
-                {2365810023, Collectible(FVector(14350, -50, 1350))},
-            // Near Theatre
-                {2365810024, Collectible(FVector(-3900, -6109, -450))},
-            // Sunsetter
-                {2365810025, Collectible(FVector(-3000, 4900, -400))},
-                    }},
-            {Map::Library, unordered_map<int64_t, Collectible> {
-            // Sun Greaves
-                {2365810026, Collectible(FVector(-4150, 9200, -100))},
-            // Upper Back
-                {2365810027, Collectible(FVector(-9250, -1850, 1250))},
-            // Locked Door Across
-                {2365810028, Collectible(FVector(-1300, -6750, -700))},
-            // Locked Door Left
-                {2365810029, Collectible(FVector(-3750, -4170, -700))},
-            // Split Greaves 1
-                {2365810051, Collectible(FVector(-4150, 9160, 0))},
-            // Split Greaves 2
-                {2365810052, Collectible(FVector(-4100, 9250, -100))},
-            // Split Greaves 3
-                {2365810053, Collectible(FVector(-4200, 9250, -100))},
-                    }},
-            {Map::Theatre, unordered_map<int64_t, Collectible> {
-            // Soul Cutter
-                {2365810030, Collectible(FVector(8500, 7850, -1400))},
-            // Back Of Auditorium
-                {2365810031, Collectible(FVector(-1600, 1500, 2600))},
-            // Center Stage
-                {2365810032, Collectible(FVector(5200, 1550, 700))},
-            // Locked Door
-                {2365810033, Collectible(FVector(-1460, -2550, 2240))},
-            // Tucked Behind Boxes
-                {2365810034, Collectible(FVector(255, 1150, 50))},
-            // Corner Beam
-                {2365810035, Collectible(FVector(-14100, -150, 1950))},
-                    }},
-            {Map::Bailey, unordered_map<int64_t, Collectible> {
-            // Solar Wind
-                {2365810036, Collectible(FVector(-1100, 10850, 150))},
-            // Center Steeple
-                {2365810037, Collectible(FVector(2350, 7260, 2110))},
-            // Cheese Bell
-                {2365810038, Collectible(FVector(5040, 7150, 2500))},
-            // Guarded Hand
-                {2365810039, Collectible(FVector(-1787, 5236, 650))},
-            // Inside Building
-                {2365810040, Collectible(FVector(3007, 3457, 300))},
-                    }},
-            {Map::Underbelly, unordered_map<int64_t, Collectible> {
-            // Ascendant Light
-                {2365810041, Collectible(FVector(-5400, 6650, 6750))},
-            // Alcove Near Light
-                {2365810042, Collectible(FVector(-2550, 12300, 4400))},
-            // Building Near Little Guy
-                {2365810043, Collectible(FVector(-4350, 28350, 1850))},
-            // Locked Door
-                {2365810044, Collectible(FVector(18896, 7937, 1200))},
-            // Main Room
-                {2365810045, Collectible(FVector(-726, 19782, 3200))},
-            // Rafters Near Keep
-                {2365810046, Collectible(FVector(19600, 17750, 5700))},
-            // Strikebreak Wall
-                {2365810047, Collectible(FVector(11300, 12700, 3107))},
-            // Surrounded By Holes
-                {2365810048, Collectible(FVector(33050, 24100, 3850), tuple<FVector, string, int>{FVector(31900, 26250, 3850), "game_version", FULL_GOLD})},
-                    }},
-            {Map::Tower, unordered_map<int64_t, Collectible> {
-            // Cling Gem
-                {2365810049, Collectible(FVector(13350, 5250, 4150))},
-            // Atop The Tower
-                {2365810050, Collectible(FVector(9650, 5250, 7100))},
-            // Cling Gem 1
-                {2365810063, Collectible(FVector(13350, 4750, 4150))},
-            // Cling Gem 2
-                {2365810064, Collectible(FVector(13350, 5250, 4150))},
-            // Cling Gem 3
-                {2365810065, Collectible(FVector(13350, 5750, 4150))},
-                    }},
+            {Map::Dungeon, unordered_map<int64_t, FVector>{
+                {2365810001, FVector(-3500.0, 4950.0, -50.0)}, // Dream Breaker
+                {2365810002, FVector(16650, 2600, 2350)}, // Slide
+                {2365810003, FVector(1150, -400, 1050)}, // Alcove Near Mirror
+                {2365810004, FVector(18250, -9750, 4200)}, // Dark Orbs
+                {2365810005, FVector(6800, 8850, 3850)}, // Past Poles
+                {2365810006, FVector(7487, 1407, 4250)}, // Rafters
+                {2365810007, FVector(750, 8850, 2650)}, // Strong Eyes
+            }},
+            {Map::Castle, unordered_map<int64_t, FVector> {
+                {2365810008, FVector(5400, 2100, -550)}, // Indignation
+                {2365810009, FVector(1600, 8000, -1400)}, // Alcove Near Dungeon
+                {2365810010, FVector(16400, 3800, 1200)}, // Balcony
+                {2365810011, FVector(11850, 1000, -300)}, // Corner Corridor
+                {2365810012, FVector(-5000, -600, 2050)}, // Floater In Courtyard
+                {2365810014, FVector(7950, 2750, -200)}, // Platform In Main Halls
+                {2365810015, FVector(-4100, -8200, 2950)}, // Tall Room Near Wheel Crawlers
+                {2365810016, FVector(-10050, -3700, 1000)}, // Wheel Crawlers
+                {2365810017, FVector(-3150, 11500, 6300)}, // High Climb From Courtyard
+                {2365810018, FVector(-9600, 21750, 5400)}, // Alcove Near Scythe Corridor
+                {2365810019, FVector(3390, 21150, 6600)}, // Near Theatre Front
+                {2365810062, FVector(8950, 6450, -175)}, // Memento
+            }},
+            {Map::Keep, unordered_map<int64_t, FVector> {
+                {2365810020, FVector(10050, 1800, 1000)}, // Strikebreak
+                {2365810021, FVector(800, 2500, 1200)}, // Alcove Near Locked Door
+                {2365810022, FVector(1050, 15700, 1300)}, // Levers Room
+                {2365810023, FVector(14350, -50, 1350)}, // Lonely Throne
+                {2365810024, FVector(-3900, -6109, -450)}, // Near Theatre
+                {2365810025, FVector(-3000, 4900, -400)}, // Sunsetter
+            }},
+            {Map::Library, unordered_map<int64_t, FVector> {
+                {2365810026, FVector(-4150, 9200, -100)}, // Sun Greaves
+                {2365810027, FVector(-9250, -1850, 1250)}, // Upper Back
+                {2365810028, FVector(-1300, -6750, -700)}, // Locked Door Across
+                {2365810029, FVector(-3750, -4170, -700)}, // Locked Door Left
+                {2365810051, FVector(-4150, 9160, 0)}, // Split Greaves 1
+                {2365810052, FVector(-4100, 9250, -100)}, // Split Greaves 2
+                {2365810053, FVector(-4200, 9250, -100)}, // Split Greaves 3
+            }},
+            {Map::Theatre, unordered_map<int64_t, FVector> {
+                {2365810030, FVector(8500, 7850, -1400)}, // Soul Cutter
+                {2365810031, FVector(-1600, 1500, 2600)}, // Back Of Auditorium
+                {2365810032, FVector(5200, 1550, 700)}, // Center Stage
+                {2365810033, FVector(-1460, -2550, 2240)}, // Locked Door
+                {2365810034, FVector(255, 1150, 50)}, // Tucked Behind Boxes
+                {2365810035, FVector(-14100, -150, 1950)}, // Corner Beam
+            }},
+            {Map::Bailey, unordered_map<int64_t, FVector> {
+                {2365810036, FVector(-1100, 10850, 150)}, // Solar Wind
+                {2365810037, FVector(2350, 7260, 2110)}, // Center Steeple
+                {2365810038, FVector(5040, 7150, 2500)}, // Cheese Bell
+                {2365810039, FVector(-1787, 5236, 650)}, // Guarded Hand
+                {2365810040, FVector(3007, 3457, 300)}, // Inside Building
+            }},
+            {Map::Underbelly, unordered_map<int64_t, FVector> {
+                {2365810041, FVector(-5400, 6650, 6750)}, // Ascendant Light
+                {2365810042, FVector(-2550, 12300, 4400)}, // Alcove Near Light
+                {2365810043, FVector(-4350, 28350, 1850)}, // Building Near Little Guy
+                {2365810044, FVector(18896, 7937, 1200)}, // Locked Door
+                {2365810045, FVector(-726, 19782, 3200)}, // Main Room
+                {2365810046, FVector(19600, 17750, 5700)}, // Rafters Near Keep
+                {2365810047, FVector(11300, 12700, 3107)}, // Strikebreak Wall
+                {2365810048, FVector(33050, 24100, 3850)}, // Surrounded By Holes
+            }},
+            {Map::Tower, unordered_map<int64_t, FVector> {
+                {2365810049, FVector(13350, 5250, 4150)}, // Cling Gem
+                {2365810050, FVector(9650, 5250, 7100)}, // Atop The Tower
+                {2365810063, FVector(13350, 4750, 4150)}, // Cling Gem 1
+                {2365810064, FVector(13350, 5250, 4150)}, // Cling Gem 2
+                {2365810065, FVector(13350, 5750, 4150)}, // Cling Gem 3
+            }},
         };
 
         // map -> time trial actor name -> location id + position
@@ -521,6 +468,7 @@ namespace GameData {
 
         slidejump_owned = false;
         slidejump_disabled = false;
+        full_gold_slide = false;
         small_keys = 0;
         for (bool &k : major_keys) {
             k = false;
@@ -532,6 +480,7 @@ namespace GameData {
         time_trial_table = {};
         slidejump_owned = false;
         slidejump_disabled = false;
+        full_gold_slide = false;
         small_keys = 0;
         for (bool &k : major_keys) {
             k = false;
@@ -622,6 +571,10 @@ namespace GameData {
 
     bool GameData::SlideJumpDisabled() {
         return slidejump_disabled;
+    }
+
+    bool GameData::HackCappedModifier() {
+        return full_gold_slide || slidejump_owned && slidejump_disabled;
     }
 
     bool CanHaveTimeTrial(Map map) {

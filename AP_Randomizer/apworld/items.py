@@ -1,6 +1,5 @@
 from BaseClasses import Item, ItemClassification
 from typing import NamedTuple, Dict, Set, Callable
-from .constants.versions import MAP_PATCH
 from .options import PseudoregaliaOptions
 
 
@@ -83,7 +82,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         classification=ItemClassification.filler),
     "Professionalism": PseudoregaliaItemData(
         code=2365810018,
-        precollect=lambda options: 1 if options.game_version == MAP_PATCH and not options.randomize_time_trials else 0,
+        precollect=lambda options: 1 if not options.randomize_time_trials else 0,
         classification=ItemClassification.filler),
 
     "Health Piece": PseudoregaliaItemData(
@@ -132,43 +131,43 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         code=2365810029,
         classification=ItemClassification.filler,
         precollect=lambda options: 1 if not options.randomize_time_trials else 0,
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
     "A Guardian": PseudoregaliaItemData(
         code=2365810030,
         classification=ItemClassification.filler,
         precollect=lambda options: 1 if not options.randomize_time_trials else 0,
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
     "Sweater": PseudoregaliaItemData(
         code=2365810031,
         classification=ItemClassification.filler,
         precollect=lambda options: 1 if not options.randomize_time_trials else 0,
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
     "Class": PseudoregaliaItemData(
         code=2365810032,
         classification=ItemClassification.filler,
         precollect=lambda options: 1 if not options.randomize_time_trials else 0,
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
     "Chivalry": PseudoregaliaItemData(
         code=2365810033,
         classification=ItemClassification.filler,
         precollect=lambda options: 1 if not options.randomize_time_trials else 0,
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
     "Nostalgia": PseudoregaliaItemData(
         code=2365810034,
         classification=ItemClassification.filler,
         precollect=lambda options: 1 if not options.randomize_time_trials else 0,
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
     "A Bleeding Heart": PseudoregaliaItemData(
         code=2365810035,
         classification=ItemClassification.filler,
         precollect=lambda options: 1 if not options.randomize_time_trials else 0,
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
 
     "Memento": PseudoregaliaItemData(
         code=2365810036,
         classification=ItemClassification.useful,
         precollect=lambda options: 1 if options.start_with_map else 0,
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
 
     "Cling Shard": PseudoregaliaItemData(
         code=2365810037,

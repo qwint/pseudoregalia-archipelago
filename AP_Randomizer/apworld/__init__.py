@@ -10,7 +10,6 @@ from .rules_expert import PseudoregaliaExpertRules
 from .rules_lunatic import PseudoregaliaLunaticRules
 from typing import Dict, Any
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
-from .constants.versions import FULL_GOLD
 
 class PseudoregaliaWorld(World):
     game = "Pseudoregalia"
@@ -82,10 +81,6 @@ class PseudoregaliaWorld(World):
         if self.options.logic_level in (EXPERT, LUNATIC):
             # obscure is forced on for expert/lunatic difficulties
             self.options.obscure_logic.value = 1
-        if self.options.game_version == FULL_GOLD:
-            # zero out options that don't do anything on full gold
-            self.options.start_with_map.value = 0
-            self.options.randomize_time_trials.value = 0
 
     def create_regions(self):
         for region_name in region_table.keys():
@@ -107,13 +102,13 @@ class PseudoregaliaWorld(World):
 
     def fill_slot_data(self) -> Dict[str, Any]:
         return {
-            "game_version": self.options.game_version.value,
             "logic_level": self.options.logic_level.value,
             "obscure_logic": bool(self.options.obscure_logic),
             "progressive_breaker": bool(self.options.progressive_breaker),
             "progressive_slide": bool(self.options.progressive_slide),
             "split_sun_greaves": bool(self.options.split_sun_greaves),
             "split_cling_gem": bool(self.options.split_cling_gem),
+            "full_gold_slide": bool(self.options.full_gold_slide),
             "randomize_time_trials": bool(self.options.randomize_time_trials),
             "randomize_goats": bool(self.options.randomize_goats),
             "randomize_chairs": bool(self.options.randomize_chairs),

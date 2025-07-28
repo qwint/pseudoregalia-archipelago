@@ -127,9 +127,9 @@ namespace Engine {
 		// This might be worked around by storing positions as three separate numbers instead and constructing the vectors in BP,
 		// but I don't think it's worth changing right now since this is just called once each map load.
 		GameData::Map map = GetCurrentMap();
-		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(map);
-		for (const auto& [id, collectible] : collectible_map) {
-			SpawnCollectible(id, collectible.GetPosition(GameData::GetOptions()));
+		std::unordered_map<int64_t, FVector> collectible_map = GameData::GetCollectiblesOfZone(map);
+		for (const auto& [id, position] : collectible_map) {
+			SpawnCollectible(id, position);
 		}
 
 		if (Settings::GetInteractableAuraDisplay() == Settings::InteractableAuraDisplay::None) {
@@ -184,26 +184,6 @@ namespace Engine {
 				ExecuteBlueprintFunction(collectible, L"Despawn", nullptr);
 				break;
 			}
-		}
-	}
-
-	void VerifyVersion() {
-		// this implementation assumes players connect after loading into the game. if the connect flow ever changes,
-		// this will need to be updated
-		if (!GameData::CanHaveTimeTrial(GetCurrentMap())) {
-			Log("Unable to verify game version.", LogType::Error);
-			return;
-		}
-
-		int game_version = GameData::GetOptions().at("game_version");
-		std::vector<UObject*> time_trials{};
-		UObjectGlobals::FindAllOf(L"BP_TimeTrial_C", time_trials);
-		bool time_trials_found = time_trials.size() != 0;
-		if (game_version == GameData::MAP_PATCH && !time_trials_found) {
-			Log("Game version map_patch was chosen in the player options, but it seems like you are playing on full gold. Switch to map patch for the intended experience.", LogType::Error);
-		}
-		else if (game_version == GameData::FULL_GOLD && time_trials_found) {
-			Log("Game version full_gold was chosen in the player options, but it seems like you are playing on map patch. Switch to full gold for the intended experience.", LogType::Error);
 		}
 	}
 
@@ -315,17 +295,22 @@ namespace Engine {
 				TArray<FName> names;
 				TArray<int> counts;
 				bool slidejump_disabled;
+				bool hack_capped_modifier;
 			};
 			TArray<FName> ue_names;
 			TArray<int> ue_counts;
-			bool toggle = GameData::SlideJumpDisabled();
 
 			for (const auto& [upgrade_name, upgrade_count] : GameData::GetUpgradeTable()) {
 				FName new_name(upgrade_name);
 				ue_names.Add(new_name);
 				ue_counts.Add(upgrade_count);
 			}
-			shared_ptr<void> upgrade_params(new AddUpgradeInfo{ ue_names, ue_counts, toggle });
+			shared_ptr<void> upgrade_params(new AddUpgradeInfo{
+				ue_names,
+				ue_counts,
+				GameData::SlideJumpDisabled(),
+				GameData::HackCappedModifier()
+			});
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SetUpgrades", upgrade_params);
 		}
 

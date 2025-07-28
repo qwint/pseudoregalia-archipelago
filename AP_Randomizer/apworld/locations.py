@@ -1,6 +1,5 @@
 from BaseClasses import Location
 from typing import NamedTuple, Callable
-from .constants.versions import MAP_PATCH, FULL_GOLD
 from .options import PseudoregaliaOptions
 
 
@@ -70,10 +69,7 @@ location_table = {
     "Castle Sansa - Floater In Courtyard": PseudoregaliaLocationData(
         code=2365810012,
         region="Castle Main",),
-    "Castle Sansa - Locked Door": PseudoregaliaLocationData(
-        code=2365810013,
-        region="Castle Main",
-        can_create=lambda options: options.game_version == FULL_GOLD),
+    # 13 used to be Locked Door but has been replaced by time trial (55)
     "Castle Sansa - Platform In Main Halls": PseudoregaliaLocationData(
         code=2365810014,
         region="Castle Main",),
@@ -210,40 +206,40 @@ location_table = {
     "Dilapidated Dungeon - Time Trial": PseudoregaliaLocationData(
         code=2365810054,
         region="Dungeon Mirror",
-        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
+        can_create=lambda options: bool(options.randomize_time_trials)),
     "Castle Sansa - Time Trial": PseudoregaliaLocationData(
         code=2365810055,
         region="Castle Main",
-        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
+        can_create=lambda options: bool(options.randomize_time_trials)),
     "Sansa Keep - Time Trial": PseudoregaliaLocationData(
         code=2365810056,
         region="Keep Throne Room",
-        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
+        can_create=lambda options: bool(options.randomize_time_trials)),
     "Listless Library - Time Trial": PseudoregaliaLocationData(
         code=2365810057,
         region="Library Main",
-        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
+        can_create=lambda options: bool(options.randomize_time_trials)),
     "Twilight Theatre - Time Trial": PseudoregaliaLocationData(
         code=2365810058,
         region="Theatre Pillar",
-        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
+        can_create=lambda options: bool(options.randomize_time_trials)),
     "Empty Bailey - Time Trial": PseudoregaliaLocationData(
         code=2365810059,
         region="Bailey Upper",
-        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
+        can_create=lambda options: bool(options.randomize_time_trials)),
     "The Underbelly - Time Trial": PseudoregaliaLocationData(
         code=2365810060,
         region="Underbelly Main Upper",
-        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
+        can_create=lambda options: bool(options.randomize_time_trials)),
     "Tower Remains - Time Trial": PseudoregaliaLocationData(
         code=2365810061,
         region="The Great Door",
-        can_create=lambda options: options.game_version == MAP_PATCH and options.randomize_time_trials),
+        can_create=lambda options: bool(options.randomize_time_trials)),
 
     "Castle Sansa - Memento": PseudoregaliaLocationData(
         code=2365810062,
         region="Castle Main",
-        can_create=lambda options: options.game_version == MAP_PATCH),
+    ),
 
     "Tower Remains - Cling Gem 1": PseudoregaliaLocationData(
         code=2365810063,
@@ -309,12 +305,12 @@ location_table = {
     "Castle Sansa - Memento Goatling": PseudoregaliaLocationData(
         code=2365810075,
         region="Castle Main",
-        can_create=lambda options: options.randomize_goats and options.game_version == MAP_PATCH,
+        can_create=lambda options: bool(options.randomize_goats),
     ),
     "Castle Sansa - Goatling Near Library": PseudoregaliaLocationData(
         code=2365810076,
         region="Castle Main",
-        can_create=lambda options: options.randomize_goats and options.game_version == MAP_PATCH,
+        can_create=lambda options: bool(options.randomize_goats),
     ),
     "Sansa Keep - Furniture-less Goatling": PseudoregaliaLocationData(
         code=2365810077,

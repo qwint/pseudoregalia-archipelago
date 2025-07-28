@@ -1,5 +1,4 @@
 from .rules import PseudoregaliaRulesHelpers
-from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
@@ -17,6 +16,13 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Bailey Upper -> Bailey Lower": lambda state: True,
             "Bailey Upper -> Underbelly => Bailey": lambda state:
                 self.has_plunge(state),
+            "Bailey Upper -> Tower Remains": lambda state:
+                (self.kick_or_plunge(state, 4)
+                or self.get_kicks(state, 1) and self.has_plunge(state) and self.can_bounce(state))
+                and (
+                    # get onto the bridge
+                    self.can_slidejump(state)
+                    or self.has_plunge(state) and self.knows_obscure(state)),
             "Tower Remains -> The Great Door": lambda state:
                 self.can_attack(state) and self.get_clings(state, 2) and self.kick_or_plunge(state, 1),
             "Theatre Main -> Theatre Outside Scythe Corridor": lambda state:
@@ -70,7 +76,20 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 self.knows_obscure(state) and self.can_attack(state) and self.navigate_darkrooms(state),
             "Dungeon Strong Eyes -> Dungeon Slide": lambda state:
                 self.has_slide(state),
+            "Dungeon Strong Eyes -> Dungeon => Castle": lambda state:
+                self.has_small_keys(state)
+                or self.knows_obscure(state)
+                and (
+                    self.can_bounce(state)
+                    or self.can_attack(state) and self.get_kicks(state, 2)
+                    or self.can_attack(state) and self.get_clings(state, 2)),
             # "Dungeon => Castle -> Dungeon Mirror": lambda state: True,
+            "Dungeon => Castle -> Dungeon Strong Eyes": lambda state:
+                self.has_small_keys(state)
+                or self.knows_obscure(state)
+                and (
+                    self.has_plunge(state)
+                    or self.has_breaker(state) and self.get_kicks(state, 1)),
             # "Dungeon => Castle -> Castle Main": lambda state: True,
             "Dungeon Escape Lower -> Dungeon Slide": lambda state:
                 self.can_attack(state),
@@ -333,6 +352,13 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.kick_or_plunge(state, 3)
                 or self.knows_obscure(state) and self.can_bounce(state) and self.get_clings(state, 2),
+            "Dilapidated Dungeon - Strong Eyes": lambda state:
+                self.has_breaker(state)
+                or self.knows_obscure(state)
+                and (
+                    self.get_clings(state, 2)
+                    or self.get_kicks(state, 1)
+                    or self.has_plunge(state)),
             # "Castle Sansa - Indignation": lambda state: True,
             "Castle Sansa - Alcove Near Dungeon": lambda state:
                 self.get_clings(state, 2)
@@ -351,8 +377,6 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.can_bounce(state) and self.get_kicks(state, 2)
                 or self.get_kicks(state, 4)
                 or self.knows_obscure(state) and self.can_bounce(state) and self.get_kicks(state, 1),
-            "Castle Sansa - Locked Door": lambda state:
-                self.has_small_keys(state),
             "Castle Sansa - Platform In Main Halls": lambda state:
                 self.has_plunge(state)
                 or self.get_clings(state, 2)
@@ -557,53 +581,6 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "The Underbelly - Note Behind a Locked Door": lambda state:
                 self.has_small_keys(state),
         }
-
-        # logic differences due to geometry changes between versions
-        if self.world.options.game_version == MAP_PATCH:
-            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
-                (self.kick_or_plunge(state, 4)
-                or self.get_kicks(state, 1) and self.has_plunge(state) and self.can_bounce(state))
-                and (
-                    # get onto the bridge
-                    self.can_slidejump(state)
-                    or self.has_plunge(state) and self.knows_obscure(state)))
-            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
-                self.has_small_keys(state)
-                or self.knows_obscure(state)
-                and (
-                    self.has_plunge(state)
-                    or self.has_breaker(state) and self.get_kicks(state, 1)))
-            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
-                self.has_small_keys(state)
-                or self.knows_obscure(state)
-                and (
-                    self.can_bounce(state)
-                    or self.can_attack(state) and self.get_kicks(state, 2)
-                    or self.can_attack(state) and self.get_clings(state, 2)))
-            location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
-                self.has_breaker(state)
-                or self.knows_obscure(state)
-                and (
-                    self.get_clings(state, 2)
-                    or self.get_kicks(state, 1)
-                    or self.has_plunge(state)))
-        else:
-            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
-                self.kick_or_plunge(state, 4)
-                and (
-                    # get onto the bridge
-                    self.can_slidejump(state)
-                    or self.has_plunge(state) and self.knows_obscure(state)))
-            region_clauses["Dungeon => Castle -> Dungeon Strong Eyes"] = (lambda state:
-                self.has_small_keys(state))
-            region_clauses["Dungeon Strong Eyes -> Dungeon => Castle"] = (lambda state:
-                self.has_small_keys(state))
-            location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
-                self.has_breaker(state)
-                or self.knows_obscure(state)
-                and (
-                    self.get_clings(state, 2) and self.get_kicks(state, 1) and self.has_plunge(state)
-                    or self.get_clings(state, 2) and self.get_kicks(state, 3)))
 
         self.apply_clauses(region_clauses, location_clauses)
 

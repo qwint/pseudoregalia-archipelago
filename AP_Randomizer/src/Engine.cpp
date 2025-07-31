@@ -284,6 +284,18 @@ namespace Engine {
 		ExecuteBlueprintFunction(L"BP_PlayerGoatMain_C", L"updatePlayerCurrentStatValues", nullptr);
 	}
 
+	void WarpToSpawn() {
+		struct WarpInfo {
+			FString zone;
+			FString playerStart;
+		};
+		shared_ptr<void> warp_params(new WarpInfo{
+			FString(L"ZONE_LowerCastle"),
+			FString(L"lowerWestSave"),
+		});
+		ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_Warp", warp_params);
+	}
+
 
 	// Private functions
 	namespace {

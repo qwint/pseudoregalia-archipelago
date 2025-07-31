@@ -6,6 +6,7 @@
 #include "Client.hpp"
 #include "Logger.hpp"
 #include "StringOps.hpp"
+#include "Engine.hpp"
 
 namespace UnrealConsole {
 	using std::string;
@@ -26,6 +27,7 @@ namespace UnrealConsole {
 		constexpr size_t getitem = HashWstring(L"getitem");
 		constexpr size_t popups = HashWstring(L"popups");
 		constexpr size_t countdown = HashWstring(L"countdown");
+		constexpr size_t spawn = HashWstring(L"spawn");
 	}
 
 	// Private members
@@ -132,6 +134,9 @@ namespace UnrealConsole {
 			}
 			break;
 		}
+		case Hashes::spawn:
+			Engine::WarpToSpawn();
+			break;
 		default:
 			Logger::PrintToConsole(L"/" + input);
 			Log(L"Command not recognized: " + input, LogType::System);

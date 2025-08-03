@@ -22,4 +22,5 @@ namespace Engine {
 	void InitializeConsole(UObject*);
 	void HealPlayer();
 	void GivePlayerPower();
+	void WarpToSpawn();
 }

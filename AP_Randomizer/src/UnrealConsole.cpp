@@ -45,7 +45,7 @@ namespace UnrealConsole {
 	void UnrealConsole::ProcessInput(FText input) {
 		wstring command = input.ToString();
 		Log(L"AP console input: " + command);
-		if (command[0] == *L"/" || command.front() == *L"!") {
+		if (command[0] == *L"/") {
 			command.erase(0, 1);
 			UnrealConsole::ProcessCommand(command);
 		}
@@ -72,47 +72,8 @@ namespace UnrealConsole {
 			break;
 		case Hashes::disconnect:
 			Logger::PrintToConsole(L"/" + input);
-			Client::Disconnect();
+			Log(L"To disconnect from the server, return to the main menu.", LogType::System);
 			break;
-		case Hashes::release:
-			Client::Say("!release");
-			break;
-		case Hashes::collect:
-			Client::Say("!collect");
-			break;
-		case Hashes::hint: {
-			string hint_args = StringOps::ToNarrow(args);
-			Client::Say("!hint " + hint_args);
-			break;
-		}
-		case Hashes::hint_location: {
-			string hint_args = StringOps::ToNarrow(args);
-			Client::Say("!hint_location " + hint_args);
-			break;
-		}
-		case Hashes::remaining:
-			Client::Say("!remaining");
-			break;
-		case Hashes::missing: {
-			string missing_args = StringOps::ToNarrow(args);
-			Client::Say("!missing " + missing_args);
-			break;
-		}
-		case Hashes::checked: {
-			string checked_args = StringOps::ToNarrow(args);
-			Client::Say("!checked " + checked_args);
-			break;
-		}
-		case Hashes::getitem: {
-			string item_name = StringOps::ToNarrow(args);
-			Client::Say("!getitem " + item_name);
-			break;
-		}
-		case Hashes::countdown: {
-			string countdown_args = StringOps::ToNarrow(args);
-			Client::Say("!countdown " + countdown_args);
-			break;
-		}
 		case Hashes::popups: {
 			Logger::PrintToConsole(L"/" + input);
 			wstring popup_args = L"";
@@ -137,12 +98,23 @@ namespace UnrealConsole {
 		case Hashes::spawn:
 			Engine::WarpToSpawn();
 			break;
+		case Hashes::release:
+		case Hashes::collect:
+		case Hashes::hint:
+		case Hashes::hint_location:
+		case Hashes::remaining:
+		case Hashes::missing:
+		case Hashes::checked:
+		case Hashes::getitem:
+		case Hashes::countdown:
+			Logger::PrintToConsole(L"/" + input);
+			Log(L"This command is not supported using /. Use ! instead:", LogType::System);
+			Log(L"!" + input, LogType::System);
+			break;
 		default:
 			Logger::PrintToConsole(L"/" + input);
 			Log(L"Command not recognized: " + input, LogType::System);
-			Log(L"Known commands: "
-				"connect, disconnect, release, collect, hint, hint_location, "
-				"remaining, missing, checked, getitem, popups, countdown", LogType::System);
+			Log(L"Known commands: connect, popups, spawn", LogType::System);
 			break;
 		}
 	}

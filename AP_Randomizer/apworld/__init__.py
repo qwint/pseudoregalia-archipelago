@@ -106,7 +106,7 @@ class PseudoregaliaWorld(World):
             region.add_exits(exit_list)
 
     def fill_slot_data(self) -> Dict[str, Any]:
-        return {
+        slot_data = {
             "game_version": self.options.game_version.value,
             "logic_level": self.options.logic_level.value,
             "obscure_logic": bool(self.options.obscure_logic),
@@ -120,6 +120,19 @@ class PseudoregaliaWorld(World):
             "randomize_books": bool(self.options.randomize_books),
             "randomize_notes": bool(self.options.randomize_notes),
         }
+        if self.options.major_key_hints:
+            key_hints = [[] for _ in range(5)]
+            key_locations = self.multiworld.find_items_in_locations(set(item_groups["major keys"]), self.player, True)
+            for location in key_locations:
+                # this implementation assumes major key item codes are all in a row starting at 2365810021 and will
+                # break if that ever changes
+                index = location.item.code - 2365810021
+                key_hints[index].append({
+                    "player": location.player,
+                    "location": location.address,
+                })
+            slot_data["key_hints"] = key_hints
+        return slot_data
 
     def set_rules(self):
         difficulty = self.options.logic_level

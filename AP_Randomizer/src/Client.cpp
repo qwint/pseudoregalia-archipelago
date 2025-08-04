@@ -43,6 +43,7 @@ namespace Client {
         void ReceiveDeathLink(const json&);
         void ReceiveItemOnce(const APClient::PrintJSONArgs&);
         void Despawn(int64_t);
+        void ParseKeyHints(const json&);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
         // If people report random crashes, especially when disconnecting, I'll revisit it.
@@ -86,7 +87,13 @@ namespace Client {
                     ap->ConnectUpdate(false, 0, true, list<string> {"DeathLink"});
                 }
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
-                    GameData::SetOption(iter.key(), iter.value());
+                    string key = iter.key();
+                    if (key == "key_hints") {
+                        ParseKeyHints(iter.value());
+                    }
+                    else {
+                        GameData::SetOption(key, iter.value());
+                    }
                 }
                 SetZoneData();
                 ap->LocationScouts(GameData::GetMissingSpawnableLocations());
@@ -442,6 +449,17 @@ namespace Client {
                 return;
             }
             Engine::DespawnCollectible(id);
+        }
+
+        void ParseKeyHints(const json& hints) {
+            for (int key_index = 0; key_index < 5; key_index++) {
+                for (const auto& hint : hints[key_index]) {
+                    GameData::AddMajorKeyHint(key_index, GameData::MultiworldLocation{
+                        .player_id = hint["player"],
+                        .location_id = hint["location"],
+                    });
+                }
+            }
         }
     } // End private functions
 }

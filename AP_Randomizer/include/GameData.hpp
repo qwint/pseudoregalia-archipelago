@@ -46,7 +46,7 @@ namespace GameData {
 	};
 
 	struct MultiworldLocation {
-		int64_t player_id;
+		int player_id;
 		int64_t location_id;
 	};
 
@@ -82,4 +82,5 @@ namespace GameData {
 	void ReceiveItemOnce(int64_t);
 	bool IsInteractable(int64_t);
 	void AddMajorKeyHint(int, MultiworldLocation);
+	std::vector<std::wstring> GetHintTombstoneText(std::wstring);
 }

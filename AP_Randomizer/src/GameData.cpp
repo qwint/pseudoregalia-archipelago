@@ -4,6 +4,7 @@
 #include "Settings.hpp"
 #include "Client.hpp"
 #include "Engine.hpp"
+#include "StringOps.hpp"
 
 namespace GameData {
     using std::unordered_map;
@@ -128,6 +129,15 @@ namespace GameData {
             {L"Zone_Tower",             Map::Tower},
             {L"Zone_PrincessChambers",  Map::Chambers},
             {L"EndScreen",              Map::EndScreen},
+        };
+
+        // maps tombstone actor name to major key index
+        const unordered_map<wstring, int> major_key_tombstones_map = {
+            {L"BP_ExamineTextPopup_C_2", 0},
+            {L"BP_ExamineTextPopup_C_1", 1},
+            {L"BP_ExamineTextPopup_C_3", 2},
+            {L"BP_ExamineTextPopup_C_4", 3},
+            {L"BP_ExamineTextPopup_C_5", 4},
         };
 
         // The two lookup tables below could be combined into one table with something like an ItemIdInfo struct,
@@ -723,6 +733,25 @@ namespace GameData {
         Log("Adding hint for key " + std::to_string(key_index) + ": player " + std::to_string(hint.player_id) +
             ", location " + std::to_string(hint.location_id));
         major_key_hints[key_index].push_back(hint);
+    }
+
+    vector<wstring> GetHintTombstoneText(wstring tombstone_actor_name) {
+        if (!major_key_tombstones_map.contains(tombstone_actor_name)) {
+            return {};
+        }
+        int index = major_key_tombstones_map.at(tombstone_actor_name);
+        wstring key_name = StringOps::ToWide(Client::GetPseudoItemName(index + 2365810021));
+        if (major_keys[index]) {
+            return {key_name + L" has been found"};
+        }
+        vector<wstring> text;
+        for (const auto& location : major_key_hints[index]) {
+            wstring location_name = StringOps::ToWide(Client::GetLocationName(location.location_id, location.player_id));
+            wstring player_name = StringOps::ToWide(Client::GetPlayerName(location.player_id));
+            // TODO add colors
+            text.push_back(key_name + L" is at " + location_name + L" in " + player_name + L"'s world");
+        }
+        return text;
     }
 
 

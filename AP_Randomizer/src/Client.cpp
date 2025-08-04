@@ -308,6 +308,27 @@ namespace Client {
         return ap->get_missing_locations().contains(id);
     }
 
+    string GetPseudoItemName(int64_t item_id) {
+        if (ap == nullptr) {
+            return "Unknown";
+        }
+        return ap->get_item_name(item_id, ap->get_game());
+    }
+
+    string GetLocationName(int64_t location_id, int player_id) {
+        if (ap == nullptr) {
+            return "Unknown";
+        }
+        return ap->get_location_name(location_id, ap->get_player_game(player_id));
+    }
+
+    string GetPlayerName(int player_id) {
+        if (ap == nullptr) {
+            return "Unknown";
+        }
+        return ap->get_player_alias(player_id);
+    }
+
 
     // Private functions
     namespace {

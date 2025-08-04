@@ -9,6 +9,7 @@
 #include "Unreal/AActor.hpp"
 #include "Unreal/FText.hpp"
 #include "Unreal/UClass.hpp"
+#include "Unreal/World.hpp"
 #include "NameTypes.hpp"
 #include "Client.hpp"
 #include "UnrealConsole.hpp"
@@ -105,6 +106,13 @@ public:
                 };
             auto interact = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
                 GameData::Interact(context.Context->GetName());
+            };
+            auto examinetext_interact = [&](UnrealScriptFunctionCallableContext& context, void* customdata) {
+                interact(context, customdata);
+                if (context.Context->GetWorld()->GetName() == L"Zone_Tower") {
+                    Log(L"interacting with examine text popup: " + context.Context->GetName());
+                    // TODO create hints
+                }
             };
             auto readnote = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
                 GameData::ReadNote(context.Context->GetName());
@@ -213,8 +221,22 @@ public:
                         return;
                     }
                     Log("Establishing hook for BPI_EndInteract");
-                    Unreal::UObjectGlobals::RegisterHook(endinteract_function, EmptyFunction, interact, nullptr);
+                    Unreal::UObjectGlobals::RegisterHook(endinteract_function, EmptyFunction, examinetext_interact, nullptr);
                     book_endinteract_hooked = true;
+                }
+
+                if (actor->GetWorld()->GetName() == L"Zone_Tower") {
+                    std::vector<std::wstring> text = GameData::GetHintTombstoneText(actor->GetName());
+                    if (text.size() == 0) {
+                        Log(L"No hint text for tower tombstone " + actor->GetName());
+                        return;
+                    }
+                    Log(L"Setting hint text for tower tombstone " + actor->GetName());
+                    TArray<FText>* textWindows = actor->GetValuePtrByPropertyName<TArray<FText>>(L"textWindows");
+                    textWindows->Empty(text.size());
+                    for (const auto& wstr : text) {
+                        textWindows->Add(FText(wstr));
+                    }
                 }
             }
 

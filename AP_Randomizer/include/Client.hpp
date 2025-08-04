@@ -10,4 +10,7 @@ namespace Client {
 	void SendDeathLink();
 	void Disconnect();
 	bool IsMissingLocation(int64_t);
+	std::string GetPseudoItemName(int64_t);
+	std::string GetLocationName(int64_t, int);
+	std::string GetPlayerName(int);
 }

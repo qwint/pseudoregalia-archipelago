@@ -326,8 +326,12 @@ namespace Client {
             wstring hint = L"[#af99ef](";
             hint += StringOps::ToWide(key_name) + L") is at [#00ff7f](";
             hint += StringOps::ToWide(location_name) + L") in ";
-            // TODO check if concerns self; common client uses ee00ee for self and fafad2 for others
-            hint += L"[#fafa7f](";
+            if (ap->slot_concerns_self(loc.player_id)) {
+                hint += L"[#ee5fee](";
+            }
+            else {
+                hint += L"[#fafa7f](";
+            }
             hint += StringOps::ToWide(player_name) + L")'s world";
             hints.push_back(hint);
         }

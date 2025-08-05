@@ -312,11 +312,15 @@ namespace Client {
     }
 
     vector<wstring> GetHintText(GameData::MajorKeyInfo info) {
-        using StringOps::ToWide;
         if (ap == nullptr) {
             return {};
         }
 
+        if (info.locations.size() == 0) {
+            return;
+        }
+
+        using StringOps::ToWide;
         wstring key_name = ToWide(ap->get_item_name(info.item_id, ap->get_game()));
         if (info.found) {
             return { L"[#af99ef](" + key_name + L") has been found" };

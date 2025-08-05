@@ -296,6 +296,31 @@ namespace Engine {
 		ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_Warp", warp_params);
 	}
 
+	void SetTombstoneText(UObject* object) {
+		if (object->GetWorld()->GetName() != L"Zone_Tower") {
+			return;
+		}
+
+		wstring tombstone_name = object->GetName();
+		optional<GameData::MajorKeyInfo> info = GameData::GetMajorKeyInfo(tombstone_name);
+		if (!info) {
+			return;
+		}
+
+		vector<wstring> text = Client::GetHintText(*info);
+		if (text.size() == 0) {
+			Log(L"No hint text for tower tombstone " + tombstone_name);
+			return;
+		}
+
+		Log(L"Setting hint text for tower tombstone " + tombstone_name);
+		TArray<FText>* textWindows = object->GetValuePtrByPropertyName<TArray<FText>>(L"textWindows");
+		textWindows->Empty(text.size());
+		for (const auto& wstr : text) {
+			textWindows->Add(FText(wstr));
+		}
+	}
+
 
 	// Private functions
 	namespace {

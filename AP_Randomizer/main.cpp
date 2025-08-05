@@ -34,6 +34,7 @@ public:
     bool sendmessage_hooked = false;
     bool npc_endinteract_hooked = false;
     bool chair_tryinteract_hooked = false;
+    bool examinetext_tryinteract_hooked = false;
     bool book_endinteract_hooked = false;
     bool note_tryinteract_hooked = false;
     bool finishnote_hooked = false;
@@ -113,6 +114,9 @@ public:
                     Log(L"interacting with examine text popup: " + context.Context->GetName());
                     // TODO create hints
                 }
+            };
+            auto tryinteract = [&](UnrealScriptFunctionCallableContext& context, void* customdata) {
+                Engine::SetTombstoneText(context.Context);
             };
             auto readnote = [](UnrealScriptFunctionCallableContext& context, void* customdata) {
                 GameData::ReadNote(context.Context->GetName());
@@ -225,18 +229,15 @@ public:
                     book_endinteract_hooked = true;
                 }
 
-                if (actor->GetWorld()->GetName() == L"Zone_Tower") {
-                    std::vector<std::wstring> text = GameData::GetHintTombstoneText(actor->GetName());
-                    if (text.size() == 0) {
-                        Log(L"No hint text for tower tombstone " + actor->GetName());
+                if (!examinetext_tryinteract_hooked) {
+                    UFunction* tryinteract_function = actor->GetFunctionByName(L"BPI_TryInteract");
+                    if (!tryinteract_function) {
+                        Log(L"Could not find function \"BPI_TryInteract\" in BP_ExamineTextPopup_C.", LogType::Error);
                         return;
                     }
-                    Log(L"Setting hint text for tower tombstone " + actor->GetName());
-                    TArray<FText>* textWindows = actor->GetValuePtrByPropertyName<TArray<FText>>(L"textWindows");
-                    textWindows->Empty(text.size());
-                    for (const auto& wstr : text) {
-                        textWindows->Add(FText(wstr));
-                    }
+                    Log("Establishing hook for BPI_TryInteract");
+                    Unreal::UObjectGlobals::RegisterHook(tryinteract_function, tryinteract, EmptyFunction, nullptr);
+                    examinetext_tryinteract_hooked = true;
                 }
             }
 

@@ -11,7 +11,6 @@
 #define APCLIENT_DEBUG
 #include "apclient.hpp"
 #include "apuuid.hpp"
-#include "GameData.hpp"
 #include "Engine.hpp"
 #include "Client.hpp"
 #include "Logger.hpp"
@@ -25,6 +24,7 @@ namespace Client {
     using std::wstring;
     using std::list;
     using std::optional;
+    using std::vector;
 
     namespace Hashes {
         using StringOps::HashNstring;
@@ -308,25 +308,30 @@ namespace Client {
         return ap->get_missing_locations().contains(id);
     }
 
-    string GetPseudoItemName(int64_t item_id) {
+    vector<wstring> GetHintText(GameData::MajorKeyInfo info) {
         if (ap == nullptr) {
-            return "Unknown";
+            return {};
         }
-        return ap->get_item_name(item_id, ap->get_game());
-    }
 
-    string GetLocationName(int64_t location_id, int player_id) {
-        if (ap == nullptr) {
-            return "Unknown";
+        string key_name = ap->get_item_name(info.item_id, ap->get_game());
+        if (info.found) {
+            return { L"[#af99ef](" + StringOps::ToWide(key_name) + L") has been found" };
         }
-        return ap->get_location_name(location_id, ap->get_player_game(player_id));
-    }
 
-    string GetPlayerName(int player_id) {
-        if (ap == nullptr) {
-            return "Unknown";
+        vector<wstring> hints;
+        for (const auto& loc : info.locations) {
+            string location_name = ap->get_location_name(loc.location_id, ap->get_player_game(loc.player_id));
+            string player_name = ap->get_player_alias(loc.player_id);
+
+            wstring hint = L"[#af99ef](";
+            hint += StringOps::ToWide(key_name) + L") is at [#00ff7f](";
+            hint += StringOps::ToWide(location_name) + L") in ";
+            // TODO check if concerns self; common client uses ee00ee for self and fafad2 for others
+            hint += L"[#fafa7f](";
+            hint += StringOps::ToWide(player_name) + L")'s world";
+            hints.push_back(hint);
         }
-        return ap->get_player_alias(player_id);
+        return hints;
     }
 
 

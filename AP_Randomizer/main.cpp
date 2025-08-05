@@ -110,10 +110,7 @@ public:
             };
             auto examinetext_interact = [&](UnrealScriptFunctionCallableContext& context, void* customdata) {
                 interact(context, customdata);
-                if (context.Context->GetWorld()->GetName() == L"Zone_Tower") {
-                    Log(L"interacting with examine text popup: " + context.Context->GetName());
-                    // TODO create hints
-                }
+                Engine::CreateMajorKeyHints(context.Context);
             };
             auto tryinteract = [&](UnrealScriptFunctionCallableContext& context, void* customdata) {
                 Engine::SetTombstoneText(context.Context);

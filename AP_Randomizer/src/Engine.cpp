@@ -321,6 +321,20 @@ namespace Engine {
 		}
 	}
 
+	void CreateMajorKeyHints(UObject* object) {
+		if (object->GetWorld()->GetName() != L"Zone_Tower") {
+			return;
+		}
+
+		optional<GameData::MajorKeyInfo> info = GameData::GetMajorKeyInfo(object->GetName());
+		if (!info || info->found) {
+			return;
+		}
+
+		Log(L"Creating hints for major key " + std::to_wstring(info->item_id));
+		Client::CreateMajorKeyHints(*info);
+	}
+
 
 	// Private functions
 	namespace {

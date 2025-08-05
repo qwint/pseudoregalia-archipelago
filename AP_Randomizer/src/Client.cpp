@@ -317,7 +317,7 @@ namespace Client {
         }
 
         if (info.locations.size() == 0) {
-            return;
+            return {};
         }
 
         using StringOps::ToWide;

@@ -362,25 +362,22 @@ namespace Client {
         for (const auto& [player_id, locations] : player_to_key_locations) {
             bool created_hints = ap->CreateHints(locations, player_id, APClient::HINT_PRIORITY);
             if (created_hints) {
-                string item = std::to_string(info.item_id);
-                string player = ap->get_player_alias(player_id);
-                Log("Created hints for " + item + " in " + player + "'s world");
+                Log("Created hints for " + std::to_string(info.item_id) + " in " + ap->get_player_alias(player_id) +
+                    "'s world");
                 continue;
             }
 
             if (player_id == ap->get_player_number()) {
                 ap->LocationScouts(locations, 2);
-                string item = std::to_string(info.item_id);
-                Log("Scouted hints for " + item);
+                Log("Scouted hints for " + std::to_string(info.item_id));
             }
             else {
                 auto console_hint_messages = GetConsoleHintText(info.item_id, player_id, locations);
                 for (const auto& [markdown, plain] : console_hint_messages) {
                     Logger::PrintToConsole(markdown, plain);
                 }
-                string item = std::to_string(info.item_id);
-                string player = ap->get_player_alias(player_id);
-                Log("Printed hints to console for " + item + " in " + player + "'s world");
+                Log("Printed hints to console for " + std::to_string(info.item_id) + " in " +
+                    ap->get_player_alias(player_id) + "'s world");
             }
         }
     }

@@ -79,16 +79,17 @@ namespace Client {
             ap->set_room_info_handler([slot_name, password]() {
                 Log("Received room info");
                 int items_handling = 0b111;
+                list<string> tags;
+                if (Settings::GetDeathLink()) {
+                    tags.push_back("DeathLink");
+                }
                 APClient::Version version{ 0, 7, 0 };
-                ap->ConnectSlot(slot_name, password, items_handling, {}, version);
+                ap->ConnectSlot(slot_name, password, items_handling, tags, version);
                 });
 
             // Executes on successful connection to slot.
             ap->set_slot_connected_handler([](const json& slot_data) {
                 Log("Connected to slot");
-                if (Settings::GetDeathLink()) {
-                    ap->ConnectUpdate(false, 0, true, list<string> {"DeathLink"});
-                }
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
                     string key = iter.key();
                     if (key == "key_hints") {

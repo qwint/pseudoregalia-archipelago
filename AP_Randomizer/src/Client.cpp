@@ -11,7 +11,6 @@
 #define APCLIENT_DEBUG
 #include "apclient.hpp"
 #include "apuuid.hpp"
-#include "GameData.hpp"
 #include "Engine.hpp"
 #include "Client.hpp"
 #include "Logger.hpp"
@@ -25,6 +24,9 @@ namespace Client {
     using std::wstring;
     using std::list;
     using std::optional;
+    using std::vector;
+    using std::unordered_map;
+    using std::pair;
 
     namespace Hashes {
         using StringOps::HashNstring;
@@ -43,6 +45,8 @@ namespace Client {
         void ReceiveDeathLink(const json&);
         void ReceiveItemOnce(const APClient::PrintJSONArgs&);
         void Despawn(int64_t);
+        void ParseKeyHints(const json&);
+        void PrintHintsToConsole(int64_t, int, list<int64_t>);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
         // If people report random crashes, especially when disconnecting, I'll revisit it.
@@ -75,18 +79,25 @@ namespace Client {
             ap->set_room_info_handler([slot_name, password]() {
                 Log("Received room info");
                 int items_handling = 0b111;
+                list<string> tags;
+                if (Settings::GetDeathLink()) {
+                    tags.push_back("DeathLink");
+                }
                 APClient::Version version{ 0, 7, 0 };
-                ap->ConnectSlot(slot_name, password, items_handling, {}, version);
+                ap->ConnectSlot(slot_name, password, items_handling, tags, version);
                 });
 
             // Executes on successful connection to slot.
             ap->set_slot_connected_handler([](const json& slot_data) {
                 Log("Connected to slot");
-                if (Settings::GetDeathLink()) {
-                    ap->ConnectUpdate(false, 0, true, list<string> {"DeathLink"});
-                }
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
-                    GameData::SetOption(iter.key(), iter.value());
+                    string key = iter.key();
+                    if (key == "key_hints") {
+                        ParseKeyHints(iter.value());
+                    }
+                    else {
+                        GameData::SetOption(key, iter.value());
+                    }
                 }
                 SetZoneData();
                 ap->LocationScouts(GameData::GetMissingSpawnableLocations());
@@ -301,6 +312,64 @@ namespace Client {
         return ap->get_missing_locations().contains(id);
     }
 
+    vector<wstring> GetHintText(GameData::MajorKeyInfo info) {
+        if (ap == nullptr) {
+            return {};
+        }
+
+        using StringOps::ToWide;
+        wstring key_name = ToWide(ap->get_item_name(info.item_id, ap->get_game()));
+        if (info.found) {
+            return { L"[#af99ef](" + key_name + L") has been found" };
+        }
+
+        vector<wstring> hints;
+        for (const auto& loc : info.locations) {
+            wstring location_name = ToWide(ap->get_location_name(loc.location_id, ap->get_player_game(loc.player_id)));
+            wstring player_name = ToWide(ap->get_player_alias(loc.player_id));
+
+            wstring hint = L"[#af99ef](" + key_name + L") is at [#00ff7f](" + location_name + L") in ";
+            if (ap->slot_concerns_self(loc.player_id)) {
+                hint += L"[#ee5fee](";
+            }
+            else {
+                hint += L"[#fafa7f](";
+            }
+            hint += player_name + L")'s world";
+            hints.push_back(hint);
+        }
+        return hints;
+    }
+
+    void CreateMajorKeyHints(GameData::MajorKeyInfo info) {
+        if (ap == nullptr) {
+            return;
+        }
+
+        unordered_map<int, list<int64_t>> player_to_key_locations;
+        for (const auto& loc : info.locations) {
+            player_to_key_locations[loc.player_id].push_back(loc.location_id);
+        }
+        for (const auto& [player_id, locations] : player_to_key_locations) {
+            bool created_hints = ap->CreateHints(locations, player_id, APClient::HINT_PRIORITY);
+            if (created_hints) {
+                Log("Created hints for " + std::to_string(info.item_id) + " in " + ap->get_player_alias(player_id) +
+                    "'s world");
+                continue;
+            }
+
+            if (player_id == ap->get_player_number()) {
+                ap->LocationScouts(locations, 2);
+                Log("Scouted hints for " + std::to_string(info.item_id));
+            }
+            else {
+                PrintHintsToConsole(info.item_id, player_id, locations);
+                Log("Printed hints to console for " + std::to_string(info.item_id) + " in " +
+                    ap->get_player_alias(player_id) + "'s world");
+            }
+        }
+    }
+
 
     // Private functions
     namespace {
@@ -442,6 +511,34 @@ namespace Client {
                 return;
             }
             Engine::DespawnCollectible(id);
+        }
+
+        void ParseKeyHints(const json& hints) {
+            for (int key_index = 0; key_index < 5; key_index++) {
+                for (const auto& hint : hints[key_index]) {
+                    GameData::AddMajorKeyHint(key_index, GameData::MultiworldLocation{
+                        .player_id = hint["player"],
+                        .location_id = hint["location"],
+                    });
+                }
+            }
+        }
+
+        void PrintHintsToConsole(int64_t item_id, int player_id, list<int64_t> location_ids) {
+            using StringOps::ToWide;
+            wstring key_name = ToWide(ap->get_item_name(item_id, ap->get_game()));
+            for (const auto& location_id : location_ids) {
+                wstring location_name = ToWide(ap->get_location_name(location_id, ap->get_player_game(player_id)));
+                wstring player_name = ToWide(ap->get_player_alias(player_id));
+
+                // we use <Player> and don't check to use <Self> because this function is only called for hints which
+                // could not be created, which can only be hints for other player's locations
+                wstring markdown = L"<ProgressionItem>" + key_name + L"</> is at <Location>" + location_name +
+                                   L"</> in <Player>" + player_name + L"</>'s world";
+                wstring plain = key_name + L" is at " + location_name + L" in " + player_name + L"'s world";
+
+                Logger::PrintToConsole(markdown, plain);
+            }
         }
     } // End private functions
 }

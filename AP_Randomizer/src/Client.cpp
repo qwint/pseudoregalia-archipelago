@@ -46,7 +46,7 @@ namespace Client {
         void ReceiveItemOnce(const APClient::PrintJSONArgs&);
         void Despawn(int64_t);
         void ParseKeyHints(const json&);
-        vector<pair<wstring, wstring>> GetConsoleHintText(int64_t, int, list<int64_t>);
+        void PrintHintsToConsole(int64_t, int, list<int64_t>);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
         // If people report random crashes, especially when disconnecting, I'll revisit it.
@@ -317,10 +317,6 @@ namespace Client {
             return {};
         }
 
-        if (info.locations.size() == 0) {
-            return {};
-        }
-
         using StringOps::ToWide;
         wstring key_name = ToWide(ap->get_item_name(info.item_id, ap->get_game()));
         if (info.found) {
@@ -350,11 +346,6 @@ namespace Client {
             return;
         }
 
-        if (info.locations.size() == 0) {
-            Log("No hints found for key " + std::to_string(info.item_id));
-            return;
-        }
-
         unordered_map<int, list<int64_t>> player_to_key_locations;
         for (const auto& loc : info.locations) {
             player_to_key_locations[loc.player_id].push_back(loc.location_id);
@@ -372,10 +363,7 @@ namespace Client {
                 Log("Scouted hints for " + std::to_string(info.item_id));
             }
             else {
-                auto console_hint_messages = GetConsoleHintText(info.item_id, player_id, locations);
-                for (const auto& [markdown, plain] : console_hint_messages) {
-                    Logger::PrintToConsole(markdown, plain);
-                }
+                PrintHintsToConsole(info.item_id, player_id, locations);
                 Log("Printed hints to console for " + std::to_string(info.item_id) + " in " +
                     ap->get_player_alias(player_id) + "'s world");
             }
@@ -536,23 +524,21 @@ namespace Client {
             }
         }
 
-        vector<pair<wstring, wstring>> GetConsoleHintText(int64_t item_id, int player_id, list<int64_t> location_ids) {
+        void PrintHintsToConsole(int64_t item_id, int player_id, list<int64_t> location_ids) {
             using StringOps::ToWide;
             wstring key_name = ToWide(ap->get_item_name(item_id, ap->get_game()));
-            vector<pair<wstring, wstring>> messages;
             for (const auto& location_id : location_ids) {
                 wstring location_name = ToWide(ap->get_location_name(location_id, ap->get_player_game(player_id)));
                 wstring player_name = ToWide(ap->get_player_alias(player_id));
 
                 // we use <Player> and don't check to use <Self> because this function is only called for hints which
                 // could not be created, which can only be hints for other player's locations
-                wstring markdown = L"<ProgressionItem>" + key_name + L"</> is at <Location>" + location_name
-                                   + L"</> in <Player>" + player_name + L"</>'s world";
+                wstring markdown = L"<ProgressionItem>" + key_name + L"</> is at <Location>" + location_name +
+                                   L"</> in <Player>" + player_name + L"</>'s world";
                 wstring plain = key_name + L" is at " + location_name + L" in " + player_name + L"'s world";
 
-                messages.push_back({ markdown, plain });
+                Logger::PrintToConsole(markdown, plain);
             }
-            return messages;
         }
     } // End private functions
 }

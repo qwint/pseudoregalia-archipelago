@@ -307,13 +307,13 @@ namespace Engine {
 			return;
 		}
 
-		vector<wstring> text = Client::GetHintText(*info);
-		if (text.size() == 0) {
-			Log(L"No hint text for tower tombstone " + tombstone_name);
+		if (info->locations.size() == 0) {
+			Log(L"No hints for tower tombstone " + tombstone_name);
 			return;
 		}
 
 		Log(L"Setting hint text for tower tombstone " + tombstone_name);
+		vector<wstring> text = Client::GetHintText(*info);
 		TArray<FText>* textWindows = object->GetValuePtrByPropertyName<TArray<FText>>(L"textWindows");
 		textWindows->Empty(text.size());
 		for (const auto& wstr : text) {
@@ -327,11 +327,20 @@ namespace Engine {
 		}
 
 		optional<GameData::MajorKeyInfo> info = GameData::GetMajorKeyInfo(object->GetName());
-		if (!info || info->found) {
+		if (!info) {
 			return;
 		}
 
-		Log(L"Creating hints for major key " + std::to_wstring(info->item_id));
+		if (info->locations.size() == 0) {
+			Log("No hints for key " + std::to_string(info->item_id));
+			return;
+		}
+
+		if (info->found) {
+			Log("Not creating hints for " + std::to_string(info->item_id) + ": key already found.");
+			return;
+		}
+
 		Client::CreateMajorKeyHints(*info);
 	}
 

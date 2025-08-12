@@ -12,6 +12,7 @@ add_library(${TARGET} SHARED
 "src/StringOps.cpp" 
 "src/Timer.cpp" 
 "src/UnrealConsole.cpp"
+"src/ModHooks.cpp"
 "src/Settings.cpp")
 
 target_include_directories(${TARGET} PRIVATE "include")

@@ -105,6 +105,25 @@ class PseudoregaliaWorld(World):
             region = self.multiworld.get_region(region_name, self.player)
             region.add_exits(exit_list)
 
+    def create_key_hints(self) -> Any:
+        key_hints = [[] for _ in range(5)]
+        key_locations = self.multiworld.find_items_in_locations(set(item_groups["major keys"]), self.player, True)
+        for location in key_locations:
+            if not location.item or not location.item.code or not location.address:
+                # guard against optional fields being None
+                continue
+            # this implementation assumes major key item codes are all in a row starting at 2365810021 and will
+            # break if that ever changes
+            index = location.item.code - 2365810021
+            if index not in range(5):
+                # guard against index being out of bounds
+                continue
+            key_hints[index].append({
+                "player": location.player,
+                "location": location.address,
+            })
+        return key_hints
+
     def fill_slot_data(self) -> Dict[str, Any]:
         slot_data = {
             "game_version": self.options.game_version.value,
@@ -121,23 +140,7 @@ class PseudoregaliaWorld(World):
             "randomize_notes": bool(self.options.randomize_notes),
         }
         if self.options.major_key_hints:
-            key_hints = [[] for _ in range(5)]
-            key_locations = self.multiworld.find_items_in_locations(set(item_groups["major keys"]), self.player, True)
-            for location in key_locations:
-                if not location.item or not location.item.code or not location.address:
-                    # guard against optional fields being None
-                    continue
-                # this implementation assumes major key item codes are all in a row starting at 2365810021 and will
-                # break if that ever changes
-                index = location.item.code - 2365810021
-                if index not in range(5):
-                    # guard against index being out of bounds
-                    continue
-                key_hints[index].append({
-                    "player": location.player,
-                    "location": location.address,
-                })
-            slot_data["key_hints"] = key_hints
+            slot_data["key_hints"] = self.create_key_hints()
         return slot_data
 
     def set_rules(self):

@@ -79,7 +79,7 @@ namespace Engine {
 
 		// Engine tick runs in a separate thread from the client so it needs to be locked.
 		lock_guard<mutex> guard(blueprint_function_mutex);
-		while (!blueprint_function_queue.empty()) {
+		for (; !blueprint_function_queue.empty(); blueprint_function_queue.pop()) {
 			BlueprintFunctionInfo info = blueprint_function_queue.front();
 			UObject* object;
 			if (std::holds_alternative<wstring>(info.parent)) {
@@ -91,7 +91,6 @@ namespace Engine {
 					object = UObjectGlobals::FindFirstOf(parent_name);
 					if (!object) {
 						Log(L"Could not find blueprint with name " + parent_name, LogType::Error);
-						blueprint_function_queue.pop();
 						continue;
 					}
 				}
@@ -100,7 +99,6 @@ namespace Engine {
 				object = get<UObject*>(info.parent);
 				if (object->IsUnreachable()) {
 					Log(L"Could not call " + info.function_name + L" because the blueprint was unreachable.", LogType::Error);
-					blueprint_function_queue.pop();
 					continue;
 				}
 			}
@@ -108,14 +106,12 @@ namespace Engine {
 			UFunction* function = object->GetFunctionByName(info.function_name.c_str());
 			if (!function) {
 				Log(L"Could not find function " + info.function_name, LogType::Error);
-				blueprint_function_queue.pop();
 				continue;
 			}
 			Log(L"Executing " + info.function_name);
 			// Need to cast to raw pointer to feed to ProcessEvent, but the memory will still be freed automatically
 			void* ptr(info.params.get());
 			object->ProcessEvent(function, ptr);
-			blueprint_function_queue.pop();
 		}
 	}
 

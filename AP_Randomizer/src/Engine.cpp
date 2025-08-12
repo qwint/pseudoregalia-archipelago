@@ -26,6 +26,7 @@ namespace Engine {
 
 	// Private members
 	namespace {
+		void QueueItemSync();
 		void SyncMajorKeys();
 		void SyncHealthPieces();
 		void SyncSmallKeys();
@@ -51,9 +52,10 @@ namespace Engine {
 			shared_ptr<void> params;
 		};
 
-		mutex blueprint_function_mutex;
 		bool awaiting_item_sync;
+		mutex item_sync_mutex;
 		std::queue<BlueprintFunctionInfo> blueprint_function_queue;
+		mutex blueprint_function_mutex;
 	} // End private members
 
 
@@ -72,15 +74,8 @@ namespace Engine {
 	}
 
 	// Runs once every engine tick.
-	void Engine::OnTick(UObject* blueprint) {
-		// Queue up item syncs together to avoid queueing a bajillion functions on connection or world release.
-		if (awaiting_item_sync) {
-			SyncHealthPieces();
-			SyncSmallKeys();
-			SyncMajorKeys();
-			SyncAbilities();
-			awaiting_item_sync = false;
-		}
+	void Engine::OnTick(UObject* ap_object) {
+		QueueItemSync();
 
 		// Engine tick runs in a separate thread from the client so it needs to be locked.
 		lock_guard<mutex> guard(blueprint_function_mutex);
@@ -89,11 +84,16 @@ namespace Engine {
 			UObject* object;
 			if (std::holds_alternative<wstring>(info.parent)) {
 				wstring parent_name = get<wstring>(info.parent);
-				object = UObjectGlobals::FindFirstOf(parent_name);
-				if (!object) {
-					Log(L"Could not find blueprint with name " + parent_name, LogType::Error);
-					blueprint_function_queue.pop();
-					continue;
+				if (parent_name == L"BP_APRandomizerInstance_C") {
+					object = ap_object;
+				}
+				else {
+					object = UObjectGlobals::FindFirstOf(parent_name);
+					if (!object) {
+						Log(L"Could not find blueprint with name " + parent_name, LogType::Error);
+						blueprint_function_queue.pop();
+						continue;
+					}
 				}
 			}
 			else {
@@ -143,6 +143,7 @@ namespace Engine {
 
 	// Queues all item sync functions.
 	void Engine::SyncItems() {
+		lock_guard<mutex> guard(item_sync_mutex);
 		awaiting_item_sync = true;
 	}
 
@@ -347,6 +348,16 @@ namespace Engine {
 
 	// Private functions
 	namespace {
+		void QueueItemSync() {
+			lock_guard<mutex> guard(item_sync_mutex);
+			if (!awaiting_item_sync) return;
+			SyncHealthPieces();
+			SyncSmallKeys();
+			SyncMajorKeys();
+			SyncAbilities();
+			awaiting_item_sync = false;
+		}
+
 		void SyncHealthPieces() {
 			shared_ptr<void> hp_params(new int(GameData::GetHealthPieces()));
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SetHealthPieces", hp_params);

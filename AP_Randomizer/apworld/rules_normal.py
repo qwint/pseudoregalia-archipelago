@@ -193,7 +193,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             # "Underbelly => Dungeon -> Underbelly Light Pillar": lambda state: True,
             "Underbelly => Dungeon -> Underbelly Ascendant Light": lambda state:
                 self.can_bounce(state)
-                or self.get_clings(state, 2)
+                or self.get_clings(state, 2) and self.get_kicks(state, 1)
                 or self.get_kicks(state, 2)
                 or self.get_kicks(state, 1) and self.can_slidejump(state)
                 or self.knows_obscure(state) and self.can_attack(state),
@@ -269,12 +269,13 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Empty Bailey - Solar Wind": lambda state:
                 self.has_slide(state),  # to consider: damage boosting w/ crouch
             "Empty Bailey - Cheese Bell": lambda state:  # TODO consider to/from center steeple
-                self.get_kicks(state, 3)
+                self.get_kicks(state, 4)
                 or self.get_clings(state, 2) and self.kick_or_plunge(state, 2),
             "Empty Bailey - Inside Building": lambda state:
                 self.has_slide(state),
             "Empty Bailey - Center Steeple": lambda state:
-                self.has_plunge(state),
+                self.has_plunge(state)
+                or self.get_kicks(state, 4),
             "Empty Bailey - Guarded Hand": lambda state:
                 upper_bailey.can_reach(state)
                 and (
@@ -329,10 +330,11 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.can_slidejump(state) and self.get_kicks(state, 1) and self.can_bounce(state),
             "Dilapidated Dungeon - Past Poles": lambda state:
                 self.get_clings(state, 2) and self.kick_or_plunge(state, 1)
-                or self.get_kicks(state, 3),
+                or self.get_kicks(state, 3)
+                or self.knows_obscure(state) and self.can_slidejump(state) and self.get_kicks(state, 2),
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.kick_or_plunge(state, 3)
-                or self.knows_obscure(state) and self.can_bounce(state) and self.get_clings(state, 2),
+                or self.knows_obscure(state) and self.can_bounce(state) and self.has_plunge(state),
             # "Castle Sansa - Indignation": lambda state: True,
             "Castle Sansa - Alcove Near Dungeon": lambda state:
                 self.get_clings(state, 2)

@@ -334,10 +334,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
                 or self.knows_obscure(state) and self.can_slidejump(state) and self.get_kicks(state, 2),
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.kick_or_plunge(state, 3)
-                or self.knows_obscure(state) and self.can_bounce(state)
-                and (
-                    self.get_clings(state, 2)
-                    or self.has_plunge(state)),
+                or self.knows_obscure(state) and self.can_bounce(state) and self.has_plunge(state),
             # "Castle Sansa - Indignation": lambda state: True,
             "Castle Sansa - Alcove Near Dungeon": lambda state:
                 self.get_clings(state, 2)

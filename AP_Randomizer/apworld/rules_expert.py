@@ -176,7 +176,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.kick_or_plunge(state, 2)
-                or self.can_gold_ultra(state) and self.kick_or_plunge(state, 1),
+                or self.can_gold_ultra(state) and self.kick_or_plunge(state, 1)
+                or self.can_bounce(state) and self.get_clings(state, 2),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.can_bounce(state) and self.has_slide(state)
                 or self.can_gold_ultra(state) and self.get_kicks(state, 1)

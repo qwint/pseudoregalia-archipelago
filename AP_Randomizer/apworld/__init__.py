@@ -1,5 +1,5 @@
-from worlds.AutoWorld import World
-from BaseClasses import Region, CollectionState
+from worlds.AutoWorld import World, WebWorld
+from BaseClasses import Region, CollectionState, Tutorial
 from .items import PseudoregaliaItem, item_table, item_groups
 from .locations import PseudoregaliaLocation, location_table, zones
 from .regions import region_table
@@ -12,6 +12,12 @@ from typing import Dict, Any
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
 from .constants.versions import FULL_GOLD
 
+
+class PseudoregaliaWebWorld(WebWorld):
+    setup_en = Tutorial("name", "description", "English", "setup_en.md", "setup/en", ["TODO"])
+    tutorials = [setup_en]
+    
+
 class PseudoregaliaWorld(World):
     game = "Pseudoregalia"
     required_client_version = (0, 7, 0)
@@ -22,6 +28,8 @@ class PseudoregaliaWorld(World):
 
     options_dataclass = PseudoregaliaOptions
     options: PseudoregaliaOptions
+    
+    web = PseudoregaliaWebWorld()
 
     filler = ("Healing", "Magic Power")
     filler_index = 0

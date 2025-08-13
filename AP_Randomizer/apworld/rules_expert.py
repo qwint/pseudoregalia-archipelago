@@ -21,9 +21,11 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Theatre Main -> Castle => Theatre (Front)": lambda state:
                 self.has_slide(state),
             "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:
-                self.has_slide(state),
+                self.has_slide(state)
+                or self.get_clings(state, 2),
             "Castle => Theatre Pillar -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1)
+                or self.get_clings(state, 2)
                 or self.has_slide(state),
             "Theatre Pillar -> Theatre Main": lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 3),
@@ -76,7 +78,7 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.get_clings(state, 4)
                     or self.get_clings(state, 2) and self.get_kicks(state, 1)
-                    or self.get_clings(state, 2) and self.can_bounce(state)
+                    or self.get_clings(state, 2) and self.has_slide(state)
                     or self.can_bounce(state) and self.kick_or_plunge(state, 3)
                     or self.has_slide(state) and self.get_kicks(state, 3)),
             "Keep Main -> Keep => Underbelly": lambda state:
@@ -144,7 +146,8 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
             "Twilight Theatre - Soul Cutter": lambda state:
                 self.can_strikebreak(state) and self.has_slide(state),
             "Twilight Theatre - Corner Beam": lambda state:
-                self.has_slide(state)
+                self.get_kicks(state, 3)
+                or self.has_slide(state)
                 and (
                     self.kick_or_plunge(state, 2)
                     or self.get_clings(state, 2)),
@@ -169,10 +172,12 @@ class PseudoregaliaExpertRules(PseudoregaliaHardRules):
                 and (
                     self.can_bounce(state)
                     or self.get_kicks(state, 2)),
+            "Dilapidated Dungeon - Past Poles": lambda state:
+                self.has_slide(state) and self.get_kicks(state, 1),
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.kick_or_plunge(state, 2)
-                or self.can_bounce(state) and self.get_kicks(state, 1)
-                or self.can_gold_ultra(state) and self.kick_or_plunge(state, 1),
+                or self.can_gold_ultra(state) and self.kick_or_plunge(state, 1)
+                or self.can_bounce(state) and self.get_clings(state, 2),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.can_bounce(state) and self.has_slide(state)
                 or self.can_gold_ultra(state) and self.get_kicks(state, 1)

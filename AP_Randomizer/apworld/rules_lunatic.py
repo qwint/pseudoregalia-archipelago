@@ -45,10 +45,10 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
             # "Twilight Theatre - Center Stage": lambda state:
             #     TODO: theoretical logic for soulcutterless or gemless
             "Dilapidated Dungeon - Past Poles": lambda state:
-                self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state),
+                self.get_kicks(state, 1) and self.has_plunge(state)
+                or self.has_breaker(state) and self.has_plunge(state) and self.has_slide(state),
             "Dilapidated Dungeon - Rafters": lambda state:
-                self.can_bounce(state) and self.kick_or_plunge(state, 1)
-                or self.can_gold_ultra(state),
+                self.can_gold_ultra(state),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Castle Sansa - Platform In Main Halls": lambda state:
@@ -57,7 +57,8 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                 self.can_gold_slide_ultra(state) and self.get_kicks(state, 1)
                 or self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Castle Sansa - Near Theatre Front": lambda state:
-                self.has_slide(state),
+                self.has_slide(state)
+                or self.get_clings(state, 2),
             "Sansa Keep - Levers Room": lambda state: True,
             "Listless Library - Upper Back": lambda state:
                 self.has_plunge(state),

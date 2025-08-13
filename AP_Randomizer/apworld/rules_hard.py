@@ -76,6 +76,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 or self.can_bounce(state) and self.get_kicks(state, 3),
             "Keep Main -> Keep (Northeast) => Castle": lambda state:
                 self.get_kicks(state, 1),
+            "Underbelly => Dungeon -> Underbelly Ascendant Light": lambda state:
+                self.get_clings(state, 2),
             "Underbelly Light Pillar -> Underbelly Ascendant Light": lambda state:
                 self.knows_obscure(state)
                 and (
@@ -117,7 +119,10 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
 
         location_clauses = {
             "Empty Bailey - Cheese Bell": lambda state:
-                self.get_clings(state, 6),
+                self.get_kicks(state, 3)
+                or self.get_clings(state, 6),
+            "Empty Bailey - Center Steeple": lambda state:
+                self.get_kicks(state, 2) and self.has_breaker(state),
             "Twilight Theatre - Soul Cutter": lambda state:
                 self.can_strikebreak(state) and self.can_slidejump(state),
             "Twilight Theatre - Corner Beam": lambda state:
@@ -155,7 +160,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 or self.get_kicks(state, 3) and self.has_plunge(state),
             "Dilapidated Dungeon - Past Poles": lambda state:
                 self.get_clings(state, 2)
-                or self.get_kicks(state, 2),
+                or self.get_kicks(state, 2)
+                or self.knows_obscure(state) and self.can_slidejump(state) and self.get_kicks(state, 1),
             "Dilapidated Dungeon - Rafters": lambda state:
                 self.get_clings(state, 6)
                 or self.get_kicks(state, 1) and self.has_plunge(state)

@@ -148,8 +148,7 @@ class RandomizeNotes(Toggle):
 class MajorKeyHints(DefaultOnToggle):
     """
     Changes the text on the tombstones near the Great Door to tell you the locations of your Major Keys.
-    On 0.6.3+ servers, reading the tombstones will also create hints.
-    On older servers, hints will only be created for keys that are in your world.
+    Also makes it so reading the tombstones will create hints.
     """
     display_name = "Major Key Hints"
 

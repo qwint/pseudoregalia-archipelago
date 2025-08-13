@@ -145,6 +145,14 @@ class RandomizeNotes(Toggle):
     display_name = "Randomize Notes"
 
 
+class MajorKeyHints(DefaultOnToggle):
+    """
+    Changes the text on the tombstones near the Great Door to tell you the locations of your Major Keys.
+    Also makes it so reading the tombstones will create hints.
+    """
+    display_name = "Major Key Hints"
+
+
 @dataclass
 class PseudoregaliaOptions(PerGameCommonOptions):
     game_version: GameVersion
@@ -161,4 +169,5 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     randomize_chairs: RandomizeChairs
     randomize_books: RandomizeBooks
     randomize_notes: RandomizeNotes
+    major_key_hints: MajorKeyHints
 

@@ -1,5 +1,5 @@
-from worlds.AutoWorld import World
-from BaseClasses import Region, CollectionState
+from worlds.AutoWorld import World, WebWorld
+from BaseClasses import Region, CollectionState, Tutorial
 from .items import PseudoregaliaItem, item_table, item_groups
 from .locations import PseudoregaliaLocation, location_table, zones
 from .regions import region_table
@@ -12,6 +12,12 @@ from typing import Dict, Any
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
 from .constants.versions import FULL_GOLD
 
+
+class PseudoregaliaWebWorld(WebWorld):
+    setup_en = Tutorial("name", "description", "English", "setup_en.md", "setup/en", ["TODO"])
+    tutorials = [setup_en]
+    
+
 class PseudoregaliaWorld(World):
     game = "Pseudoregalia"
     required_client_version = (0, 7, 0)
@@ -22,6 +28,8 @@ class PseudoregaliaWorld(World):
 
     options_dataclass = PseudoregaliaOptions
     options: PseudoregaliaOptions
+    
+    web = PseudoregaliaWebWorld()
 
     filler = ("Healing", "Magic Power")
     filler_index = 0
@@ -105,8 +113,27 @@ class PseudoregaliaWorld(World):
             region = self.multiworld.get_region(region_name, self.player)
             region.add_exits(exit_list)
 
+    def create_key_hints(self) -> Any:
+        key_hints = [[] for _ in range(5)]
+        key_locations = self.multiworld.find_items_in_locations(set(item_groups["major keys"]), self.player, True)
+        for location in key_locations:
+            if not location.item or not location.item.code or not location.address:
+                # guard against optional fields being None
+                continue
+            # this implementation assumes major key item codes are all in a row starting at 2365810021 and will
+            # break if that ever changes
+            index = location.item.code - 2365810021
+            if index not in range(5):
+                # guard against index being out of bounds
+                continue
+            key_hints[index].append({
+                "player": location.player,
+                "location": location.address,
+            })
+        return key_hints
+
     def fill_slot_data(self) -> Dict[str, Any]:
-        return {
+        slot_data = {
             "game_version": self.options.game_version.value,
             "logic_level": self.options.logic_level.value,
             "obscure_logic": bool(self.options.obscure_logic),
@@ -120,6 +147,9 @@ class PseudoregaliaWorld(World):
             "randomize_books": bool(self.options.randomize_books),
             "randomize_notes": bool(self.options.randomize_notes),
         }
+        if self.options.major_key_hints:
+            slot_data["key_hints"] = self.create_key_hints()
+        return slot_data
 
     def set_rules(self):
         difficulty = self.options.logic_level

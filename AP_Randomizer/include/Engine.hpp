@@ -23,4 +23,6 @@ namespace Engine {
 	void HealPlayer();
 	void GivePlayerPower();
 	void WarpToSpawn();
+	void SetTombstoneText(UObject*);
+	void CreateMajorKeyHints(UObject*);
 }

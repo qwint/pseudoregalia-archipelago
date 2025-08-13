@@ -4,6 +4,7 @@
 #include "Settings.hpp"
 #include "Client.hpp"
 #include "Engine.hpp"
+#include "StringOps.hpp"
 
 namespace GameData {
     using std::unordered_map;
@@ -13,6 +14,7 @@ namespace GameData {
     using std::optional;
     using std::pair;
     using std::tuple;
+    using std::vector;
 
     // Private members
     namespace {
@@ -24,6 +26,7 @@ namespace GameData {
         int health_pieces;
         int small_keys;
         bool major_keys[5];
+        vector<MultiworldLocation> major_key_hints[5];
         unordered_map<wstring, int> upgrade_table;
         unordered_map<Map, unordered_map<int64_t, Collectible>> collectible_table;
         unordered_map<Map, unordered_map<wstring, TimeTrial>> time_trial_table;
@@ -126,6 +129,15 @@ namespace GameData {
             {L"Zone_Tower",             Map::Tower},
             {L"Zone_PrincessChambers",  Map::Chambers},
             {L"EndScreen",              Map::EndScreen},
+        };
+
+        // maps tombstone actor name to major key index
+        const unordered_map<wstring, int> major_key_tombstones_map = {
+            {L"BP_ExamineTextPopup_C_2", 0},
+            {L"BP_ExamineTextPopup_C_1", 1},
+            {L"BP_ExamineTextPopup_C_3", 2},
+            {L"BP_ExamineTextPopup_C_4", 3},
+            {L"BP_ExamineTextPopup_C_5", 4},
         };
 
         // The two lookup tables below could be combined into one table with something like an ItemIdInfo struct,
@@ -525,6 +537,9 @@ namespace GameData {
         for (bool &k : major_keys) {
             k = false;
         }
+        for (auto& hints : major_key_hints) {
+            hints.clear();
+        }
     }
 
     void GameData::Close() {
@@ -535,6 +550,9 @@ namespace GameData {
         small_keys = 0;
         for (bool &k : major_keys) {
             k = false;
+        }
+        for (auto& hints : major_key_hints) {
+            hints.clear();
         }
         upgrade_table = {
             {L"attack", 0},
@@ -705,6 +723,28 @@ namespace GameData {
     bool IsInteractable(int64_t location_id) {
         // this works for now since locations are separated by collectible/interactable at this location id
         return location_id >= 2365810066;
+    }
+
+    void AddMajorKeyHint(int key_index, MultiworldLocation hint) {
+        if (key_index < 0 || key_index >= 5) {
+            Log("Tried to add a key hint out of the allowed range [0-5): index " + std::to_string(key_index));
+            return;
+        }
+        Log("Adding hint for key " + std::to_string(key_index) + ": player " + std::to_string(hint.player_id) +
+            ", location " + std::to_string(hint.location_id));
+        major_key_hints[key_index].push_back(hint);
+    }
+
+    optional<MajorKeyInfo> GetMajorKeyInfo(wstring tombstone_actor_name) {
+        if (!major_key_tombstones_map.contains(tombstone_actor_name)) {
+            return {};
+        }
+
+        int index = major_key_tombstones_map.at(tombstone_actor_name);
+        int64_t item_id = index + 2365810021;
+        bool found = major_keys[index];
+        vector<MultiworldLocation> hints = major_key_hints[index];
+        return MajorKeyInfo{ item_id, found, hints };
     }
 
 

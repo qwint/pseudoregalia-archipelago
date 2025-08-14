@@ -27,7 +27,7 @@ namespace Settings {
 		bool death_link = false;
 		PopupsInitialState popups_initial_state = PopupsInitialState::ShowWithSound;
 		bool popups_simplify_item_font = false;
-		Filters::ItemSend item_send_filter;
+		Filters::ItemSend item_send_filter = Filters::ItemSend::All;
 
 		template<class E> void ParseSetting(E&, toml::table, string, unordered_map<string, E>);
 		void ParseSetting(bool&, toml::table, string);

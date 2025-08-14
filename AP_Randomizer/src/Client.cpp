@@ -169,7 +169,7 @@ namespace Client {
             ap->set_print_json_handler([](const APClient::PrintJSONArgs& args) {
                 string plain_text = ap->render_json(args.data);
                 string markdown_text = ProcessMessageText(args);
-                Logger::PrintToConsole(
+                Engine::PrintToConsole(
                     StringOps::ToWide(markdown_text),
                     StringOps::ToWide(plain_text)
                 );
@@ -537,7 +537,7 @@ namespace Client {
                                    L"</> in <Player>" + player_name + L"</>'s world";
                 wstring plain = key_name + L" is at " + location_name + L" in " + player_name + L"'s world";
 
-                Logger::PrintToConsole(markdown, plain);
+                Engine::PrintToConsole(markdown, plain);
             }
         }
     } // End private functions

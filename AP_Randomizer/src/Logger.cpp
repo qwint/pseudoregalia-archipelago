@@ -58,7 +58,7 @@ namespace Logger {
 		case LogType::System: {
 			send<LogLevel::Verbose>(L"[APRandomizer] System: " + text + L"\n");
 			wstring markdown_text = L"<System>" + text + L"</>";
-			PrintToConsole(markdown_text, text);
+			Engine::PrintToConsole(markdown_text, text);
 			break;
 		}
 
@@ -70,7 +70,7 @@ namespace Logger {
 		case LogType::Error: {
 			send<LogLevel::Error>(L"[APRandomizer] ERROR: " + text + L"\n");
 			wstring markdown_text = L"<Error>Error: " + text + L"</>";
-			PrintToConsole(markdown_text, text);
+			Engine::PrintToConsole(markdown_text, text);
 			break;
 		}
 
@@ -79,15 +79,6 @@ namespace Logger {
 			break;
 		}
 		} // End switch
-	}
-
-	void Logger::PrintToConsole(std::wstring markdown_text, std::wstring plain_text) {
-		Engine::SaveMessage(markdown_text, plain_text);
-		Engine::PrintToConsole(markdown_text, plain_text);
-	}
-
-	void Logger::PrintToConsole(std::wstring text) {
-		PrintToConsole(text, text);
 	}
 
 	void Logger::OnTick() {

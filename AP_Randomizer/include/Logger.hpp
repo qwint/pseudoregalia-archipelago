@@ -24,8 +24,6 @@ namespace Logger {
 	void OnTick();
 	void ToggleMessageMute();
 	void ToggleMessageHide();
-	void PrintToConsole(std::wstring, std::wstring);
-	void PrintToConsole(std::wstring);
 	void Init();
 }
 

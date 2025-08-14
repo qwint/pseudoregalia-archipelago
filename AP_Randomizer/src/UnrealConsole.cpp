@@ -67,15 +67,15 @@ namespace UnrealConsole {
 		size_t hashed_command = Hashes::HashWstring(command);
 		switch (hashed_command) {
 		case Hashes::connect:
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			TryConnect(args);
 			break;
 		case Hashes::disconnect:
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			Log(L"To disconnect from the server, return to the main menu.", LogType::System);
 			break;
 		case Hashes::popups: {
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			wstring popup_args = L"";
 			for (const wchar_t c : args) {
 				if (c != L' ') {
@@ -107,12 +107,12 @@ namespace UnrealConsole {
 		case Hashes::checked:
 		case Hashes::getitem:
 		case Hashes::countdown:
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			Log(L"This command is not supported using /. Use ! instead:", LogType::System);
 			Log(L"!" + input, LogType::System);
 			break;
 		default:
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			Log(L"Command not recognized: " + input, LogType::System);
 			Log(L"Known commands: connect, popups, spawn", LogType::System);
 			break;

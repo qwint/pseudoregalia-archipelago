@@ -12,14 +12,14 @@ namespace Engine {
 	void SpawnCollectibles();
 	void DespawnCollectible(const int64_t);
 	void DespawnInteractable(const int64_t);
+	GameData::Map GetCurrentMap(UObject*);
 	GameData::Map GetCurrentMap();
 	void ToggleSlideJump();
 	void VaporizeGoat();
 	void VerifyVersion();
 	void SpawnTimeTrialCollectibleIfBeaten(UObject*);
-	void PrintToConsole(std::wstring, std::wstring, std::optional<UObject*> = {});
-	void SaveMessage(std::wstring, std::wstring);
-	void InitializeConsole(UObject*);
+	void PrintToConsole(std::wstring, std::wstring);
+	void PrintToConsole(std::wstring);
 	void HealPlayer();
 	void GivePlayerPower();
 	void WarpToSpawn();

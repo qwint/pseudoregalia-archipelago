@@ -40,11 +40,14 @@ namespace Engine {
 		// without getting the collectible
 		unordered_set<int64_t> spawned_collectibles;
 
-		bool has_initialized_console = false;
-		deque<pair<wstring, wstring>> messages;
+		// matches the max amount of messages the console widget will display
+		const size_t max_messages = 100;
+		//const auto message_debounce_milliseconds = std::chrono::milliseconds(150);
 
-		const wstring intro_markdown = L"<System>Welcome to Pseudoregalia Archipelago! You can connect by pressing Enter to open the console, then typing</>\n<System>/connect ip:port \"player name\"</>\n\n<System>Once you've obtained Solar Wind, you can toggle it with either Left Ctrl or the top face button on your controller.</>";
-		const wstring intro_plain = L"Welcome to Pseudoregalia Archipelago! You can connect by pressing Enter to open the console, then typing\n/connect ip:port \"player name\"\n\nOnce you've obtained Solar Wind, you can toggle it with either Left Ctrl or the top face button on your controller.";
+		size_t pending_messages = 0;
+		deque<pair<wstring, wstring>> messages;
+		//bool message_debounce_locked;
+		mutex messages_mutex;
 
 		struct BlueprintFunctionInfo {
 			variant<wstring, UObject*> parent;
@@ -54,16 +57,22 @@ namespace Engine {
 
 		bool awaiting_item_sync;
 		mutex item_sync_mutex;
+
 		std::queue<BlueprintFunctionInfo> blueprint_function_queue;
 		mutex blueprint_function_mutex;
 	} // End private members
 
 
-	// Returns the current map as a Map enum.
-	GameData::Map Engine::GetCurrentMap() {
+	// Returns the current map as a Map enum, getting the world name from the player controller.
+	GameData::Map GetCurrentMap() {
 		static FName controller_name = FName(STR("PlayerController"));
 		UObject* player_controller = UObjectGlobals::FindFirstOf(controller_name);
-		wstring world_name = player_controller->GetWorld()->GetName();
+		return GetCurrentMap(player_controller);
+	}
+
+	// Returns the current map as a Map enum, getting the world name from the object.
+	GameData::Map GetCurrentMap(UObject* object) {
+		wstring world_name = object->GetWorld()->GetName();
 		return GameData::MapNameToEnum(world_name);
 	}
 
@@ -76,6 +85,7 @@ namespace Engine {
 	// Runs once every engine tick.
 	void Engine::OnTick(UObject* ap_object) {
 		QueueItemSync();
+		AddMessages(ap_object);
 
 		// Engine tick runs in a separate thread from the client so it needs to be locked.
 		lock_guard<mutex> guard(blueprint_function_mutex);
@@ -220,38 +230,23 @@ namespace Engine {
 		SpawnCollectible(id, position);
 	}
 
-	void PrintToConsole(wstring markdown_text, wstring plain_text, optional<UObject*> console) {
-		struct ConsoleLineInfo {
-			FText markdown;
-			FText plain;
-		};
-		FText ue_markdown(markdown_text);
-		FText ue_plain(plain_text);
-		std::shared_ptr<void> params(new ConsoleLineInfo{ ue_markdown, ue_plain });
-		if (console) {
-			ExecuteBlueprintFunction(*console, L"AP_PrintToConsole", params);
-		}
-		else {
-			ExecuteBlueprintFunction(L"AP_DeluxeConsole_C", L"AP_PrintToConsole", params);
-		}
-	}
-
-	void SaveMessage(wstring markdown, wstring plain) {
-		if (messages.size() == 100) {
-			// only maintain the last 100 messages
+	void PrintToConsole(wstring markdown_text, wstring plain_text) {
+		lock_guard<mutex> guard(messages_mutex);
+		//if (!message_debounce_locked) {
+		//	// debounce messages to help handle a large influx, like when a big game releases
+		//	Timer::RunTimerRealTime(message_debounce_milliseconds, message_debounce_locked);
+		//}
+		if (messages.size() == max_messages) {
 			messages.pop_front();
 		}
-		messages.push_back(pair<wstring, wstring>{ markdown, plain });
+		messages.push_back({ markdown_text, plain_text });
+		if (pending_messages < max_messages) {
+			pending_messages++;
+		}
 	}
 
-	void InitializeConsole(UObject* console) {
-		if (has_initialized_console) {
-			AddMessages(console);
-		}
-		else if (GetCurrentMap() != GameData::Map::TitleScreen) {
-			has_initialized_console = true;
-			PrintToConsole(intro_markdown, intro_plain, console);
-		}
+	void PrintToConsole(wstring text) {
+		PrintToConsole(text, text);
 	}
 
 	void HealPlayer() {
@@ -294,9 +289,7 @@ namespace Engine {
 	}
 
 	void SetTombstoneText(UObject* object) {
-		if (object->GetWorld()->GetName() != L"Zone_Tower") {
-			return;
-		}
+		if (GetCurrentMap(object) != GameData::Map::Tower) return;
 
 		wstring tombstone_name = object->GetName();
 		optional<GameData::MajorKeyInfo> info = GameData::GetMajorKeyInfo(tombstone_name);
@@ -319,9 +312,7 @@ namespace Engine {
 	}
 
 	void CreateMajorKeyHints(UObject* object) {
-		if (object->GetWorld()->GetName() != L"Zone_Tower") {
-			return;
-		}
+		if (GetCurrentMap(object) != GameData::Map::Tower) return;
 
 		optional<GameData::MajorKeyInfo> info = GameData::GetMajorKeyInfo(object->GetName());
 		if (!info) {
@@ -437,19 +428,44 @@ namespace Engine {
 			ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_SpawnInteractableAura", interactable_aura_info);
 		}
 
-		void AddMessages(UObject* console) {
+		void AddMessages(UObject* ap_object) {
+			lock_guard<mutex> guard(messages_mutex);
+			//if (message_debounce_locked) return;
+
+			// I want to only create the console in gameplay levels, but for some reason I can't figure out, the console
+			// has to exist on the title screen or it messes with the map. It's frustrating not to know what causes the
+			// issue because who knows what will make it break down the line, but what can you do.
+			GameData::Map map = GetCurrentMap(ap_object);
+			if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) return;
+
+			bool* console_initialized = ap_object->GetValuePtrByPropertyName<bool>(L"console_initialized");
+			size_t print_num = *console_initialized ? pending_messages : messages.size();
+			*console_initialized = true;
+			if (print_num == 0) return;
+
 			struct AddMessagesInfo {
 				TArray<FText> markdown_messages;
 				TArray<FText> plain_messages;
+				bool show_console;
 			};
-			TArray<FText> ue_markdown_messages = { FText(intro_markdown) };
-			TArray<FText> ue_plain_messages = { FText(intro_plain) };
+			TArray<FText> ue_markdown_messages;
+			TArray<FText> ue_plain_messages;
+			size_t skip_num = messages.size() - print_num;
+			size_t skipped = 0;
 			for (const auto& [markdown, plain] : messages) {
+				if (skipped < skip_num) {
+					skipped++;
+					continue;
+				}
 				ue_markdown_messages.Add(FText(markdown));
 				ue_plain_messages.Add(FText(plain));
 			}
-			std::shared_ptr<void> params(new AddMessagesInfo{ ue_markdown_messages, ue_plain_messages });
-			ExecuteBlueprintFunction(console, L"AP_AddMessages", params);
+			bool show_console = pending_messages > 0;
+
+			shared_ptr<void> params(new AddMessagesInfo{ ue_markdown_messages, ue_plain_messages, show_console });
+			ExecuteBlueprintFunction(ap_object, L"AP_AddMessages", params);
+
+			pending_messages = 0;
 		}
 	} // End private functions
 }

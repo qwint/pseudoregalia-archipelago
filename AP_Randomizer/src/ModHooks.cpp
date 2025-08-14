@@ -127,9 +127,6 @@ namespace ModHooks {
 
 		typedef function<void(UObject*)> ObjectCallback;
 		const unordered_map<wstring, ObjectCallback> static_construct_object_post_callbacks = {
-			{L"AP_DeluxeConsole_C", [](UObject* object) {
-				Engine::InitializeConsole(object);
-			}},
 		};
 
 		void RegisterModHook(UObject*, ModHook&);

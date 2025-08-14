@@ -243,6 +243,7 @@ namespace Engine {
 	}
 
 	void PrintToConsole(wstring markdown_text, wstring plain_text) {
+		Log(plain_text, LogType::Console);
 		lock_guard<mutex> guard(messages_mutex);
 		//if (!message_debounce_locked) {
 		//	// debounce messages to help handle a large influx, like when a big game releases

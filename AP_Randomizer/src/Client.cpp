@@ -40,6 +40,7 @@ namespace Client {
         typedef nlohmann::json json;
         typedef APClient::State ConnectionStatus;
         void ReceiveItems(const list<APClient::NetworkItem>&);
+        bool ShouldPrintToConsole(const APClient::PrintJSONArgs&);
         string ProcessMessageText(const APClient::PrintJSONArgs&);
         optional<Engine::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
@@ -168,11 +169,13 @@ namespace Client {
             // Executes whenever a chat message is received.
             ap->set_print_json_handler([](const APClient::PrintJSONArgs& args) {
                 string plain_text = ap->render_json(args.data);
-                string markdown_text = ProcessMessageText(args);
-                Engine::PrintToConsole(
-                    StringOps::ToWide(markdown_text),
-                    StringOps::ToWide(plain_text)
-                );
+                if (ShouldPrintToConsole(args)) {
+                    string markdown_text = ProcessMessageText(args);
+                    Engine::PrintToConsole(StringOps::ToWide(markdown_text), StringOps::ToWide(plain_text));
+                }
+                else {
+                    Log("Filtered: " + plain_text);
+                }
 
                 if (args.type == "ItemSend") {
                     ReceiveItemOnce(args);
@@ -180,12 +183,6 @@ namespace Client {
                     if (item_popup) {
                         Engine::ShowPopup(*item_popup);
                     }
-                    else {
-                        Log(plain_text, LogType::Console);
-                    }
-                }
-                else {
-                    Log(plain_text, LogType::Console);
                 }
                 });
 
@@ -373,6 +370,29 @@ namespace Client {
 
     // Private functions
     namespace {
+        bool ShouldPrintToConsole(const APClient::PrintJSONArgs& args) {
+            using namespace Settings::Filters;
+
+            if (args.type == "ItemSend") {
+                switch (Settings::GetItemSendFilter()) {
+                case ItemSend::All:
+                    return true;
+                case ItemSend::Relevant:
+                    if (args.receiving == nullptr || args.item == nullptr) {
+                        // don't filter out ill-formed messages just in case
+                        return true;
+                    }
+                    return ap->slot_concerns_self(*args.receiving) || ap->slot_concerns_self(args.item->player);
+                default:
+                    // ItemSend::None
+                    return false;
+                }
+            }
+            else {
+                return true;
+            }
+        }
+
         string ProcessMessageText(const APClient::PrintJSONArgs& args) {
             string console_text;
 
@@ -383,7 +403,7 @@ namespace Client {
                 case Hashes::player_id: {
                     int id = std::stoi(node.text);
                     string player_name = ap->get_player_alias(id);
-                    if (id == ap->get_player_number()) {
+                    if (ap->slot_concerns_self(id)) {
                         console_text += "<Self>" + player_name + "</>";
                     }
                     else {
@@ -434,8 +454,7 @@ namespace Client {
 
             int32_t receiver = *args.receiving;
             int32_t finder = args.item->player;
-            int32_t player = ap->get_player_number();
-            if (finder != player && receiver != player) {
+            if (!ap->slot_concerns_self(finder) && !ap->slot_concerns_self(receiver)) {
                 return {};
             }
 
@@ -443,11 +462,11 @@ namespace Client {
                 .item = StringOps::ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver))),
             };
             wstring location = StringOps::ToWide(ap->get_location_name(args.item->location, ap->get_player_game(finder)));
-            if (finder == player && receiver == player) {
+            if (ap->slot_concerns_self(finder) && ap->slot_concerns_self(receiver)) {
                 item_popup.preamble = L"Found ";
                 item_popup.info = L"at " + location;
             }
-            else if (finder == player) {
+            else if (ap->slot_concerns_self(finder)) {
                 item_popup.preamble = L"Sent ";
                 wstring receiver_name = StringOps::ToWide(ap->get_player_alias(receiver));
                 item_popup.info = L"to " + receiver_name + L" (" + location + L")";
@@ -465,7 +484,7 @@ namespace Client {
                 return;
             }
 
-            if (*args.receiving != ap->get_player_number()) {
+            if (!ap->slot_concerns_self(*args.receiving)) {
                 return;
             }
 
@@ -487,20 +506,21 @@ namespace Client {
                 return;
             }
             json details = data["data"];
-            string funny_message;
+            wstring funny_message;
 
             if (details.contains("cause")) {
-                string cause(details["cause"]);
-                Engine::ShowPopup(StringOps::ToWide(cause));
+                funny_message = StringOps::ToWide(details["cause"]);
             }
             else if (details.contains("source")) {
                 string source(details["source"]);
-                Engine::ShowPopup(StringOps::ToWide("You were brutally murdered by " + source + "."));
+                funny_message = L"You were brutally murdered by " + StringOps::ToWide(source) + L".";
             }
             else {
                 // Should only execute if the received death link data was not properly filled out.
-                Engine::ShowPopup(StringOps::ToWide("You were assassinated by a mysterious villain..."));
+                funny_message = L"You were assassinated by a mysterious villain...";
             }
+            Engine::ShowPopup(funny_message);
+            Engine::PrintToConsole(funny_message);
             Engine::VaporizeGoat();
             Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
         }

@@ -27,6 +27,7 @@ namespace Settings {
 		bool death_link = false;
 		PopupsInitialState popups_initial_state = PopupsInitialState::ShowWithSound;
 		bool popups_simplify_item_font = false;
+		Filters::ItemSend item_send_filter;
 
 		template<class E> void ParseSetting(E&, toml::table, string, unordered_map<string, E>);
 		void ParseSetting(bool&, toml::table, string);
@@ -82,6 +83,15 @@ namespace Settings {
 				{ "hide", PopupsInitialState::Hide },
 			});
 		ParseSetting(popups_simplify_item_font, settings_table, "settings.popups.simplify_item_font");
+		ParseSetting(
+			item_send_filter,
+			settings_table,
+			"settings.console.filters.item_send",
+			unordered_map<string, Filters::ItemSend> {
+				{ "all", Filters::ItemSend::All },
+				{ "relevant", Filters::ItemSend::Relevant },
+				{ "none", Filters::ItemSend::None },
+			});
 	}
 
 	ItemDisplay GetItemDisplay() {
@@ -102,6 +112,10 @@ namespace Settings {
 
 	bool GetPopupsSimplifyItemFont() {
 		return popups_simplify_item_font;
+	}
+
+	Filters::ItemSend GetItemSendFilter() {
+		return item_send_filter;
 	}
 
 	namespace {

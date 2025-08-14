@@ -6,6 +6,12 @@
 namespace Engine {
 	using RC::Unreal::UObject;
 
+	struct ItemPopup {
+		std::wstring preamble;
+		std::wstring item;
+		std::wstring info;
+	};
+
 	void ExecuteBlueprintFunction(std::variant<std::wstring, UObject*>, std::wstring, std::shared_ptr<void>);
 	void OnTick(UObject*);
 	void SyncItems();
@@ -20,9 +26,13 @@ namespace Engine {
 	void SpawnTimeTrialCollectibleIfBeaten(UObject*);
 	void PrintToConsole(std::wstring, std::wstring);
 	void PrintToConsole(std::wstring);
+	void ShowPopup(std::variant<std::wstring, ItemPopup>);
+	void TogglePopupsMute();
+	void TogglePopupsHide();
 	void HealPlayer();
 	void GivePlayerPower();
 	void WarpToSpawn();
 	void SetTombstoneText(UObject*);
 	void CreateMajorKeyHints(UObject*);
+	void Init();
 }

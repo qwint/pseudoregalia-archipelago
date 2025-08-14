@@ -4,7 +4,6 @@
 #include "Settings.hpp"
 #include "Client.hpp"
 #include "Engine.hpp"
-#include "StringOps.hpp"
 
 namespace GameData {
     using std::unordered_map;

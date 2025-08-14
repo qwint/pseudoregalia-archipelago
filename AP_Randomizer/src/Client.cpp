@@ -41,7 +41,7 @@ namespace Client {
         typedef APClient::State ConnectionStatus;
         void ReceiveItems(const list<APClient::NetworkItem>&);
         string ProcessMessageText(const APClient::PrintJSONArgs&);
-        optional<Logger::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs&);
+        optional<Engine::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
         void ReceiveItemOnce(const APClient::PrintJSONArgs&);
         void Despawn(int64_t);
@@ -176,9 +176,9 @@ namespace Client {
 
                 if (args.type == "ItemSend") {
                     ReceiveItemOnce(args);
-                    optional<Logger::ItemPopup> item_popup = BuildItemPopup(args);
+                    optional<Engine::ItemPopup> item_popup = BuildItemPopup(args);
                     if (item_popup) {
-                        Logger::ShowPopup(*item_popup);
+                        Engine::ShowPopup(*item_popup);
                     }
                     else {
                         Log(plain_text, LogType::Console);
@@ -290,7 +290,7 @@ namespace Client {
             {"source", ap->get_slot()},
         };
         ap->Bounce(data, {}, {}, { "DeathLink" });
-        Logger::ShowPopup(RandomOwnDeathlink());
+        Engine::ShowPopup(RandomOwnDeathlink());
         Log("Sending bounce: " + data.dump());
         Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
     }
@@ -424,7 +424,7 @@ namespace Client {
             return console_text;
         }
 
-        optional<Logger::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs& args) {
+        optional<Engine::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs& args) {
             if (args.receiving == nullptr || args.item == nullptr) {
                 // I don't think this is reachable because of the way apclientpp validates packets, but it felt weird
                 // not to check just in case
@@ -439,7 +439,7 @@ namespace Client {
                 return {};
             }
 
-            Logger::ItemPopup item_popup = {
+            Engine::ItemPopup item_popup = {
                 .item = StringOps::ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver))),
             };
             wstring location = StringOps::ToWide(ap->get_location_name(args.item->location, ap->get_player_game(finder)));
@@ -481,7 +481,7 @@ namespace Client {
 
             if (!data.contains("data")) {
                 // Should only execute if the received death link data was not properly filled out.
-                Logger::ShowPopup(L"You were assassinated by a mysterious villain...");
+                Engine::ShowPopup(L"You were assassinated by a mysterious villain...");
                 Engine::VaporizeGoat();
                 Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
                 return;
@@ -491,15 +491,15 @@ namespace Client {
 
             if (details.contains("cause")) {
                 string cause(details["cause"]);
-                Logger::ShowPopup(cause);
+                Engine::ShowPopup(StringOps::ToWide(cause));
             }
             else if (details.contains("source")) {
                 string source(details["source"]);
-                Logger::ShowPopup("You were brutally murdered by " + source + ".");
+                Engine::ShowPopup(StringOps::ToWide("You were brutally murdered by " + source + "."));
             }
             else {
                 // Should only execute if the received death link data was not properly filled out.
-                Logger::ShowPopup("You were assassinated by a mysterious villain...");
+                Engine::ShowPopup(StringOps::ToWide("You were assassinated by a mysterious villain..."));
             }
             Engine::VaporizeGoat();
             Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);

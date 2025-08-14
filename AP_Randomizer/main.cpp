@@ -16,7 +16,6 @@
 #include "Engine.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
-#include "StringOps.hpp"
 #include "Settings.hpp"
 #include "ModHooks.hpp"
 
@@ -36,7 +35,7 @@ public:
         //ModIntendedSDKVersion = STR("2.6");
 
         Settings::Load();
-        Logger::Init();
+        Engine::Init();
     }
 
     ~AP_Randomizer()
@@ -108,7 +107,6 @@ public:
     auto on_update() -> void override
     {
         Client::PollServer();
-        Logger::OnTick();
         for (auto& boundKey : m_boundKeys)
         {
             if ((GetKeyState(boundKey.key) & 0x8000) && !boundKey.isPressed)

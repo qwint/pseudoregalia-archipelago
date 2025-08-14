@@ -8,6 +8,8 @@
 #include "Logger.hpp"
 #include "Client.hpp"
 #include "Settings.hpp"
+#include "StringOps.hpp"
+#include "Timer.hpp"
 
 namespace Engine {
 	using namespace RC::Unreal; // Give Engine easy access to Unreal objects
@@ -34,6 +36,7 @@ namespace Engine {
 		void SpawnCollectible(int64_t, FVector);
 		void SpawnInteractableAura(wstring, GameData::Interactable);
 		void AddMessages(UObject*);
+		void ShowQueuedPopup(UObject*);
 
 		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary because
 		// time trials may try to spawn their collectibles multiple times if the player beats the time trial more than once
@@ -44,10 +47,18 @@ namespace Engine {
 		const size_t max_messages = 100;
 		//const auto message_debounce_milliseconds = std::chrono::milliseconds(150);
 
-		size_t pending_messages = 0;
+		size_t queued_messages = 0;
 		deque<pair<wstring, wstring>> messages;
 		//bool message_debounce_locked;
 		mutex messages_mutex;
+
+		//const auto popup_debounce_milliseconds = std::chrono::milliseconds(150);
+
+		bool popups_muted;
+		bool popups_hidden;
+		optional<variant<wstring, ItemPopup>> queued_popup;
+		//bool popup_debounce_locked;
+		mutex popups_mutex;
 
 		struct BlueprintFunctionInfo {
 			variant<wstring, UObject*> parent;
@@ -86,6 +97,7 @@ namespace Engine {
 	void Engine::OnTick(UObject* ap_object) {
 		QueueItemSync();
 		AddMessages(ap_object);
+		ShowQueuedPopup(ap_object);
 
 		// Engine tick runs in a separate thread from the client so it needs to be locked.
 		lock_guard<mutex> guard(blueprint_function_mutex);
@@ -240,13 +252,46 @@ namespace Engine {
 			messages.pop_front();
 		}
 		messages.push_back({ markdown_text, plain_text });
-		if (pending_messages < max_messages) {
-			pending_messages++;
+		if (queued_messages < max_messages) {
+			queued_messages++;
 		}
 	}
 
 	void PrintToConsole(wstring text) {
 		PrintToConsole(text, text);
+	}
+
+	void ShowPopup(variant<wstring, ItemPopup> popup) {
+		lock_guard<mutex> guard(popups_mutex);
+		if (popups_hidden) return;
+		//if (!popup_debounce_locked) {
+		//	// debounce messages to help handle a large influx, like when a big game releases
+		//	Timer::RunTimerRealTime(popup_debounce_milliseconds, &popup_debounce_locked);
+		//}
+		queued_popup = popup;
+	}
+
+	void TogglePopupsMute() {
+		lock_guard<mutex> guard(popups_mutex);
+		popups_muted = !popups_muted;
+		if (popups_muted) {
+			Log(L"Popup sounds are now muted.", LogType::System);
+		}
+		else {
+			Log(L"Popup sounds are no longer muted.", LogType::System);
+		}
+	}
+
+	void TogglePopupsHide() {
+		lock_guard<mutex> guard(popups_mutex);
+		popups_hidden = !popups_hidden;
+		if (popups_hidden) {
+			queued_popup = {};
+			Log(L"Popups are now hidden.", LogType::System);
+		}
+		else {
+			Log(L"Popups are no longer hidden.", LogType::System);
+		}
 	}
 
 	void HealPlayer() {
@@ -330,6 +375,17 @@ namespace Engine {
 		}
 
 		Client::CreateMajorKeyHints(*info);
+	}
+
+	void Init() {
+		switch (Settings::GetPopupsInitialState()) {
+		case Settings::PopupsInitialState::ShowMuted:
+			popups_muted = true;
+			break;
+		case Settings::PopupsInitialState::Hide:
+			popups_hidden = true;
+			break;
+		}
 	}
 
 
@@ -439,7 +495,7 @@ namespace Engine {
 			if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) return;
 
 			bool* console_initialized = ap_object->GetValuePtrByPropertyName<bool>(L"console_initialized");
-			size_t print_num = *console_initialized ? pending_messages : messages.size();
+			size_t print_num = *console_initialized ? queued_messages : messages.size();
 			*console_initialized = true;
 			if (print_num == 0) return;
 
@@ -460,12 +516,56 @@ namespace Engine {
 				ue_markdown_messages.Add(FText(markdown));
 				ue_plain_messages.Add(FText(plain));
 			}
-			bool show_console = pending_messages > 0;
+			bool show_console = queued_messages > 0;
 
 			shared_ptr<void> params(new AddMessagesInfo{ ue_markdown_messages, ue_plain_messages, show_console });
 			ExecuteBlueprintFunction(ap_object, L"AP_AddMessages", params);
 
-			pending_messages = 0;
+			queued_messages = 0;
+		}
+
+		void ShowQueuedPopup(UObject* ap_object) {
+			lock_guard<mutex> guard(popups_mutex);
+			//if (popup_debounce_locked) return;
+
+			// don't try to show a popup in a non-gameplay level
+			GameData::Map map = GetCurrentMap(ap_object);
+			if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) return;
+
+			if (!queued_popup) return;
+
+			if (holds_alternative<wstring>(*queued_popup)) {
+				wstring popup_text = get<wstring>(*queued_popup);
+				Log(popup_text, LogType::Popup);
+				struct PrintMessageInfo {
+					FText text;
+					bool mute_sound;
+				};
+				FText new_text(popup_text);
+				shared_ptr<void> params(new PrintMessageInfo{ new_text, popups_muted });
+				ExecuteBlueprintFunction(ap_object, L"AP_PrintMessage", params);
+			}
+			else {
+				ItemPopup popup = get<ItemPopup>(*queued_popup);
+				Log(popup.preamble + popup.item + L" " + popup.info, LogType::Popup);
+				struct PrintItemToPlayerInfo {
+					FText preamble;
+					FText item;
+					FText info;
+					bool mute_sound;
+					bool simplify_item_popup_font;
+				};
+				std::shared_ptr<void> params(new PrintItemToPlayerInfo{
+					FText(popup.preamble),
+					FText(popup.item),
+					FText(popup.info),
+					popups_muted,
+					Settings::GetPopupsSimplifyItemFont(),
+				});
+				ExecuteBlueprintFunction(ap_object, L"AP_PrintItemMessage", params);
+			}
+
+			queued_popup = {};
 		}
 	} // End private functions
 }

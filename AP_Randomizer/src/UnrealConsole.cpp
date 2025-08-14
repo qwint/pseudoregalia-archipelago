@@ -85,10 +85,10 @@ namespace UnrealConsole {
 			std::transform(popup_args.begin(), popup_args.end(), popup_args.begin(), tolower);
 
 			if (popup_args == L"hide" || popup_args == L"unhide" || popup_args == L"show") {
-				Logger::ToggleMessageHide();
+				Engine::TogglePopupsHide();
 			}
 			else if (popup_args == L"mute" || popup_args == L"unmute") {
-				Logger::ToggleMessageMute();
+				Engine::TogglePopupsMute();
 			}
 			else {
 				Log(L"Please input either \"/popups mute\" or \"/popups hide\".", LogType::System);
@@ -253,10 +253,10 @@ namespace UnrealConsole {
 				return;
 			}
 			if (option == "hide" || option == "unhide" || option == "show") {
-				Logger::ToggleMessageHide();
+				Engine::TogglePopupsHide();
 			}
 			if (option == "mute" || option == "unmute") {
-				Logger::ToggleMessageMute();
+				Engine::TogglePopupsMute();
 			}
 		}
 

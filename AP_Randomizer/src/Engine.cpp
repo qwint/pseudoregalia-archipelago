@@ -53,21 +53,23 @@ namespace Engine {
 		mutex messages_mutex;
 
 		//const auto popup_debounce_milliseconds = std::chrono::milliseconds(150);
+		const auto popup_sound_milliseconds = std::chrono::milliseconds(500);
 
 		bool popups_muted;
 		bool popups_hidden;
 		optional<variant<wstring, ItemPopup>> queued_popup;
 		//bool popup_debounce_locked;
+		bool popup_sound_locked;
 		mutex popups_mutex;
+
+		bool awaiting_item_sync;
+		mutex item_sync_mutex;
 
 		struct BlueprintFunctionInfo {
 			variant<wstring, UObject*> parent;
 			wstring function_name;
 			shared_ptr<void> params;
 		};
-
-		bool awaiting_item_sync;
-		mutex item_sync_mutex;
 
 		std::queue<BlueprintFunctionInfo> blueprint_function_queue;
 		mutex blueprint_function_mutex;
@@ -265,7 +267,7 @@ namespace Engine {
 		lock_guard<mutex> guard(messages_mutex);
 		//if (!message_debounce_locked) {
 		//	// debounce messages to help handle a large influx, like when a big game releases
-		//	Timer::RunTimerRealTime(message_debounce_milliseconds, message_debounce_locked);
+		//	Timer::RunTimerRealTime(message_debounce_milliseconds, &message_debounce_locked);
 		//}
 		if (messages.size() == max_messages) {
 			messages.pop_front();
@@ -284,7 +286,7 @@ namespace Engine {
 		lock_guard<mutex> guard(popups_mutex);
 		if (popups_hidden) return;
 		//if (!popup_debounce_locked) {
-		//	// debounce messages to help handle a large influx, like when a big game releases
+		//	// debounce popups to help handle a large influx, like when a big game releases
 		//	Timer::RunTimerRealTime(popup_debounce_milliseconds, &popup_debounce_locked);
 		//}
 		queued_popup = popup;
@@ -549,17 +551,21 @@ namespace Engine {
 		void ShowQueuedPopup(UObject* ap_object) {
 			lock_guard<mutex> guard(popups_mutex);
 			//if (popup_debounce_locked) return;
+			if (!queued_popup) return;
 
 			// don't try to show a popup in a non-gameplay level
 			GameData::Map map = GetCurrentMap(ap_object);
 			if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) return;
 
-			if (!queued_popup) return;
-
-			// don't show popup if the console hasn't been created yet
+			// don't show popup if the console hasn't been created yet, eg during the dungeon cutscene
 			bool* console_exists = ap_object->GetValuePtrByPropertyName<bool>(L"console_exists");
 			if (!*console_exists) return;
 
+			bool mute_sound = popups_muted || popup_sound_locked;
+			if (!mute_sound) {
+				// prevent popup sound from playing too frequently when receiving a lot of messages
+				Timer::RunTimerRealTime(popup_sound_milliseconds, &popup_sound_locked);
+			}
 			if (holds_alternative<wstring>(*queued_popup)) {
 				wstring popup_text = get<wstring>(*queued_popup);
 				Log(popup_text, LogType::Popup);
@@ -568,21 +574,21 @@ namespace Engine {
 					bool mute_sound;
 				};
 				FText new_text(popup_text);
-				shared_ptr<void> params(new PrintMessageInfo{ new_text, popups_muted });
+				shared_ptr<void> params(new PrintMessageInfo{ new_text, mute_sound });
 				ExecuteBlueprintFunction(ap_object, L"AP_PrintMessage", params);
 			}
 			else {
 				ItemPopup popup = get<ItemPopup>(*queued_popup);
 				Log(popup.preamble + L" " + popup.item, LogType::Popup);
-				struct PrintItemToPlayerInfo {
+				struct PrintItemMessageInfo {
 					FText preamble;
 					FText item;
 					bool mute_sound;
 				};
-				std::shared_ptr<void> params(new PrintItemToPlayerInfo{
+				std::shared_ptr<void> params(new PrintItemMessageInfo{
 					FText(popup.preamble),
 					FText(popup.item),
-					popups_muted,
+					mute_sound,
 				});
 				ExecuteBlueprintFunction(ap_object, L"AP_PrintItemMessage", params);
 			}

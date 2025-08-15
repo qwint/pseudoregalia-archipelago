@@ -137,6 +137,24 @@ namespace Engine {
 		}
 	}
 
+	// Performs actions that should be done at the start of a new scene
+	void OnSceneLoad(UObject* ap_object) {
+		GameData::Map map = GetCurrentMap(ap_object);
+		if (map == GameData::Map::EndScreen) {
+			Client::CompleteGame();
+			return;
+		}
+		if (map == GameData::Map::TitleScreen) {
+			Client::Disconnect();
+			lock_guard<mutex> guard(popups_mutex);
+			queued_popup = {};
+			return;
+		}
+		Engine::SpawnCollectibles(); // TODO pass in map
+		Engine::SyncItems();
+		Client::SetZoneData(); // TODO pass in map
+	}
+
 	// Calls blueprint's AP_SpawnCollectible function for each unchecked collectible in a map.
 	void Engine::SpawnCollectibles() {
 		spawned_collectibles.clear();

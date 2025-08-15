@@ -104,18 +104,7 @@ namespace ModHooks {
 		typedef function<void(AActor*)> ActorCallback;
 		const unordered_map<wstring, ActorCallback> begin_play_post_callbacks = {
 			{L"BP_APRandomizerInstance_C", [](AActor* actor) {
-				GameData::Map map = Engine::GetCurrentMap();
-				if (map == GameData::Map::EndScreen) {
-					Client::CompleteGame();
-					return;
-				}
-				if (map == GameData::Map::TitleScreen) {
-					Client::Disconnect();
-					return;
-				}
-				Engine::SpawnCollectibles(); // TODO pass in map
-				Engine::SyncItems();
-				Client::SetZoneData(); // TODO pass in map
+				Engine::OnSceneLoad(actor);
 			}},
 			{L"BP_Note_C", [](AActor* actor) {
 				optional<wstring> note_text = GameData::GetNoteText(actor->GetName());

@@ -86,8 +86,7 @@ public:
 
         Hook::RegisterStaticConstructObjectPostCallback([&](const FStaticConstructObjectParameters& params, UObject* object) -> UObject* {
             ModHooks::RegisterObjectHooks(object);
-            // currently none to run so save the function call
-            //ModHooks::RunStaticConstructObjectPostCallback(object);
+            ModHooks::RunStaticConstructObjectPostCallback(object);
             return object;
         });
 

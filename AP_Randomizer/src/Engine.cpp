@@ -495,6 +495,9 @@ namespace Engine {
 			GameData::Map map = GetCurrentMap(ap_object);
 			if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) return;
 
+			bool* console_exists = ap_object->GetValuePtrByPropertyName<bool>(L"console_exists");
+			if (!*console_exists) return;
+
 			bool* console_initialized = ap_object->GetValuePtrByPropertyName<bool>(L"console_initialized");
 			size_t print_num = *console_initialized ? queued_messages : messages.size();
 			*console_initialized = true;
@@ -535,6 +538,10 @@ namespace Engine {
 
 			if (!queued_popup) return;
 
+			// don't show popup if the console hasn't been created yet
+			bool* console_exists = ap_object->GetValuePtrByPropertyName<bool>(L"console_exists");
+			if (!*console_exists) return;
+
 			if (holds_alternative<wstring>(*queued_popup)) {
 				wstring popup_text = get<wstring>(*queued_popup);
 				Log(popup_text, LogType::Popup);
@@ -548,20 +555,16 @@ namespace Engine {
 			}
 			else {
 				ItemPopup popup = get<ItemPopup>(*queued_popup);
-				Log(popup.preamble + popup.item + L" " + popup.info, LogType::Popup);
+				Log(popup.preamble + L" " + popup.item, LogType::Popup);
 				struct PrintItemToPlayerInfo {
 					FText preamble;
 					FText item;
-					FText info;
 					bool mute_sound;
-					bool simplify_item_popup_font;
 				};
 				std::shared_ptr<void> params(new PrintItemToPlayerInfo{
 					FText(popup.preamble),
 					FText(popup.item),
-					FText(popup.info),
 					popups_muted,
-					Settings::GetPopupsSimplifyItemFont(),
 				});
 				ExecuteBlueprintFunction(ap_object, L"AP_PrintItemMessage", params);
 			}

@@ -458,25 +458,20 @@ namespace Client {
                 return {};
             }
 
-            Engine::ItemPopup item_popup = {
-                .item = StringOps::ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver))),
-            };
-            wstring location = StringOps::ToWide(ap->get_location_name(args.item->location, ap->get_player_game(finder)));
+            wstring preamble;
             if (ap->slot_concerns_self(finder) && ap->slot_concerns_self(receiver)) {
-                item_popup.preamble = L"Found ";
-                item_popup.info = L"at " + location;
+                preamble = L"You found your";
             }
             else if (ap->slot_concerns_self(finder)) {
-                item_popup.preamble = L"Sent ";
                 wstring receiver_name = StringOps::ToWide(ap->get_player_alias(receiver));
-                item_popup.info = L"to " + receiver_name + L" (" + location + L")";
+                preamble = L"You found " + receiver_name + L"'s";
             }
             else {
-                item_popup.preamble = L"Received ";
                 wstring finder_name = StringOps::ToWide(ap->get_player_alias(finder));
-                item_popup.info = L"from " + finder_name + L" (" + location + L")";
+                preamble = finder_name + L" found your";
             }
-            return item_popup;
+            wstring item = StringOps::ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver)));
+            return Engine::ItemPopup{ preamble, item };
         }
 
         void ReceiveItemOnce(const APClient::PrintJSONArgs& args) {

@@ -9,7 +9,6 @@ namespace Engine {
 	struct ItemPopup {
 		std::wstring preamble;
 		std::wstring item;
-		std::wstring info;
 	};
 
 	void ExecuteBlueprintFunction(std::variant<std::wstring, UObject*>, std::wstring, std::shared_ptr<void>);

@@ -45,24 +45,22 @@ namespace Engine {
 
 		// matches the max amount of messages the console widget will display
 		const size_t max_messages = 100;
-		//const auto message_debounce_milliseconds = std::chrono::milliseconds(150);
-
+		const auto message_debounce_delay = std::chrono::milliseconds(300);
 		size_t queued_messages = 0;
 		deque<pair<wstring, wstring>> messages;
-		//bool message_debounce_locked;
+		bool message_debounce_locked;
 		mutex messages_mutex;
 
-		//const auto popup_debounce_milliseconds = std::chrono::milliseconds(150);
-		const auto popup_sound_milliseconds = std::chrono::milliseconds(500);
-
+		const auto popup_debounce_delay = std::chrono::milliseconds(500);
+		const auto popup_sound_delay = std::chrono::milliseconds(1000);
 		bool popups_muted;
 		bool popups_hidden;
 		optional<variant<wstring, ItemPopup>> queued_popup;
-		//bool popup_debounce_locked;
+		bool popup_debounce_locked;
 		bool popup_sound_locked;
 		mutex popups_mutex;
 
-		bool awaiting_item_sync;
+		bool item_sync_queued;
 		mutex item_sync_mutex;
 
 		struct BlueprintFunctionInfo {
@@ -70,7 +68,6 @@ namespace Engine {
 			wstring function_name;
 			shared_ptr<void> params;
 		};
-
 		std::queue<BlueprintFunctionInfo> blueprint_function_queue;
 		mutex blueprint_function_mutex;
 	} // End private members
@@ -182,7 +179,7 @@ namespace Engine {
 	// Queues all item sync functions.
 	void Engine::SyncItems() {
 		lock_guard<mutex> guard(item_sync_mutex);
-		awaiting_item_sync = true;
+		item_sync_queued = true;
 	}
 
 	void Engine::ToggleSlideJump() {
@@ -265,10 +262,6 @@ namespace Engine {
 	void PrintToConsole(wstring markdown_text, wstring plain_text) {
 		Log(plain_text, LogType::Console);
 		lock_guard<mutex> guard(messages_mutex);
-		//if (!message_debounce_locked) {
-		//	// debounce messages to help handle a large influx, like when a big game releases
-		//	Timer::RunTimerRealTime(message_debounce_milliseconds, &message_debounce_locked);
-		//}
 		if (messages.size() == max_messages) {
 			messages.pop_front();
 		}
@@ -285,10 +278,6 @@ namespace Engine {
 	void ShowPopup(variant<wstring, ItemPopup> popup) {
 		lock_guard<mutex> guard(popups_mutex);
 		if (popups_hidden) return;
-		//if (!popup_debounce_locked) {
-		//	// debounce popups to help handle a large influx, like when a big game releases
-		//	Timer::RunTimerRealTime(popup_debounce_milliseconds, &popup_debounce_locked);
-		//}
 		queued_popup = popup;
 	}
 
@@ -414,12 +403,12 @@ namespace Engine {
 	namespace {
 		void QueueItemSync() {
 			lock_guard<mutex> guard(item_sync_mutex);
-			if (!awaiting_item_sync) return;
+			if (!item_sync_queued) return;
 			SyncHealthPieces();
 			SyncSmallKeys();
 			SyncMajorKeys();
 			SyncAbilities();
-			awaiting_item_sync = false;
+			item_sync_queued = false;
 		}
 
 		void SyncHealthPieces() {
@@ -507,7 +496,7 @@ namespace Engine {
 
 		void AddMessages(UObject* ap_object) {
 			lock_guard<mutex> guard(messages_mutex);
-			//if (message_debounce_locked) return;
+			if (message_debounce_locked) return;
 
 			// I want to only create the console in gameplay levels, but for some reason I can't figure out, the console
 			// has to exist on the title screen or it messes with the map. It's frustrating not to know what causes the
@@ -534,6 +523,8 @@ namespace Engine {
 			size_t skipped = 0;
 			for (const auto& [markdown, plain] : messages) {
 				if (skipped < skip_num) {
+					// TODO would it be better to just do random access?
+					// messages has a max size of 100 so this probably isn't too bad
 					skipped++;
 					continue;
 				}
@@ -546,12 +537,12 @@ namespace Engine {
 			ExecuteBlueprintFunction(ap_object, L"AP_AddMessages", params);
 
 			queued_messages = 0;
+			Timer::RunTimerRealTime(message_debounce_delay, &message_debounce_locked);
 		}
 
 		void ShowQueuedPopup(UObject* ap_object) {
 			lock_guard<mutex> guard(popups_mutex);
-			//if (popup_debounce_locked) return;
-			if (!queued_popup) return;
+			if (popup_debounce_locked || !queued_popup) return;
 
 			// don't try to show a popup in a non-gameplay level
 			GameData::Map map = GetCurrentMap(ap_object);
@@ -562,10 +553,6 @@ namespace Engine {
 			if (!*console_exists) return;
 
 			bool mute_sound = popups_muted || popup_sound_locked;
-			if (!mute_sound) {
-				// prevent popup sound from playing too frequently when receiving a lot of messages
-				Timer::RunTimerRealTime(popup_sound_milliseconds, &popup_sound_locked);
-			}
 			if (holds_alternative<wstring>(*queued_popup)) {
 				wstring popup_text = get<wstring>(*queued_popup);
 				Log(popup_text, LogType::Popup);
@@ -594,6 +581,11 @@ namespace Engine {
 			}
 
 			queued_popup = {};
+			Timer::RunTimerRealTime(popup_debounce_delay, &popup_debounce_locked);
+			if (!mute_sound) {
+				// prevent popup sound from playing too frequently when receiving a lot of messages
+				Timer::RunTimerRealTime(popup_sound_delay, &popup_sound_locked);
+			}
 		}
 	} // End private functions
 }

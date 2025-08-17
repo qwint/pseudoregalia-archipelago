@@ -66,6 +66,7 @@ namespace Client {
         if (ap != nullptr) {
             delete ap;
         }
+        ap = nullptr;
         GameData::Initialize();
         ap = new APClient(uuid, game_name, uri, cert_store);
         connection_retries = 0;

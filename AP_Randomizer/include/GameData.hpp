@@ -81,6 +81,7 @@ namespace GameData {
 	void SetPseudoItemClassification(int64_t, int64_t);
 	void SetOffWorldItemClassification(int64_t, Classification);
 	Classification GetClassification(int64_t);
+	void ResetItems();
 	ItemType ReceiveItem(int64_t);
 	Map MapNameToEnum(std::wstring);
 	bool ToggleSlideJump();

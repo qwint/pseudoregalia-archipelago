@@ -62,6 +62,7 @@ namespace Client {
         bool death_link_locked;
         const float death_link_timer_seconds(4.0f);
         bool disconnect_queued = false;
+        optional<string> active_seed = {};
     } // End private members
 
     void Client::Connect(wstring domain, wstring port, wstring slot_name, wstring password, optional<wstring> seed) {
@@ -74,13 +75,13 @@ namespace Client {
         wstring uri = domain + L":" + port;
         ap = new APClient(uuid, game_name, StringOps::ToNarrow(uri), cert_store);
         connection_retries = 0;
-        optional<string> active_seed = {};
+        active_seed = {};
         Log(L"Attempting to connect to " + uri + L" with name " + slot_name);
 
         // The Great Wall Of Callbacks
         {
             // Executes when the server sends room info; attempts to connect the player.
-            ap->set_room_info_handler([slot_name, password, seed, active_seed]() {
+            ap->set_room_info_handler([slot_name, password, seed]() {
                 Log("Received room info");
                 if (active_seed && *active_seed != ap->get_seed()) {
                     // active_seed should be set only when connected in-game, so the console should be visible
@@ -88,7 +89,7 @@ namespace Client {
                     Disconnect();
                     return;
                 }
-                else if (seed && StringOps::ToNarrow(*seed) != ap->get_seed()) {
+                if (seed && StringOps::ToNarrow(*seed) != ap->get_seed()) {
                     Log("Seed mismatch on connect");
                     PrintErrorAndDisconnect("Seed mismatch detected: " + ap->get_seed());
                     return;
@@ -136,7 +137,7 @@ namespace Client {
                 });
 
             // Executes when the server refuses slot connection.
-            ap->set_slot_refused_handler([active_seed](const list<string>& reasons) {
+            ap->set_slot_refused_handler([](const list<string>& reasons) {
                 if (active_seed) {
                     Log("Reconnection to the server was refused. Return to the main menu and reconnect.");
                     Disconnect();
@@ -155,7 +156,7 @@ namespace Client {
                 });
 
             // Executes as a response to LocationScouts.
-            ap->set_location_info_handler([domain, port, slot_name, password, seed, &active_seed](const list<APClient::NetworkItem>& items) {
+            ap->set_location_info_handler([domain, port, slot_name, password, seed](const list<APClient::NetworkItem>& items) {
                 Log("Scouted locations");
                 if (!Engine::IsInConnectHandshake()) return;
 
@@ -192,6 +193,9 @@ namespace Client {
             ap->set_items_received_handler([](const list<APClient::NetworkItem>& items) {
                 for (const auto& item : items) {
                     Log(L"Receiving item with id " + std::to_wstring(item.item));
+                    if (item.index == 0) {
+                        GameData::ResetItems();
+                    }
                     GameData::ReceiveItem(item.item);
                     Engine::SyncItems();
                 }

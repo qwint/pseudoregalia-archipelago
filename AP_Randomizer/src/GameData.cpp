@@ -504,43 +504,7 @@ namespace GameData {
             }},
         };
 
-
-        upgrade_table = {
-            {L"attack", 0},
-            {L"powerBoost", 0},
-            {L"airKick", 0},
-            {L"slide", 0},
-            {L"SlideJump", 0},
-            {L"plunge", 0},
-            {L"chargeAttack", 0},
-            {L"clingGem", 0},
-            {L"Light", 0},
-            {L"projectile", 0},
-            {L"extraKick", 0},
-            {L"airRecovery", 0},
-            {L"mobileHeal", 0},
-            {L"magicHaste", 0},
-            {L"healBoost", 0},
-            {L"damageBoost", 0},
-            {L"magicPiece", 0},
-            {L"outfitPro", 0},
-            {L"outfitFaith", 0},
-            {L"outfitShoujo", 0},
-            {L"outfitSweater", 0},
-            {L"outfitClassy", 0},
-            {L"outfitKnight", 0},
-            {L"outfitJam", 0},
-            {L"outfitPast", 0},
-            {L"map", 0},
-            {L"clingShard", 0},
-        };
-
-        slidejump_owned = false;
-        slidejump_disabled = false;
-        small_keys = 0;
-        for (bool &k : major_keys) {
-            k = false;
-        }
+        ResetItems();
         for (auto& hints : major_key_hints) {
             hints.clear();
         }
@@ -549,14 +513,18 @@ namespace GameData {
     void GameData::Close() {
         collectible_table = {};
         time_trial_table = {};
+        ResetItems();
+        for (auto& hints : major_key_hints) {
+            hints.clear();
+        }
+    }
+
+    void ResetItems() {
         slidejump_owned = false;
         slidejump_disabled = false;
         small_keys = 0;
         for (bool &k : major_keys) {
             k = false;
-        }
-        for (auto& hints : major_key_hints) {
-            hints.clear();
         }
         upgrade_table = {
             {L"attack", 0},

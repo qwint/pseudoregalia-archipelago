@@ -3,10 +3,10 @@
 #include "GameData.hpp"
 
 namespace Client {
-	void Connect(const std::string, const std::string, const std::string);
+	void Connect(std::wstring, std::wstring, std::wstring, std::wstring, std::optional<std::wstring> = {});
 	void SendCheck(int64_t);
 	void Say(std::string);
-	void PollServer();
+	void OnTick();
 	void SetZoneData();
 	void CompleteGame();
 	void SendDeathLink();

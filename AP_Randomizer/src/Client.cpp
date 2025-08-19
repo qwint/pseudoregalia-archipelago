@@ -48,6 +48,8 @@ namespace Client {
         void Despawn(int64_t);
         void ParseKeyHints(const json&);
         void PrintHintsToConsole(int64_t, int, list<int64_t>);
+        void PrintErrorAndDisconnect(string);
+        void PrintErrorAndDisconnect(wstring);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
         // If people report random crashes, especially when disconnecting, I'll revisit it.
@@ -55,38 +57,52 @@ namespace Client {
         const string game_name("Pseudoregalia");
         const string uuid(ap_get_uuid("Mods/AP_Randomizer/dlls/uuid"));
         const string cert_store("Mods/AP_Randomizer/dlls/cacert.pem");
-        const int max_connection_retries = 3;
+        const int max_connection_retries = 2;
         int connection_retries = 0;
         bool death_link_locked;
         const float death_link_timer_seconds(4.0f);
+        bool disconnect_queued = false;
     } // End private members
 
-    void Client::Connect(const string uri, const string slot_name, const string password) {
+    void Client::Connect(wstring domain, wstring port, wstring slot_name, wstring password, optional<wstring> seed) {
         // Nuke any existing client in case uri needs to change.
         if (ap != nullptr) {
             delete ap;
         }
         ap = nullptr;
         GameData::Initialize();
-        ap = new APClient(uuid, game_name, uri, cert_store);
+        wstring uri = domain + L":" + port;
+        ap = new APClient(uuid, game_name, StringOps::ToNarrow(uri), cert_store);
         connection_retries = 0;
-        string connect_message(
-            "Attempting to connect to " + uri
-            + " with name " + slot_name + "...");
-        Log(connect_message, LogType::System);
+        optional<string> active_seed = {};
+        Log(L"Attempting to connect to " + uri + L" with name " + slot_name);
 
         // The Great Wall Of Callbacks
         {
             // Executes when the server sends room info; attempts to connect the player.
-            ap->set_room_info_handler([slot_name, password]() {
+            ap->set_room_info_handler([slot_name, password, seed, active_seed]() {
                 Log("Received room info");
+                if (active_seed && *active_seed != ap->get_seed()) {
+                    // active_seed should be set only when connected in-game, so the console should be visible
+                    Log("Seed mismatch detected. Return to the main menu and reconnect.", LogType::Error);
+                    Disconnect();
+                    return;
+                }
+                else if (seed && StringOps::ToNarrow(*seed) != ap->get_seed()) {
+                    Log("Seed mismatch on connect");
+                    PrintErrorAndDisconnect("Seed mismatch detected: " + ap->get_seed());
+                    return;
+                }
+
                 int items_handling = 0b111;
                 list<string> tags;
                 if (Settings::GetDeathLink()) {
                     tags.push_back("DeathLink");
                 }
                 APClient::Version version{ 0, 7, 0 };
-                ap->ConnectSlot(slot_name, password, items_handling, tags, version);
+                string slotn = StringOps::ToNarrow(slot_name);
+                string passw = StringOps::ToNarrow(password);
+                ap->ConnectSlot(slotn, passw, items_handling, tags, version);
                 });
 
             // Executes on successful connection to slot.
@@ -101,46 +117,48 @@ namespace Client {
                         GameData::SetOption(key, iter.value());
                     }
                 }
-                SetZoneData();
-                ap->LocationScouts(GameData::GetMissingSpawnableLocations());
-                // Delay spawning collectibles so that we have time to receive checked locations and scouts.
-                Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::SpawnCollectibles);
-                // Delay verifying version so that it shows up as the last message after connecting
-                Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::VerifyVersion);
+                if (Engine::IsInConnectHandshake()) {
+                    Engine::UpdateConnectHandshakeStatus(L"Scouting...", false);
+                    ap->LocationScouts(GameData::GetMissingSpawnableLocations());
+                }
                 connection_retries = 0;
                 });
 
             // Executes whenever a socket error is detected.
             // We want to only print an error after exactly X attempts.
             ap->set_socket_error_handler([](const string& error) {
-                Log("Socket error: " + error);
-                if (connection_retries == max_connection_retries) {
-                    if (ap->get_player_number() >= 0) { // Seed is already in progress
-                        Log(L"Lost connection with the server. Attempting to reconnect...", LogType::System);
-                    }
-                    else { // Attempting to connect to a new room
-                        Log(L"Could not connect to the server. Please double-check the address and ensure the server is active.", LogType::System);
-                    }
-                }
                 connection_retries++;
+                Log("Socket error: " + error);
+                if (Engine::IsInConnectHandshake() && connection_retries == max_connection_retries) {
+                    PrintErrorAndDisconnect("Could not connect to the server. "
+                        "Double-check the address and make sure the server is active.");
+                }
                 });
 
             // Executes when the server refuses slot connection.
-            ap->set_slot_refused_handler([](const list<string>& reasons) {
-                string advice;
+            ap->set_slot_refused_handler([active_seed](const list<string>& reasons) {
+                if (active_seed) {
+                    Log("Reconnection to the server was refused. Return to the main menu and reconnect.");
+                    Disconnect();
+                    return;
+                }
+                string details;
                 if (std::find(reasons.begin(), reasons.end(), "InvalidSlot") != reasons.end()
                     || std::find(reasons.begin(), reasons.end(), "InvalidPassword") != reasons.end()) {
-                    advice = "Please double-check your slot name and password.";
+                    details = ": Invalid slot name or password";
                 }
-                // Intentionally overwriting advice because slot name doesn't matter if the version is wrong.
+                // Intentionally overwriting message because slot name doesn't matter if the version is wrong.
                 if (std::find(reasons.begin(), reasons.end(), "IncompatibleVersion") != reasons.end()) {
-                    advice = "Please double-check your client version.";
+                    details = ": Incompatible version";
                 }
-                Log("Could not connect to the server. " + advice, LogType::System);
+                PrintErrorAndDisconnect("Connection refused" + details + ".");
                 });
 
             // Executes as a response to LocationScouts.
-            ap->set_location_info_handler([](const list<APClient::NetworkItem>& items) {
+            ap->set_location_info_handler([domain, port, slot_name, password, seed, &active_seed](const list<APClient::NetworkItem>& items) {
+                Log("Scouted locations");
+                if (!Engine::IsInConnectHandshake()) return;
+
                 for (const auto& item : items) {
                     if (ap->get_player_game(item.player) == ap->get_game() && !GameData::IsInteractable(item.location)) {
                         // interactable locations should have classification set by item classification only
@@ -156,6 +174,18 @@ namespace Client {
                         GameData::SetOffWorldItemClassification(item.location, GameData::Classification::GenericFiller);
                     }
                 }
+
+                Engine::UpdateConnectHandshakeStatus(L"Loading game...", false);
+                active_seed = ap->get_seed();
+                if (seed) {
+                    Engine::FinishConnect(port);
+                }
+                else {
+                    const auto& spawn_info = GameData::GetSpawnInfo();
+                    Engine::FinishConnect(spawn_info.zone, spawn_info.player_start, StringOps::ToWide(*active_seed),
+                                          spawn_info.spawn_name, domain, port, slot_name, password);
+                }
+                Engine::EndConnectHandshake();
                 });
 
             // Executes whenever items are received from the server.
@@ -213,21 +243,18 @@ namespace Client {
     }
 
     void Client::Disconnect() {
-        if (ap == nullptr) {
-            return;
-        }
-        GameData::Close();
-        delete ap;
-        ap = nullptr;
-        Log("Disconnected from Archipelago.", LogType::System);
+        disconnect_queued = true;
     }
 
     void Client::SendCheck(int64_t id) {
+        if (ap == nullptr) return;
+
         // TODO: Consider refactoring to queue location ids as an actual list
         list<int64_t> id_list{ id };
         Log(L"Sending check with id " + std::to_wstring(id));
         ap->LocationChecks(id_list);
 
+        // TODO remove once I can call ap->set_receive_own_locations(true)
         Log(L"Marking location " + std::to_wstring(id) + L" as checked");
         Despawn(id);
     }
@@ -265,11 +292,19 @@ namespace Client {
         ap->Set(key, default_value, true, filler_operations);
     }
 
-    void Client::PollServer() {
-        if (ap == nullptr) {
-            return;
+    void Client::OnTick() {
+        if (disconnect_queued) {
+            disconnect_queued = false;
+            if (ap == nullptr) return;
+            delete ap;
+            ap = nullptr;
+            GameData::Close();
+            Engine::EndConnectHandshake();
+            Log("Disconnected from Archipelago.");
         }
-        ap->poll();
+        else if (ap != nullptr) {
+            ap->poll();
+        }
     }
 
     void Client::SendDeathLink() {
@@ -555,6 +590,15 @@ namespace Client {
 
                 Engine::PrintToConsole(markdown, plain);
             }
+        }
+
+        void PrintErrorAndDisconnect(string message) {
+            PrintErrorAndDisconnect(StringOps::ToWide(message));
+        }
+
+        void PrintErrorAndDisconnect(wstring message) {
+            Engine::UpdateConnectHandshakeStatus(L"ERROR: " + message, true);
+            Disconnect();
         }
     } // End private functions
 }

@@ -70,6 +70,9 @@ namespace Engine {
 		};
 		std::queue<BlueprintFunctionInfo> blueprint_function_queue;
 		mutex blueprint_function_mutex;
+
+		optional<UObject*> file_object;
+		mutex file_object_mutex;
 	} // End private members
 
 
@@ -332,13 +335,14 @@ namespace Engine {
 	}
 
 	void WarpToSpawn() {
+		const auto& spawn_info = GameData::GetSpawnInfo();
 		struct WarpInfo {
 			FString zone;
 			FString playerStart;
 		};
 		shared_ptr<void> warp_params(new WarpInfo{
-			FString(L"ZONE_LowerCastle"),
-			FString(L"lowerWestSave"),
+			FString(spawn_info.zone.c_str()),
+			FString(spawn_info.player_start.c_str()),
 		});
 		ExecuteBlueprintFunction(L"BP_APRandomizerInstance_C", L"AP_Warp", warp_params);
 	}
@@ -396,6 +400,72 @@ namespace Engine {
 			popups_hidden = true;
 			break;
 		}
+	}
+
+	void StartConnectHandshake(UObject* object) {
+		lock_guard<mutex> guard(file_object_mutex);
+		file_object = object;
+	}
+
+	bool IsInConnectHandshake() {
+		lock_guard<mutex> guard(file_object_mutex);
+		return file_object.has_value();
+	}
+
+	void UpdateConnectHandshakeStatus(wstring status, bool is_error) {
+		lock_guard<mutex> guard(file_object_mutex);
+		if (!file_object) return;
+
+		struct UpdateConnectionStatus {
+			FText new_text;
+			bool is_error;
+		};
+		shared_ptr<void> params(new UpdateConnectionStatus{ FText(status), is_error });
+		ExecuteBlueprintFunction(*file_object, L"UpdateConnectionStatus", params);
+	}
+
+	void FinishConnect(wstring zone, wstring player_start, wstring seed, wstring spawn_point, wstring domain,
+		               wstring port, wstring slot_name, wstring password) {
+		lock_guard<mutex> guard(file_object_mutex);
+		if (!file_object) return;
+
+		struct FinishConnectInfo {
+			FString zone;
+			FString player_start;
+			FString seed;
+			FString spawn_point;
+			FString domain;
+			FString port;
+			FString slot_name;
+			FString password;
+		};
+		shared_ptr<void> params(new FinishConnectInfo{
+			FString(zone.c_str()),
+			FString(player_start.c_str()),
+			FString(seed.c_str()),
+			FString(spawn_point.c_str()),
+			FString(domain.c_str()),
+			FString(port.c_str()),
+			FString(slot_name.c_str()),
+			FString(password.c_str()),
+		});
+		ExecuteBlueprintFunction(*file_object, L"FinishConnect", params);
+	}
+
+	void FinishConnect(wstring port) {
+		lock_guard<mutex> guard(file_object_mutex);
+		if (!file_object) return;
+
+		struct FinishConnectInfo {
+			FString port;
+		};
+		shared_ptr<void> params(new FinishConnectInfo{ FString(port.c_str()) });
+		ExecuteBlueprintFunction(*file_object, L"FinishConnect", params);
+	}
+
+	void EndConnectHandshake() {
+		lock_guard<mutex> guard(file_object_mutex);
+		file_object = {};
 	}
 
 

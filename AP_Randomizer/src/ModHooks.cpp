@@ -99,6 +99,41 @@ namespace ModHooks {
 				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
 					GameData::FinishNote();
 				}),
+			ModHook(L"AP_NewFileMenu_C", L"Connect",
+				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
+					Engine::StartConnectHandshake(context.Context);
+					struct ConnectParams {
+						FText domain;
+						FText port;
+						FText slot_name;
+						FText password;
+					};
+					auto& params = context.GetParams<ConnectParams>();
+					Client::Connect(params.domain.ToString(), params.port.ToString(), params.slot_name.ToString(),
+						            params.password.ToString());
+				}),
+			ModHook(L"AP_NewFileMenu_C", L"GoBack",
+				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
+					Client::Disconnect();
+				}),
+			ModHook(L"AP_ExistingFileMenu_C", L"Connect",
+				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
+					Engine::StartConnectHandshake(context.Context);
+					struct ConnectParams {
+						FText seed;
+						FText domain;
+						FText port;
+						FText slot_name;
+						FText password;
+					};
+					auto& params = context.GetParams<ConnectParams>();
+					Client::Connect(params.domain.ToString(), params.port.ToString(), params.slot_name.ToString(),
+									params.password.ToString(), params.seed.ToString());
+				}),
+			ModHook(L"AP_ExistingFileMenu_C", L"GoBack",
+				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
+					Client::Disconnect();
+				}),
 		};
 
 		typedef function<void(AActor*)> ActorCallback;

@@ -105,7 +105,7 @@ public:
 
     auto on_update() -> void override
     {
-        Client::PollServer();
+        Client::OnTick();
         for (auto& boundKey : m_boundKeys)
         {
             if ((GetKeyState(boundKey.key) & 0x8000) && !boundKey.isPressed)

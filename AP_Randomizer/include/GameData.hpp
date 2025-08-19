@@ -56,6 +56,12 @@ namespace GameData {
 		std::vector<MultiworldLocation> locations;
 	};
 
+	struct SpawnInfo {
+		std::wstring zone;
+		std::wstring player_start;
+		std::wstring spawn_name;
+	};
+
 	// encodes the location id and spawn position of a time trial collectible
 	typedef std::pair<int64_t, FVector> TimeTrial;
 	// encodes the location id and actor class name of an interactable location
@@ -89,4 +95,5 @@ namespace GameData {
 	bool IsInteractable(int64_t);
 	void AddMajorKeyHint(int, MultiworldLocation);
 	std::optional<MajorKeyInfo> GetMajorKeyInfo(std::wstring);
+	const SpawnInfo& GetSpawnInfo();
 }

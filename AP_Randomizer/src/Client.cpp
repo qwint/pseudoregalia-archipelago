@@ -407,6 +407,10 @@ namespace Client {
         }
     }
 
+    bool IsConnected() {
+        return ap != nullptr && ap->get_state() == APClient::State::SLOT_CONNECTED;
+    }
+
 
     // Private functions
     namespace {

@@ -37,6 +37,8 @@ namespace Engine {
 		void SpawnInteractableAura(wstring, GameData::Interactable);
 		void AddMessages(UObject*);
 		void ShowQueuedPopup(UObject*);
+		void CreateIndicator(UObject*);
+		void UpdateIndicator(UObject*);
 
 		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary because
 		// time trials may try to spawn their collectibles multiple times if the player beats the time trial more than once
@@ -73,6 +75,9 @@ namespace Engine {
 
 		optional<UObject*> file_object;
 		mutex file_object_mutex;
+
+		bool connected;
+		mutex connected_mutex;
 	} // End private members
 
 
@@ -100,6 +105,7 @@ namespace Engine {
 		QueueItemSync();
 		AddMessages(ap_object);
 		ShowQueuedPopup(ap_object);
+		UpdateIndicator(ap_object);
 
 		// Engine tick runs in a separate thread from the client so it needs to be locked.
 		lock_guard<mutex> guard(blueprint_function_mutex);
@@ -152,6 +158,7 @@ namespace Engine {
 			queued_popup = {};
 			return;
 		}
+		CreateIndicator(ap_object);
 		Engine::SpawnCollectibles(); // TODO pass in map
 		Engine::SyncItems();
 		Client::SetZoneData(); // TODO pass in map
@@ -656,6 +663,28 @@ namespace Engine {
 				// prevent popup sound from playing too frequently when receiving a lot of messages
 				Timer::RunTimerRealTime(popup_sound_delay, &popup_sound_locked);
 			}
+		}
+
+		void CreateIndicator(UObject* ap_object) {
+			lock_guard<mutex> guard(connected_mutex);
+			connected = Client::IsConnected();
+			struct CreateIndicatorInfo {
+				bool connected;
+			};
+			shared_ptr<void> params(new CreateIndicatorInfo{ connected });
+			ExecuteBlueprintFunction(ap_object, L"AP_CreateIndicator", params);
+		}
+
+		void UpdateIndicator(UObject* ap_object) {
+			lock_guard<mutex> guard(connected_mutex);
+			bool current_connected = Client::IsConnected();
+			if (connected == current_connected) return;
+			connected = current_connected;
+			struct UpdateIndicatorInfo {
+				bool connected;
+			};
+			shared_ptr<void> params(new UpdateIndicatorInfo{ connected });
+			ExecuteBlueprintFunction(ap_object, L"AP_UpdateIndicator", params);
 		}
 	} // End private functions
 }

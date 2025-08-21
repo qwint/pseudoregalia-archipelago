@@ -2,7 +2,7 @@ from worlds.AutoWorld import World, WebWorld
 from BaseClasses import Region, CollectionState, Tutorial
 from .items import PseudoregaliaItem, item_table, item_groups
 from .locations import PseudoregaliaLocation, location_table, zones
-from .regions import region_table
+from .regions import region_table, origin_exit_region_names
 from .options import PseudoregaliaOptions
 from .rules_normal import PseudoregaliaNormalRules
 from .rules_hard import PseudoregaliaHardRules
@@ -94,6 +94,14 @@ class PseudoregaliaWorld(World):
             # zero out options that don't do anything on full gold
             self.options.start_with_map.value = 0
             self.options.randomize_time_trials.value = 0
+        spawn_point = self.options.spawn_point
+        if spawn_point == spawn_point.option_dungeon_mirror:
+            # start_with_breaker is forced on for dungeon start to help with sphere 1 size
+            self.options.start_with_breaker.value = 1
+        elif spawn_point == spawn_point.option_library:
+            if not self.options.start_with_breaker and not self.options.randomize_books:
+                # start_with_breaker is forced on if otherwise player wouldn't have enough checks
+                self.options.start_with_breaker.value = 1
 
     def create_regions(self):
         for region_name in region_table.keys():
@@ -112,6 +120,12 @@ class PseudoregaliaWorld(World):
         for region_name, exit_list in region_table.items():
             region = self.multiworld.get_region(region_name, self.player)
             region.add_exits(exit_list)
+
+        origin_region = Region(self.origin_region_name, self.player, self.multiworld)
+        self.multiworld.regions.append(origin_region)
+        origin_exit_region_name = origin_exit_region_names[self.options.spawn_point.value]
+        origin_exit_region = self.get_region(origin_exit_region_name)
+        origin_region.connect(origin_exit_region)
 
     def create_key_hints(self) -> Any:
         key_hints = [[] for _ in range(5)]
@@ -136,6 +150,7 @@ class PseudoregaliaWorld(World):
         slot_data = {
             "game_version": self.options.game_version.value,
             "logic_level": self.options.logic_level.value,
+            "spawn_point": self.options.spawn_point.value,
             "obscure_logic": bool(self.options.obscure_logic),
             "progressive_breaker": bool(self.options.progressive_breaker),
             "progressive_slide": bool(self.options.progressive_slide),

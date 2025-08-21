@@ -67,7 +67,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Dungeon Slide -> Dungeon Strong Eyes": lambda state:
                 self.has_slide(state),
             "Dungeon Slide -> Dungeon Escape Lower": lambda state:
-                self.knows_obscure(state) and self.can_attack(state) and self.navigate_darkrooms(state),
+                self.knows_dungeon_escape and self.can_attack(state) and self.navigate_darkrooms(state),
             "Dungeon Strong Eyes -> Dungeon Slide": lambda state:
                 self.has_slide(state),
             # "Dungeon => Castle -> Dungeon Mirror": lambda state: True,

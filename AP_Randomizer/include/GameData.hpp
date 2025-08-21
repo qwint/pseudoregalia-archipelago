@@ -56,7 +56,7 @@ namespace GameData {
 		std::vector<MultiworldLocation> locations;
 	};
 
-	struct SpawnInfo {
+	struct PlayerStart {
 		std::wstring zone;
 		std::wstring player_start;
 		std::wstring spawn_name;
@@ -96,5 +96,5 @@ namespace GameData {
 	bool IsInteractable(int64_t);
 	void AddMajorKeyHint(int, MultiworldLocation);
 	std::optional<MajorKeyInfo> GetMajorKeyInfo(std::wstring);
-	const SpawnInfo& GetSpawnInfo();
+	const PlayerStart& GetSpawnInfo();
 }

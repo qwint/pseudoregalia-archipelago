@@ -34,10 +34,69 @@ namespace GameData {
         bool slidejump_owned;
         bool slidejump_disabled;
 
-        // TODO fill out
-        const unordered_map<int, SpawnInfo> spawn_info = {
-            {1, SpawnInfo(L"ZONE_LowerCastle", L"lowerWestSave", L"Castle Main")},
+        const vector<PlayerStart> player_starts = {
+            { L"ZONE_Dungeon", L"gameStart", L"Dungeon Mirror" },
+            { L"ZONE_Dungeon", L"dungeonlowestSave", L"Dungeon Mirror Save" },
+            { L"ZONE_Dungeon", L"dungeonWestSave", L"Dungeon Slide Save" },
+            { L"ZONE_Dungeon", L"dungeonSaveNearBoss", L"Dungeon Strong Eyes Save" },
+            { L"ZONE_Dungeon", L"lower1", L"Dungeon Strong Eyes Exit" },
+            { L"ZONE_Dungeon", L"dungeonWest", L"Dungeon Escape Lower Exit" },
+            { L"ZONE_Dungeon", L"dungeonNorth", L"Dungeon Escape Upper Exit" },
+
+            { L"ZONE_LowerCastle", L"lowerWestSave", L"Castle West Save" },
+            { L"ZONE_LowerCastle", L"startGazebo", L"Castle Gazebo Save" },
+            { L"ZONE_LowerCastle", L"lowerEastSave", L"Castle East Save" },
+            { L"ZONE_LowerCastle", L"lowerNorthWestTheatre", L"Castle Northwest Save" },
+            { L"ZONE_LowerCastle", L"dungeon1", L"Castle West Lower Exit" },
+            { L"ZONE_LowerCastle", L"lowerWest", L"Castle West Upper Exit" },
+            { L"ZONE_LowerCastle", L"exterior1", L"Castle South Lower Exit" },
+            { L"ZONE_LowerCastle", L"lowerSouthHigh", L"Castle South Upper Exit" },
+            { L"ZONE_LowerCastle", L"lowerMiddle", L"Castle Locked Exit" },
+            { L"ZONE_LowerCastle", L"lowerEast", L"Castle East Exit" },
+            { L"ZONE_LowerCastle", L"lowerNorth", L"Castle North Exit" },
+            { L"ZONE_LowerCastle", L"lowerNorthNorthWest", L"Castle Northwest Exit" },
+
+            { L"Zone_Upper", L"saveUpperMid", L"Keep Central Save" },
+            { L"Zone_Upper", L"upperNorthSave", L"Keep North Save" },
+            { L"Zone_Upper", L"upperSouth", L"Keep South Exit" },
+            { L"Zone_Upper", L"upperSouthWest", L"Keep Southwest Exit" },
+            { L"Zone_Upper", L"upperMiddle", L"Keep Locked Exit" },
+            { L"Zone_Upper", L"upperNorthEast", L"Keep Northeast Exit" },
+            { L"Zone_Upper", L"upperNorth", L"Keep North Exit" },
+
+            { L"Zone_Library", L"librarySave", L"Library Main Save" },
+            { L"Zone_Library", L"saveLibraryWest", L"Library Back Save" },
+            { L"Zone_Library", L"libraryWest", L"Library Exit" },
+
+            { L"Zone_Theatre", L"theatreSaveMain", L"Theatre Save" },
+            { L"Zone_Theatre", L"theatreSouthWest", L"Theatre Pillar West Exit" },
+            { L"Zone_Theatre", L"theatreSouthEast", L"Theatre Pillar East Exit" },
+            { L"Zone_Theatre", L"theatreEast", L"Theatre Front Exit" },
+            { L"Zone_Theatre", L"theatreNorthEastLower", L"Theatre Scythes North Exit" },
+            { L"Zone_Theatre", L"theatreNorthEastUpper", L"Theatre Scythes South Exit" },
+
+            { L"ZONE_Exterior", L"exteriorSouthSave", L"Bailey Save" },
+            { L"ZONE_Exterior", L"lower1", L"Bailey North Exit" },
+            { L"ZONE_Exterior", L"exteriorWest", L"Bailey West Exit" },
+            { L"ZONE_Exterior", L"exteriorEast", L"Bailey Shack Exit" },
+            { L"ZONE_Exterior", L"exteriorSouthEast", L"Bailey East Exit" },
+
+            { L"Zone_Caves", L"cavesSouthSave", L"Underbelly South Save" },
+            { L"Zone_Caves", L"cavesBigMiddleStart", L"Underbelly Central Save" },
+            { L"Zone_Caves", L"cavesBigSideStart", L"Underbelly East Save" },
+            { L"Zone_Caves", L"cavesWestSave", L"Underbelly Pre Light Save" },
+            { L"Zone_Caves", L"postLightSave", L"Underbelly Post Light Save" },
+            { L"Zone_Caves", L"cavesSouth", L"Underbelly South Exit" },
+            { L"Zone_Caves", L"cavesEast", L"Underbelly Hole Exit" },
+            { L"Zone_Caves", L"cavesWest", L"Underbelly Light Pillar Exit" },
+
+            { L"Zone_Tower", L"towerSave", L"Tower Save" },
+            { L"Zone_Tower", L"towerSouth", L"Tower South Exit" },
+            { L"Zone_Tower", L"towerTop", L"Tower Top Exit" },
+
+            { L"Zone_PrincessChambers", L"chambersStart", L"Chambers Exit" },
         };
+        const size_t default_spawn_index = 7; // Castle West Save
 
         // map -> actor name -> location id + actor class name
         unordered_map<Map, unordered_map<wstring, Interactable>> interactable_table = {
@@ -719,17 +778,17 @@ namespace GameData {
         return MajorKeyInfo{ item_id, found, hints };
     }
 
-    const SpawnInfo& GetSpawnInfo() {
+    const PlayerStart& GetSpawnInfo() {
         if (!options.contains("spawn_point")) {
-            return spawn_info.at(1);
+            return player_starts.at(default_spawn_index);
         }
 
         const int& spawn_point = options.at("spawn_point");
-        if (!spawn_info.contains(spawn_point)) {
-            return spawn_info.at(1);
+        if (spawn_point < 0 || spawn_point >= player_starts.size()) {
+            return player_starts.at(default_spawn_index);
         }
 
-        return spawn_info.at(spawn_point);
+        return player_starts.at(spawn_point);
     }
 
 

@@ -28,6 +28,7 @@ namespace UnrealConsole {
 		constexpr size_t popups = HashWstring(L"popups");
 		constexpr size_t countdown = HashWstring(L"countdown");
 		constexpr size_t spawn = HashWstring(L"spawn");
+		constexpr size_t breaker = HashWstring(L"breaker");
 		// TODO add /help command
 	}
 
@@ -113,10 +114,14 @@ namespace UnrealConsole {
 			Log(L"This command is not supported using /. Use ! instead:", LogType::System);
 			Log(L"!" + input, LogType::System);
 			break;
+		case Hashes::breaker:
+			Engine::PrintToConsole(L"/" + input);
+			Engine::RecallBreaker();
+			break;
 		default:
 			Engine::PrintToConsole(L"/" + input);
 			Log(L"Command not recognized: " + input, LogType::System);
-			Log(L"Known commands: popups, spawn", LogType::System);
+			Log(L"Known commands: spawn, breaker, popups", LogType::System);
 			break;
 		}
 	}

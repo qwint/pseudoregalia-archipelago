@@ -12,6 +12,7 @@ You can get the PopTracker pack for Pseudoregalia [here](https://github.com/high
 
 # Extra Features
 - If you ever get stuck, entering `/spawn` into the console will save your progress and take you back to where you spawned into the game.
+- If you ever find yourself without Dream Breaker after obtaining it, entering `/breaker` into the console will recall it.
 - You can toggle Solar Wind once you've obtained it by pressing the top face button on controller or left ctrl on keyboard.
 - Entering `/popups mute` into the console will mute the sound effects of send/receive popups.
 - Entering `/popups hide` into the console will stop send/receive popups from appearing completely.

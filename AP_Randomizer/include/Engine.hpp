@@ -42,4 +42,5 @@ namespace Engine {
 		               std::wstring);
 	void FinishConnect(std::wstring);
 	void EndConnectHandshake();
+	void RecallBreaker();
 }

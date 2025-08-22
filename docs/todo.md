@@ -10,13 +10,7 @@
 
 - have some custom death link messages check options or map name
 
-- save files and other main menu stuff
-  - consider stealing format of tunic/hacknet and placing connection menu on main menu
-  - save files themselves should probably be handled by c++; they will probably be in json format
-    - When the player loads a file, BP calls back to C++ to tell it to load the corresponding file
-    - When the player deletes a file, BP calls back to C++ to tell it to delete the corresponding file
-    - Internal state is initialized when a slot is selected
-    - Update internal state whenever anything in it changes (getting an item, checking a location, etc)
-  - save files should be associated with a uri, slot name, and password on first connection
-    - when loading into a new save file, queue with a boolean and attempt to connect automatically once the next scene loads
-    - when a connection command is input, compare the connection info to what's in the file. if it doesn't match, warn the player and make them input a special command to change the info for that save file
+- investigate the health piece issue? I think the way the mod sets health pieces isn't fully compatible with the game
+  - health pieces carry over from one save file to another if you don't quit the game
+  - changing zones after getting a lot of health pieces in one zone also has some weird behavior
+  - look into how the game sets health pieces when you get and see if that differs from how SetHealthPieces works

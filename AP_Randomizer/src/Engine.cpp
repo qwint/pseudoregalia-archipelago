@@ -475,6 +475,21 @@ namespace Engine {
 		file_object = {};
 	}
 
+	void RecallBreaker() {
+		UObject* player = UObjectGlobals::FindFirstOf(L"BP_PlayerGoatMain_C");
+		if (!player) {
+			Log("Couldn't find player object.", LogType::Error);
+			return;
+		}
+		bool* obtainedAttack = player->GetValuePtrByPropertyName<bool>(L"obtainedAttack?");
+		if (!*obtainedAttack) {
+			Log("You haven't obtained Dream Breaker yet!", LogType::System);
+			return;
+		}
+		Log("Recalling Dream Breaker.", LogType::System);
+		ExecuteBlueprintFunction(player, L"recallWeapon", nullptr);
+	}
+
 
 	// Private functions
 	namespace {

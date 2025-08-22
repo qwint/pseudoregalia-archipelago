@@ -29,7 +29,7 @@ namespace UnrealConsole {
 		constexpr size_t countdown = HashWstring(L"countdown");
 		constexpr size_t spawn = HashWstring(L"spawn");
 		constexpr size_t breaker = HashWstring(L"breaker");
-		// TODO add /help command
+		constexpr size_t help = HashWstring(L"help");
 	}
 
 	// Private members
@@ -118,10 +118,20 @@ namespace UnrealConsole {
 			Engine::PrintToConsole(L"/" + input);
 			Engine::RecallBreaker();
 			break;
+		case Hashes::help:
+			Engine::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(
+				L"<System>/spawn</>\n"
+				L"    <System>Save game and warp to spawn.</>\n"
+				L"<System>/breaker</>\n"
+				L"    <System>Recall Dream Breaker. Only works if you have obtained it.</>\n"
+				L"<System>/popups [hide|mute]</>\n"
+				L"    <System>Hide/show or mute/unmute item and deathlink popups.</>");
+			break;
 		default:
 			Engine::PrintToConsole(L"/" + input);
 			Log(L"Command not recognized: " + input, LogType::System);
-			Log(L"Known commands: spawn, breaker, popups", LogType::System);
+			Log(L"Known commands: help, spawn, breaker, popups", LogType::System);
 			break;
 		}
 	}

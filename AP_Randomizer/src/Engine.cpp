@@ -39,6 +39,7 @@ namespace Engine {
 		void ShowQueuedPopup(UObject*);
 		void CreateIndicator(UObject*);
 		void UpdateIndicator(UObject*);
+		void MarkGameCompleted(UObject*);
 
 		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary because
 		// time trials may try to spawn their collectibles multiple times if the player beats the time trial more than once
@@ -149,6 +150,7 @@ namespace Engine {
 	void OnSceneLoad(UObject* ap_object) {
 		GameData::Map map = GetCurrentMap(ap_object);
 		if (map == GameData::Map::EndScreen) {
+			MarkGameCompleted(ap_object);
 			Client::CompleteGame();
 			return;
 		}
@@ -700,6 +702,10 @@ namespace Engine {
 			};
 			shared_ptr<void> params(new UpdateIndicatorInfo{ connected });
 			ExecuteBlueprintFunction(ap_object, L"AP_UpdateIndicator", params);
+		}
+
+		void MarkGameCompleted(UObject* ap_object) {
+			ExecuteBlueprintFunction(ap_object, L"AP_MarkGameCompleted", nullptr);
 		}
 	} // End private functions
 }

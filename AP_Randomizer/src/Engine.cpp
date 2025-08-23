@@ -433,8 +433,7 @@ namespace Engine {
 		ExecuteBlueprintFunction(*file_object, L"UpdateConnectionStatus", params);
 	}
 
-	void FinishConnect(wstring zone, wstring player_start, wstring seed, wstring spawn_point, wstring domain,
-		               wstring port, wstring slot_name, wstring password) {
+	void FinishConnect(wstring zone, wstring player_start, wstring seed, wstring spawn_point) {
 		lock_guard<mutex> guard(file_object_mutex);
 		if (!file_object) return;
 
@@ -443,33 +442,20 @@ namespace Engine {
 			FString player_start;
 			FString seed;
 			FString spawn_point;
-			FString domain;
-			FString port;
-			FString slot_name;
-			FString password;
 		};
 		shared_ptr<void> params(new FinishConnectInfo{
 			FString(zone.c_str()),
 			FString(player_start.c_str()),
 			FString(seed.c_str()),
 			FString(spawn_point.c_str()),
-			FString(domain.c_str()),
-			FString(port.c_str()),
-			FString(slot_name.c_str()),
-			FString(password.c_str()),
 		});
 		ExecuteBlueprintFunction(*file_object, L"FinishConnect", params);
 	}
 
-	void FinishConnect(wstring port) {
+	void FinishConnect() {
 		lock_guard<mutex> guard(file_object_mutex);
 		if (!file_object) return;
-
-		struct FinishConnectInfo {
-			FString port;
-		};
-		shared_ptr<void> params(new FinishConnectInfo{ FString(port.c_str()) });
-		ExecuteBlueprintFunction(*file_object, L"FinishConnect", params);
+		ExecuteBlueprintFunction(*file_object, L"FinishConnect", nullptr);
 	}
 
 	void EndConnectHandshake() {

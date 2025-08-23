@@ -38,9 +38,8 @@ namespace Engine {
 	void StartConnectHandshake(UObject*);
 	bool IsInConnectHandshake();
 	void UpdateConnectHandshakeStatus(std::wstring, bool);
-	void FinishConnect(std::wstring, std::wstring, std::wstring, std::wstring, std::wstring, std::wstring, std::wstring,
-		               std::wstring);
-	void FinishConnect(std::wstring);
+	void FinishConnect(std::wstring, std::wstring, std::wstring, std::wstring);
+	void FinishConnect();
 	void EndConnectHandshake();
 	void RecallBreaker();
 }

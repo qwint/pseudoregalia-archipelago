@@ -99,7 +99,7 @@ namespace ModHooks {
 				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
 					GameData::FinishNote();
 				}),
-			ModHook(L"AP_NewFileMenu_C", L"Connect",
+			ModHook(L"AP_NewFileMenu_C", L"Connect", nop,
 				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
 					Engine::StartConnectHandshake(context.Context);
 					struct ConnectParams {
@@ -116,7 +116,7 @@ namespace ModHooks {
 				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
 					Client::Disconnect();
 				}),
-			ModHook(L"AP_ExistingFileMenu_C", L"Connect",
+			ModHook(L"AP_ExistingFileMenu_C", L"Connect", nop,
 				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
 					Engine::StartConnectHandshake(context.Context);
 					struct ConnectParams {

@@ -156,7 +156,7 @@ namespace Client {
                 });
 
             // Executes as a response to LocationScouts.
-            ap->set_location_info_handler([domain, port, slot_name, password, seed](const list<APClient::NetworkItem>& items) {
+            ap->set_location_info_handler([seed](const list<APClient::NetworkItem>& items) {
                 Log("Scouted locations");
                 if (!Engine::IsInConnectHandshake()) return;
 
@@ -179,12 +179,12 @@ namespace Client {
                 Engine::UpdateConnectHandshakeStatus(L"Loading game...", false);
                 active_seed = ap->get_seed();
                 if (seed) {
-                    Engine::FinishConnect(port);
+                    Engine::FinishConnect();
                 }
                 else {
                     const auto& spawn_info = GameData::GetSpawnInfo();
-                    Engine::FinishConnect(spawn_info.zone, spawn_info.player_start, StringOps::ToWide(*active_seed),
-                                          spawn_info.spawn_name, domain, port, slot_name, password);
+                    wstring wseed = StringOps::ToWide(*active_seed);
+                    Engine::FinishConnect(spawn_info.zone, spawn_info.player_start, wseed, spawn_info.spawn_name);
                 }
                 Engine::EndConnectHandshake();
                 });

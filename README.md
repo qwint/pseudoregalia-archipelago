@@ -46,5 +46,4 @@ Note: If you are installing on Steam Deck, please read [the Steam Deck installat
 
 
 # Known Issues
-- The mod will not always fully load before starting the game, especially the first time. If the AP logo doesn't appear in the top right corner of the main menu, try restarting the game.
-- If you're on top of an item when you first connect, it won't spawn until you reload the scene.
+- The mod will not always fully load before starting the game, especially the first time. If the `pseudoregalia-archipelago [version]` text doesn't appear in the top right corner of the main menu, try restarting the game.

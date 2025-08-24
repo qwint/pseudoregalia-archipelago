@@ -22,6 +22,9 @@ namespace GameData {
 
         optional<wstring> note_being_read = {};
 
+        // The amount of Health Pieces in the base game.
+        const int max_health_pieces = 16;
+
         int health_pieces;
         int small_keys;
         bool major_keys[5];
@@ -582,6 +585,7 @@ namespace GameData {
         slidejump_owned = false;
         slidejump_disabled = false;
         small_keys = 0;
+        health_pieces = 0;
         for (bool &k : major_keys) {
             k = false;
         }
@@ -622,15 +626,17 @@ namespace GameData {
         case ItemType::MajorAbility:
         case ItemType::MinorAbility:
             upgrade_table[lookup_item_id_to_upgrade.at(id)]++;
-            if (!slidejump_owned) {
-                if (upgrade_table[L"slide"] && upgrade_table[L"SlideJump"]
-                    || upgrade_table[L"progressiveSlide"] >= 2) {
-                    slidejump_owned = true;
-                }
+            if (!slidejump_owned && (upgrade_table[L"slide"] && upgrade_table[L"SlideJump"]
+                                     || upgrade_table[L"progressiveSlide"] >= 2)) {
+                slidejump_owned = true;
             }
             break;
         case ItemType::HealthPiece:
-            health_pieces++;
+            // Cap health_pieces. You can give yourself more than the max in a MW using either item plando or !getitem,
+            // so we account for that here to not overload the file select screen.
+            if (health_pieces < max_health_pieces) {
+                health_pieces++;
+            }
             break;
         case ItemType::SmallKey:
             small_keys++;

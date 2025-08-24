@@ -257,15 +257,22 @@ namespace GameData {
             {2365810039, ItemType::Filler},
         };
 
+        // Upgrades starting with ~ don't actually exist in the game but are used to track AP items and are handled by
+        // AP_SetUpgrades.
         const unordered_map<int64_t, wstring> lookup_item_id_to_upgrade = {
             {2365810001, L"attack"},
             {2365810002, L"powerBoost"},
             {2365810003, L"airKick"},
             {2365810004, L"slide"},
-            {2365810005, L"SlideJump"},
+            // Maps to SlideJump. The set upgrades function may set SlideJump to 0 if solar wind is toggled off. By
+            // tracking it separately, we can properly display whether solar wind has been obtained on file select.
+            {2365810005, L"~solar"},
             {2365810006, L"plunge"},
             {2365810007, L"chargeAttack"},
-            {2365810008, L"clingGem"}, // game actually uses wallRide, but this is handled in AP_SetUpgrades
+            // Maps to wallRide. The wallRide upgrade grants the ability to cling, but the max number of clings is
+            // stored in a separate variable, wallRideClingLimit. The set upgrades function will set wallRide to 1 if
+            // any clings have been obtained, so we need to track cling gem separately.
+            {2365810008, L"~cling6"},
             {2365810009, L"Light"},
             {2365810010, L"projectile"},
             {2365810011, L"extraKick"},
@@ -276,9 +283,11 @@ namespace GameData {
             {2365810016, L"damageBoost"},
             {2365810017, L"magicPiece"},
             {2365810018, L"outfitPro"},
-            {2365810026, L"progressiveSlide"},
-            {2365810027, L"extraKick"}, // Used for split kicks, just treats them like heliacal
-            {2365810028, L"progressiveBreaker"},
+            // Maps to slide and SlideJump based on the value of ~progressiveSlide. 
+            {2365810026, L"~progressiveSlide"},
+            {2365810027, L"extraKick"},
+            // Maps to attack, chargeAttack, and projectile based on the value of ~progressiveBreaker.
+            {2365810028, L"~progressiveBreaker"},
             {2365810029, L"outfitFaith"},
             {2365810030, L"outfitShoujo"},
             {2365810031, L"outfitSweater"},
@@ -287,7 +296,8 @@ namespace GameData {
             {2365810034, L"outfitJam"},
             {2365810035, L"outfitPast"},
             {2365810036, L"map"},
-            {2365810037, L"clingShard"},
+            // Maps to wallRide. See note about ~cling6 above.
+            {2365810037, L"~cling2"},
         };
     } // End private members
 
@@ -402,8 +412,7 @@ namespace GameData {
     }
 
     void GameData::Initialize() {
-        using std::vector;
-        using std::pair;
+        Close();
 
         collectible_table = {
             {Map::Dungeon, unordered_map<int64_t, Collectible>{
@@ -565,11 +574,6 @@ namespace GameData {
                 {L"BP_TimeTrial_C_3", {2365810061, FVector(10750, 3050, 4000)}},
             }},
         };
-
-        ResetItems();
-        for (auto& hints : major_key_hints) {
-            hints.clear();
-        }
     }
 
     void GameData::Close() {
@@ -589,35 +593,7 @@ namespace GameData {
         for (bool &k : major_keys) {
             k = false;
         }
-        upgrade_table = {
-            {L"attack", 0},
-            {L"powerBoost", 0},
-            {L"airKick", 0},
-            {L"slide", 0},
-            {L"SlideJump", 0},
-            {L"plunge", 0},
-            {L"chargeAttack", 0},
-            {L"clingGem", 0},
-            {L"Light", 0},
-            {L"projectile", 0},
-            {L"extraKick", 0},
-            {L"airRecovery", 0},
-            {L"mobileHeal", 0},
-            {L"magicHaste", 0},
-            {L"healBoost", 0},
-            {L"damageBoost", 0},
-            {L"magicPiece", 0},
-            {L"outfitPro", 0},
-            {L"outfitFaith", 0},
-            {L"outfitShoujo", 0},
-            {L"outfitSweater", 0},
-            {L"outfitClassy", 0},
-            {L"outfitKnight", 0},
-            {L"outfitJam", 0},
-            {L"outfitPast", 0},
-            {L"map", 0},
-            {L"clingShard", 0},
-        };
+        upgrade_table = {};
     }
 
     ItemType GameData::ReceiveItem(int64_t id) {
@@ -626,8 +602,8 @@ namespace GameData {
         case ItemType::MajorAbility:
         case ItemType::MinorAbility:
             upgrade_table[lookup_item_id_to_upgrade.at(id)]++;
-            if (!slidejump_owned && (upgrade_table[L"slide"] && upgrade_table[L"SlideJump"]
-                                     || upgrade_table[L"progressiveSlide"] >= 2)) {
+            if (!slidejump_owned && (upgrade_table[L"slide"] && upgrade_table[L"~solar"]
+                                     || upgrade_table[L"~progressiveSlide"] >= 2)) {
                 slidejump_owned = true;
             }
             break;

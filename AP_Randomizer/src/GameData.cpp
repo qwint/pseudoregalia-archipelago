@@ -608,11 +608,7 @@ namespace GameData {
             }
             break;
         case ItemType::HealthPiece:
-            // Cap health_pieces. You can give yourself more than the max in a MW using either item plando or !getitem,
-            // so we account for that here to not overload the file select screen.
-            if (health_pieces < max_health_pieces) {
-                health_pieces++;
-            }
+            health_pieces++;
             break;
         case ItemType::SmallKey:
             small_keys++;

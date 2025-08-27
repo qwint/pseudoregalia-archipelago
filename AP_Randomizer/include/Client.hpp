@@ -14,5 +14,4 @@ namespace Client {
 	bool IsMissingLocation(int64_t);
 	std::vector<std::wstring> GetHintText(GameData::MajorKeyInfo);
 	void CreateMajorKeyHints(GameData::MajorKeyInfo);
-	bool IsConnected();
 }

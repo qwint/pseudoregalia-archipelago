@@ -37,8 +37,6 @@ namespace Engine {
 		void SpawnInteractableAura(wstring, GameData::Interactable);
 		void AddMessages(UObject*);
 		void ShowQueuedPopup(UObject*);
-		void CreateIndicator(UObject*);
-		void UpdateIndicator(UObject*);
 		void CreateOverlay(UObject*);
 		
 		// TODO change to array? if logic needs to be done i.e. to compare against apworld version in slot data
@@ -109,7 +107,6 @@ namespace Engine {
 		QueueItemSync();
 		AddMessages(ap_object);
 		ShowQueuedPopup(ap_object);
-		UpdateIndicator(ap_object);
 
 		// Engine tick runs in a separate thread from the client so it needs to be locked.
 		lock_guard<mutex> guard(blueprint_function_mutex);
@@ -168,7 +165,6 @@ namespace Engine {
 			queued_popup = {};
 			return;
 		}
-		CreateIndicator(ap_object);
 		Engine::SpawnCollectibles(); // TODO pass in map
 		Engine::SyncItems();
 		Client::SetZoneData(); // TODO pass in map
@@ -674,28 +670,6 @@ namespace Engine {
 				// prevent popup sound from playing too frequently when receiving a lot of messages
 				Timer::RunTimerRealTime(popup_sound_delay, &popup_sound_locked);
 			}
-		}
-
-		void CreateIndicator(UObject* ap_object) {
-			lock_guard<mutex> guard(connected_mutex);
-			connected = Client::IsConnected();
-			struct CreateIndicatorInfo {
-				bool connected;
-			};
-			shared_ptr<void> params(new CreateIndicatorInfo{ connected });
-			ExecuteBlueprintFunction(ap_object, L"AP_CreateIndicator", params);
-		}
-
-		void UpdateIndicator(UObject* ap_object) {
-			lock_guard<mutex> guard(connected_mutex);
-			bool current_connected = Client::IsConnected();
-			if (connected == current_connected) return;
-			connected = current_connected;
-			struct UpdateIndicatorInfo {
-				bool connected;
-			};
-			shared_ptr<void> params(new UpdateIndicatorInfo{ connected });
-			ExecuteBlueprintFunction(ap_object, L"AP_UpdateIndicator", params);
 		}
 
 		void CreateOverlay(UObject* ap_object) {

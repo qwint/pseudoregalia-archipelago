@@ -39,7 +39,10 @@ namespace Engine {
 		void ShowQueuedPopup(UObject*);
 		void CreateIndicator(UObject*);
 		void UpdateIndicator(UObject*);
-		void MarkGameCompleted(UObject*);
+		void CreateOverlay(UObject*);
+		
+		// TODO change to array? if logic needs to be done i.e. to compare against apworld version in slot data
+		const wstring version = L"0.10.0";
 
 		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary because
 		// time trials may try to spawn their collectibles multiple times if the player beats the time trial more than once
@@ -150,12 +153,17 @@ namespace Engine {
 	void OnSceneLoad(UObject* ap_object) {
 		GameData::Map map = GetCurrentMap(ap_object);
 		if (map == GameData::Map::EndScreen) {
-			MarkGameCompleted(ap_object);
+			ExecuteBlueprintFunction(ap_object, L"AP_MarkGameCompleted", nullptr);
 			Client::CompleteGame();
 			return;
 		}
 		if (map == GameData::Map::TitleScreen) {
 			Client::Disconnect();
+			CreateOverlay(ap_object);
+			// Normally we create the console in response to the HUD being constructed in a gameplay level. For some reason, if
+			// we don't create the console on the title screen, it causes issues with the map item. One day I will figure out why
+			// tf that happens.
+			ExecuteBlueprintFunction(ap_object, L"AP_CreateConsole", nullptr);
 			lock_guard<mutex> guard(popups_mutex);
 			queued_popup = {};
 			return;
@@ -690,8 +698,12 @@ namespace Engine {
 			ExecuteBlueprintFunction(ap_object, L"AP_UpdateIndicator", params);
 		}
 
-		void MarkGameCompleted(UObject* ap_object) {
-			ExecuteBlueprintFunction(ap_object, L"AP_MarkGameCompleted", nullptr);
+		void CreateOverlay(UObject* ap_object) {
+			struct CreateOverlayInfo {
+				FText Version;
+			};
+			shared_ptr<void> params = std::make_shared<CreateOverlayInfo>(FText(version));
+			ExecuteBlueprintFunction(ap_object, L"AP_CreateOverlay", params);
 		}
 	} // End private functions
 }

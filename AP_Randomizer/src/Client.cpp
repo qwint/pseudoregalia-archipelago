@@ -74,6 +74,7 @@ namespace Client {
         GameData::Initialize();
         wstring uri = domain + L":" + port;
         ap = new APClient(uuid, game_name, StringOps::ToNarrow(uri), cert_store);
+        ap->set_receive_own_locations(true);
         connection_retries = 0;
         active_seed = {};
         Log(L"Attempting to connect to " + uri + L" with name " + slot_name);
@@ -257,10 +258,6 @@ namespace Client {
         list<int64_t> id_list{ id };
         Log(L"Sending check with id " + std::to_wstring(id));
         ap->LocationChecks(id_list);
-
-        // TODO remove once I can call ap->set_receive_own_locations(true)
-        Log(L"Marking location " + std::to_wstring(id) + L" as checked");
-        Despawn(id);
     }
     
     // Sets the data storage Zone value based on the player's current zone.

@@ -9,7 +9,7 @@ class RegionExit(NamedTuple):
     breakable_wall: bool = False
 
 
-origin_exit_region_names: dict[int, str] = {
+origin_region_names: dict[int, str] = {
     SpawnPoint.option_castle_main: "Castle Main",
     SpawnPoint.option_castle_gazebo: "Castle Main",
     SpawnPoint.option_dungeon_mirror: "Dungeon Mirror",

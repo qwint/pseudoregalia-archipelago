@@ -77,9 +77,6 @@ namespace Engine {
 
 		optional<UObject*> file_object;
 		mutex file_object_mutex;
-
-		bool connected;
-		mutex connected_mutex;
 	} // End private members
 
 

@@ -126,6 +126,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Castle => Theatre (Front) -> Theatre Main": lambda state:
                 self.has_plunge(state) and self.get_kicks(state, 1)
                 or self.get_kicks(state, 2),
+            "Library Main -> Castle Main": lambda state:
+                self.can_attack(state),
             "Library Main -> Library Locked": lambda state:
                 self.has_small_keys(state),
             "Library Main -> Library Greaves": lambda state:

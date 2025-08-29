@@ -2,7 +2,7 @@ from worlds.AutoWorld import World, WebWorld
 from BaseClasses import Region, CollectionState, Tutorial
 from .items import PseudoregaliaItem, item_table, item_groups
 from .locations import PseudoregaliaLocation, location_table, zones
-from .regions import region_table, origin_exit_region_names
+from .regions import region_table, origin_region_names
 from .options import PseudoregaliaOptions
 from .rules_normal import PseudoregaliaNormalRules
 from .rules_hard import PseudoregaliaHardRules
@@ -104,6 +104,8 @@ class PseudoregaliaWorld(World):
                 self.options.start_with_breaker.value = 1
 
     def create_regions(self):
+        self.origin_region_name = origin_region_names[self.options.spawn_point.value]
+
         for region_name in region_table.keys():
             self.multiworld.regions.append(Region(region_name, self.player, self.multiworld))
 
@@ -120,12 +122,6 @@ class PseudoregaliaWorld(World):
         for region_name, exit_list in region_table.items():
             region = self.multiworld.get_region(region_name, self.player)
             region.add_exits(exit_list)
-
-        origin_region = Region(self.origin_region_name, self.player, self.multiworld)
-        self.multiworld.regions.append(origin_region)
-        origin_exit_region_name = origin_exit_region_names[self.options.spawn_point.value]
-        origin_exit_region = self.get_region(origin_exit_region_name)
-        origin_region.connect(origin_exit_region)
 
     def create_key_hints(self) -> Any:
         key_hints = [[] for _ in range(5)]

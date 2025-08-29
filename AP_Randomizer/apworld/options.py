@@ -49,7 +49,7 @@ class SpawnPoint(Choice):
     bailey_main: The save point in Empty Bailey.
     keep_main: The save point in the main hallway in Sansa Keep.
     keep_north: The north save point in Sansa Keep.
-    theatre_main: The save point in the auditorium in Twilight Theatre. If this option is selected, your staring
+    theatre_main: The save point in the auditorium in Twilight Theatre. If this option is selected, your starting
         inventory will include Cling Gem/one Cling Shard on normal, or Heliacal Power/one Air Kick on hard+. You will be
         able to leave Twilight Theatre through the big pillar room to the south.
     """

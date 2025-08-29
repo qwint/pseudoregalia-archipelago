@@ -22,9 +22,6 @@ namespace GameData {
 
         optional<wstring> note_being_read = {};
 
-        // The amount of Health Pieces in the base game.
-        const int max_health_pieces = 16;
-
         int health_pieces;
         int small_keys;
         bool major_keys[5];

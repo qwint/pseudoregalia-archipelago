@@ -56,12 +56,10 @@ namespace Engine {
 		mutex messages_mutex;
 
 		const auto popup_debounce_delay = std::chrono::milliseconds(500);
-		const auto popup_sound_delay = std::chrono::milliseconds(1000);
 		bool popups_muted;
 		bool popups_hidden;
 		optional<variant<wstring, ItemPopup>> queued_popup;
 		bool popup_debounce_locked;
-		bool popup_sound_locked;
 		mutex popups_mutex;
 
 		bool item_sync_queued;
@@ -157,7 +155,7 @@ namespace Engine {
 			// Normally we create the console in response to the HUD being constructed in a gameplay level. For some reason, if
 			// we don't create the console on the title screen, it causes issues with the map item. One day I will figure out why
 			// tf that happens.
-			ExecuteBlueprintFunction(ap_object, L"AP_CreateConsole", nullptr);
+			ExecuteBlueprintFunction(ap_object, L"AP_CreateConsoleHacky", nullptr);
 			lock_guard<mutex> guard(popups_mutex);
 			queued_popup = {};
 			return;
@@ -579,12 +577,6 @@ namespace Engine {
 			lock_guard<mutex> guard(messages_mutex);
 			if (message_debounce_locked) return;
 
-			// I want to only create the console in gameplay levels, but for some reason I can't figure out, the console
-			// has to exist on the title screen or it messes with the map. It's frustrating not to know what causes the
-			// issue because who knows what will make it break down the line, but what can you do.
-			GameData::Map map = GetCurrentMap(ap_object);
-			if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) return;
-
 			bool* console_exists = ap_object->GetValuePtrByPropertyName<bool>(L"console_exists");
 			if (!*console_exists) return;
 
@@ -625,15 +617,10 @@ namespace Engine {
 			lock_guard<mutex> guard(popups_mutex);
 			if (popup_debounce_locked || !queued_popup) return;
 
-			// don't try to show a popup in a non-gameplay level
-			GameData::Map map = GetCurrentMap(ap_object);
-			if (map == GameData::Map::TitleScreen || map == GameData::Map::EndScreen) return;
-
 			// don't show popup if the console hasn't been created yet, eg during the dungeon cutscene
 			bool* console_exists = ap_object->GetValuePtrByPropertyName<bool>(L"console_exists");
 			if (!*console_exists) return;
 
-			bool mute_sound = popups_muted || popup_sound_locked;
 			if (holds_alternative<wstring>(*queued_popup)) {
 				wstring popup_text = get<wstring>(*queued_popup);
 				Log(popup_text, LogType::Popup);
@@ -642,7 +629,7 @@ namespace Engine {
 					bool mute_sound;
 				};
 				FText new_text(popup_text);
-				shared_ptr<void> params(new PrintMessageInfo{ new_text, mute_sound });
+				shared_ptr<void> params(new PrintMessageInfo{ new_text, popups_muted });
 				ExecuteBlueprintFunction(ap_object, L"AP_PrintMessage", params);
 			}
 			else {
@@ -656,17 +643,13 @@ namespace Engine {
 				std::shared_ptr<void> params(new PrintItemMessageInfo{
 					FText(popup.preamble),
 					FText(popup.item),
-					mute_sound,
+					popups_muted,
 				});
 				ExecuteBlueprintFunction(ap_object, L"AP_PrintItemMessage", params);
 			}
 
 			queued_popup = {};
 			Timer::RunTimerRealTime(popup_debounce_delay, &popup_debounce_locked);
-			if (!mute_sound) {
-				// prevent popup sound from playing too frequently when receiving a lot of messages
-				Timer::RunTimerRealTime(popup_sound_delay, &popup_sound_locked);
-			}
 		}
 
 		void CreateOverlay(UObject* ap_object) {

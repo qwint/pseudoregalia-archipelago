@@ -38,6 +38,7 @@ namespace Engine {
 		void AddMessages(UObject*);
 		void ShowQueuedPopup(UObject*);
 		void CreateOverlay(UObject*);
+		void VerifyVersion(GameData::Map);
 		
 		// TODO change to array? if logic needs to be done i.e. to compare against apworld version in slot data
 		const wstring version = L"0.10.0";
@@ -75,6 +76,8 @@ namespace Engine {
 
 		optional<UObject*> file_object;
 		mutex file_object_mutex;
+
+		bool verified_version = false;
 	} // End private members
 
 
@@ -156,10 +159,12 @@ namespace Engine {
 			// we don't create the console on the title screen, it causes issues with the map item. One day I will figure out why
 			// tf that happens.
 			ExecuteBlueprintFunction(ap_object, L"AP_CreateConsoleHacky", nullptr);
+			verified_version = false;
 			lock_guard<mutex> guard(popups_mutex);
 			queued_popup = {};
 			return;
 		}
+		VerifyVersion(map);
 		Engine::SpawnCollectibles(); // TODO pass in map
 		Engine::SyncItems();
 		Client::SetZoneData(); // TODO pass in map
@@ -231,26 +236,6 @@ namespace Engine {
 				ExecuteBlueprintFunction(collectible, L"Despawn", nullptr);
 				break;
 			}
-		}
-	}
-
-	void VerifyVersion() {
-		// this implementation assumes players connect after loading into the game. if the connect flow ever changes,
-		// this will need to be updated
-		if (!GameData::CanHaveTimeTrial(GetCurrentMap())) {
-			Log("Unable to verify game version.", LogType::Error);
-			return;
-		}
-
-		int game_version = GameData::GetOptions().at("game_version");
-		std::vector<UObject*> time_trials{};
-		UObjectGlobals::FindAllOf(L"BP_TimeTrial_C", time_trials);
-		bool time_trials_found = time_trials.size() != 0;
-		if (game_version == GameData::MAP_PATCH && !time_trials_found) {
-			Log("Game version map_patch was chosen in the player options, but it seems like you are playing on full gold. Switch to map patch for the intended experience.", LogType::Error);
-		}
-		else if (game_version == GameData::FULL_GOLD && time_trials_found) {
-			Log("Game version full_gold was chosen in the player options, but it seems like you are playing on map patch. Switch to full gold for the intended experience.", LogType::Error);
 		}
 	}
 
@@ -669,6 +654,27 @@ namespace Engine {
 			};
 			shared_ptr<void> params = std::make_shared<CreateOverlayInfo>(FText(version));
 			ExecuteBlueprintFunction(ap_object, L"AP_CreateOverlay", params);
+		}
+
+		void VerifyVersion(GameData::Map map) {
+			if (verified_version || !GameData::CanHaveTimeTrial(map)) return;
+
+			int game_version = GameData::GetOptions().at("game_version");
+			std::vector<UObject*> time_trials{};
+			UObjectGlobals::FindAllOf(L"BP_TimeTrial_C", time_trials);
+			bool time_trials_found = time_trials.size() != 0;
+			if (game_version == GameData::MAP_PATCH && !time_trials_found) {
+				Log("Game version map_patch was chosen in the player options, but it seems like you are playing on full gold. "
+					"Switch to map patch for the intended experience.", LogType::Error);
+			}
+			else if (game_version == GameData::FULL_GOLD && time_trials_found) {
+				Log("Game version full_gold was chosen in the player options, but it seems like you are playing on map patch. "
+					"Switch to full gold for the intended experience.", LogType::Error);
+			}
+			else {
+				Log("Verified that game version matches slot data.");
+			}
+			verified_version = true;
 		}
 	} // End private functions
 }

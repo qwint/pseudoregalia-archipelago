@@ -14,6 +14,8 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 self.can_attack(state) and self.get_clings(state, 2),
             "Theatre Main -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1),
+            "Theatre Main -> Theatre Outside Scythe Corridor": lambda state:
+                self.get_clings(state, 4),
             "Theatre Pillar => Bailey -> Theatre Pillar": lambda state:
                 self.get_kicks(state, 1)
                 or self.can_slidejump(state),
@@ -185,6 +187,7 @@ class PseudoregaliaHardRules(PseudoregaliaNormalRules):
                 or self.can_slidejump(state) and self.has_plunge(state),
             "Castle Sansa - Alcove Near Scythe Corridor": lambda state:
                 self.get_clings(state, 4)
+                or self.has_plunge(state) and self.get_clings(state, 2)
                 or self.get_kicks(state, 2) and self.has_plunge(state),
             "Castle Sansa - Near Theatre Front": lambda state:
                 self.get_clings(state, 6)

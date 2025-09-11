@@ -155,9 +155,9 @@ namespace Engine {
 		if (map == GameData::Map::TitleScreen) {
 			Client::Disconnect();
 			CreateOverlay(ap_object);
-			// Normally we create the console in response to the HUD being constructed in a gameplay level. For some reason, if
-			// we don't create the console on the title screen, it causes issues with the map item. One day I will figure out why
-			// tf that happens.
+            // Normally we create the console in response to the HUD being constructed in a gameplay level. For some
+            // reason, if we don't create the console on the title screen, it causes issues with the map item. Maybe one
+            // day I will figure out why tf that happens.
 			ExecuteBlueprintFunction(ap_object, L"AP_CreateConsoleHacky", nullptr);
 			verified_version = false;
 			lock_guard<mutex> guard(popups_mutex);
@@ -165,19 +165,18 @@ namespace Engine {
 			return;
 		}
 		VerifyVersion(map);
-		Engine::SpawnCollectibles(); // TODO pass in map
+		Engine::SpawnCollectibles(map);
 		Engine::SyncItems();
-		Client::SetZoneData(); // TODO pass in map
+		Client::SetZoneData(map);
 	}
 
 	// Calls blueprint's AP_SpawnCollectible function for each unchecked collectible in a map.
-	void Engine::SpawnCollectibles() {
+	void Engine::SpawnCollectibles(GameData::Map map) {
 		spawned_collectibles.clear();
 		// This function must loop through instead of calling once with an array;
 		// as of 10/11/23 the params struct method I use can't easily represent FVectors or FTransforms in C++.
 		// This might be worked around by storing positions as three separate numbers instead and constructing the vectors in BP,
 		// but I don't think it's worth changing right now since this is just called once each map load.
-		GameData::Map map = GetCurrentMap();
 		std::unordered_map<int64_t, GameData::Collectible> collectible_map = GameData::GetCollectiblesOfZone(map);
 		for (const auto& [id, collectible] : collectible_map) {
 			SpawnCollectible(id, collectible.GetPosition(GameData::GetOptions()));

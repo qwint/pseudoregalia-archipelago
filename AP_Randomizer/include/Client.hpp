@@ -7,7 +7,7 @@ namespace Client {
 	void SendCheck(int64_t);
 	void Say(std::string);
 	void OnTick();
-	void SetZoneData();
+	void SetZoneData(GameData::Map);
 	void CompleteGame();
 	void SendDeathLink();
 	void Disconnect();

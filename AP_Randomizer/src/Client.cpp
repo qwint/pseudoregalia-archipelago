@@ -263,7 +263,7 @@ namespace Client {
     }
     
     // Sets the data storage Zone value based on the player's current zone.
-    void Client::SetZoneData() {
+    void Client::SetZoneData(GameData::Map map) {
         if (ap == nullptr) {
             return;
         }
@@ -272,7 +272,7 @@ namespace Client {
             "Pseudoregalia - Team " + std::to_string(ap->get_team_number())
             + " - Player " + std::to_string(ap->get_player_number())
             + " - Zone";
-        int32_t zone = static_cast<int32_t>(Engine::GetCurrentMap());
+        int32_t zone = static_cast<int32_t>(map);
         list<APClient::DataStorageOperation> operations{ { "replace", zone } };
         ap->Set(key, 0, false, operations);
     }

@@ -16,7 +16,7 @@ namespace Engine {
 	void OnTick(UObject*);
 	void OnSceneLoad(UObject*);
 	void SyncItems();
-	void SpawnCollectibles();
+	void SpawnCollectibles(GameData::Map);
 	void DespawnCollectible(const int64_t);
 	void DespawnInteractable(const int64_t);
 	GameData::Map GetCurrentMap(UObject*);

@@ -634,17 +634,28 @@ namespace Engine {
 			}
 			else {
 				ItemPopup popup = get<ItemPopup>(*queued_popup);
-				Log(popup.preamble + L" " + popup.item, LogType::Popup);
+				Log(popup.preamble + popup.item + L" " + popup.info, LogType::Popup);
 				struct PrintItemMessageInfo {
 					FText preamble;
 					FText item;
+					FText info;
 					bool mute_sound;
 				};
-				std::shared_ptr<void> params(new PrintItemMessageInfo{
-					FText(popup.preamble),
-					FText(popup.item),
-					popups_muted,
-				});
+				shared_ptr<void> params;
+				if (Settings::GetPopupsSimplifyItemFont()) {
+					params = std::make_shared<PrintItemMessageInfo>(
+						FText(popup.preamble + popup.item),
+						FText(L""),
+						FText(popup.info),
+						popups_muted);
+				}
+				else {
+					params = std::make_shared<PrintItemMessageInfo>(
+						FText(popup.preamble),
+						FText(popup.item),
+						FText(popup.info),
+						popups_muted);
+				}
 				ExecuteBlueprintFunction(ap_object, L"AP_PrintItemMessage", params);
 			}
 

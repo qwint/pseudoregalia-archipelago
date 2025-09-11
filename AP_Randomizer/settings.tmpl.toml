@@ -34,6 +34,9 @@ death_link = false
 # "hide": Popups are not displayed.
 initial_state = "show_with_sound"
 
+# Whether to use a simpler font for the item text in item popups.
+simplify_item_font = false
+
 [settings.console.filters]
 
 # Which ItemSend messages to print to the console.

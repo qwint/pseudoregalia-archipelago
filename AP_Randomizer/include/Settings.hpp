@@ -32,5 +32,6 @@ namespace Settings {
     InteractableAuraDisplay GetInteractableAuraDisplay();
     bool GetDeathLink();
     PopupsInitialState GetPopupsInitialState();
+    bool GetPopupsSimplifyItemFont();
     Filters::ItemSend GetItemSendFilter();
 }

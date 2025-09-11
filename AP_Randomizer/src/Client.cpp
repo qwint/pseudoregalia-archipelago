@@ -482,6 +482,8 @@ namespace Client {
         }
 
         optional<Engine::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs& args) {
+            using StringOps::ToWide;
+
             if (args.receiving == nullptr || args.item == nullptr) {
                 // I don't think this is reachable because of the way apclientpp validates packets, but it felt weird
                 // not to check just in case
@@ -495,20 +497,23 @@ namespace Client {
                 return {};
             }
 
+            Engine::ItemPopup item_popup = {
+                .item = ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver))),
+                .info = L"at " + ToWide(ap->get_location_name(args.item->location, ap->get_player_game(finder))),
+            };
             wstring preamble;
             if (ap->slot_concerns_self(finder) && ap->slot_concerns_self(receiver)) {
-                preamble = L"You found your";
+                item_popup.preamble = L"You found your ";
             }
             else if (ap->slot_concerns_self(finder)) {
                 wstring receiver_name = StringOps::ToWide(ap->get_player_alias(receiver));
-                preamble = L"You found " + receiver_name + L"'s";
+                item_popup.preamble = L"You found " + receiver_name + L"'s ";
             }
             else {
                 wstring finder_name = StringOps::ToWide(ap->get_player_alias(finder));
-                preamble = finder_name + L" found your";
+                item_popup.preamble = finder_name + L" found your ";
             }
-            wstring item = StringOps::ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver)));
-            return Engine::ItemPopup{ preamble, item };
+            return item_popup;
         }
 
         void ReceiveItemOnce(const APClient::PrintJSONArgs& args) {

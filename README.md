@@ -5,7 +5,7 @@ You can get the latest release from [the releases page](https://github.com/qwint
 
 The logic is separated by difficulty, which you can choose in your player yaml file. The options are explained in the template.
 
-You'll spawn in Castle with no items, but there are options to start with Dream Breaker and/or the map (if you are playing on the latest patch). If you don't have Dream Breaker yet, you can save the game by touching a save point.
+There is an option to set or randomize your spawn point, and some spawns may start you with an item so you aren't immediately stuck. If you don't have Dream Breaker yet, you can save the game by touching a save point.
 
 You can get the PopTracker pack for Pseudoregalia [here](https://github.com/highrow623/pseudoregalia_brooty).
 
@@ -30,10 +30,10 @@ Note: If you are installing on Steam Deck, please read [the Steam Deck installat
 ![](https://i.imgur.com/SGPm9oq.jpg)
 
 4. Create a shortcut to Pseudoregalia_AP/pseudoregalia.exe and rename it "Pseudoregalia_AP" (or whatever else you like). Place it on your desktop or in your games folder or whatever.
-5. Launch the shortcut, which should open Pseudoregalia. Start a new file.
-6. Once you've loaded into the game, press `enter` to open the in-game console, and enter your connect message:
+5. Launch the shortcut, which should open Pseudoregalia. Select a new file.
+6. Enter the connect info and click Start.
 
-`/connect ip:port slotname password`
+![](./docs/new_file_menu.png)
 
 
 # Generating a Seed

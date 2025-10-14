@@ -38,10 +38,15 @@ namespace Engine {
 		void AddMessages(UObject*);
 		void ShowQueuedPopup(UObject*);
 		void CreateOverlay(UObject*);
-		void VerifyVersion(GameData::Map);
+		void VerifyGameVersion(GameData::Map);
 		
-		// TODO change to array? if logic needs to be done i.e. to compare against apworld version in slot data
-		const wstring version = L"0.10.0";
+		// version compatibility stuff
+		const size_t MAJOR = 0;
+		const size_t MINOR = 1;
+		const size_t PATCH = 2;
+		const int32_t PRE_RELEASE = 0;
+		const Version client_version = { 0, 10, 0 };
+		const wstring client_version_text = VersionToWString(client_version);
 
 		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary because
 		// time trials may try to spawn their collectibles multiple times if the player beats the time trial more than once
@@ -164,7 +169,7 @@ namespace Engine {
 			queued_popup = {};
 			return;
 		}
-		VerifyVersion(map);
+		VerifyGameVersion(map);
 		Engine::SpawnCollectibles(map);
 		Engine::SyncItems();
 		Client::SetZoneData(map);
@@ -416,7 +421,7 @@ namespace Engine {
 		ExecuteBlueprintFunction(*file_object, L"UpdateConnectionStatus", params);
 	}
 
-	void FinishConnect(wstring zone, wstring player_start, wstring seed, wstring spawn_point) {
+    void FinishConnect(wstring zone, wstring player_start, wstring seed, wstring spawn_point, Version apworld_version) {
 		lock_guard<mutex> guard(file_object_mutex);
 		if (!file_object) return;
 
@@ -425,12 +430,18 @@ namespace Engine {
 			FString player_start;
 			FString seed;
 			FString spawn_point;
+			int32_t major;
+			int32_t minor;
+			int32_t patch;
 		};
 		shared_ptr<void> params(new FinishConnectInfo{
 			FString(zone.c_str()),
 			FString(player_start.c_str()),
 			FString(seed.c_str()),
 			FString(spawn_point.c_str()),
+			apworld_version[MAJOR],
+			apworld_version[MINOR],
+			apworld_version[PATCH],
 		});
 		ExecuteBlueprintFunction(*file_object, L"FinishConnect", params);
 	}
@@ -459,6 +470,23 @@ namespace Engine {
 		}
 		Log("Recalling Dream Breaker.", LogType::System);
 		ExecuteBlueprintFunction(player, L"recallWeapon", nullptr);
+	}
+
+	wstring VersionToWString(const Version& version) {
+        return to_wstring(version[MAJOR]) + L"." + to_wstring(version[MINOR]) + L"." + to_wstring(version[PATCH]);
+	}
+
+	bool IsAPWorldVersionCompatible(const Version& apworld_version) {
+		// major version must match
+		if (client_version[MAJOR] != apworld_version[MAJOR])
+			return false;
+
+		// pre release, minor version must match
+		if (client_version[MAJOR] == PRE_RELEASE)
+			return client_version[MINOR] == apworld_version[MINOR];
+
+		// post release, client supports previous minor versions
+		return client_version[MINOR] >= apworld_version[MINOR];
 	}
 
 
@@ -651,11 +679,11 @@ namespace Engine {
 			struct CreateOverlayInfo {
 				FText Version;
 			};
-			shared_ptr<void> params = std::make_shared<CreateOverlayInfo>(FText(version));
+			shared_ptr<void> params = std::make_shared<CreateOverlayInfo>(FText(client_version_text));
 			ExecuteBlueprintFunction(ap_object, L"AP_CreateOverlay", params);
 		}
 
-		void VerifyVersion(GameData::Map map) {
+		void VerifyGameVersion(GameData::Map map) {
 			if (verified_version || !GameData::CanHaveTimeTrial(map)) return;
 
 			int game_version = GameData::GetOptions().at("game_version");

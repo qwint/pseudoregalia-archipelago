@@ -50,6 +50,7 @@ namespace Client {
         void PrintHintsToConsole(int64_t, int, list<int64_t>);
         void PrintErrorAndDisconnect(string);
         void PrintErrorAndDisconnect(wstring);
+        Engine::Version ParseAPWorldVersion(const json&);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
         // If people report random crashes, especially when disconnecting, I'll revisit it.
@@ -63,6 +64,7 @@ namespace Client {
         const float death_link_timer_seconds(4.0f);
         bool disconnect_queued = false;
         optional<string> active_seed = {};
+        optional<Engine::Version> apworld_version = {};
     } // End private members
 
     void Client::Connect(wstring domain, wstring port, wstring slot_name, wstring password, optional<wstring> seed) {
@@ -76,6 +78,7 @@ namespace Client {
         ap = new APClient(uuid, game_name, StringOps::ToNarrow(uri), cert_store);
         connection_retries = 0;
         active_seed = {};
+        apworld_version.reset();
         Log(L"Attempting to connect to " + uri + L" with name " + slot_name);
 
         // The Great Wall Of Callbacks
@@ -107,12 +110,30 @@ namespace Client {
                 });
 
             // Executes on successful connection to slot.
-            ap->set_slot_connected_handler([](const json& slot_data) {
+            ap->set_slot_connected_handler([seed](const json& slot_data) {
                 Log("Connected to slot");
+
+                if (Engine::IsInConnectHandshake() && !seed) {
+                    // we should only need to validate version on the initial connection
+                    if (!slot_data.contains("apworld_version")) {
+                        PrintErrorAndDisconnect("Incompatible APWorld version: pre 0.10.0");
+                        return;
+                    }
+                    apworld_version = ParseAPWorldVersion(slot_data["apworld_version"]);
+                    if (!Engine::IsAPWorldVersionCompatible(*apworld_version)) {
+                        auto version_text = Engine::VersionToWString(*apworld_version);
+                        PrintErrorAndDisconnect(L"Incompatible APWorld version: " + version_text);
+                        return;
+                    }
+                }
+
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
                     string key = iter.key();
                     if (key == "key_hints") {
                         ParseKeyHints(iter.value());
+                    }
+                    else if (key == "apworld_version") {
+                        continue;
                     }
                     else {
                         GameData::SetOption(key, iter.value());
@@ -184,7 +205,8 @@ namespace Client {
                 else {
                     const auto& spawn_info = GameData::GetSpawnInfo();
                     wstring wseed = StringOps::ToWide(*active_seed);
-                    Engine::FinishConnect(spawn_info.zone, spawn_info.player_start, wseed, spawn_info.spawn_name);
+                    Engine::FinishConnect(spawn_info.zone, spawn_info.player_start, wseed, spawn_info.spawn_name,
+                        *apworld_version);
                 }
                 Engine::EndConnectHandshake();
                 });
@@ -608,5 +630,15 @@ namespace Client {
             Engine::UpdateConnectHandshakeStatus(L"ERROR: " + message, true);
             Disconnect();
         }
+
+        Engine::Version ParseAPWorldVersion(const json& version) {
+            // TODO could check for proper format, i.e. is_array, 3 items, each item is a number
+            return {
+                version[0].template get<int32_t>(),
+                version[1].template get<int32_t>(),
+                version[2].template get<int32_t>(),
+            };
+        }
+
     } // End private functions
 }

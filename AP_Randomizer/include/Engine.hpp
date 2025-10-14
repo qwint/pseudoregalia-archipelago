@@ -12,6 +12,10 @@ namespace Engine {
 		std::wstring info;
 	};
 
+	typedef std::array<int32_t, 3> Version;
+	std::wstring VersionToWString(const Version&);
+	bool IsAPWorldVersionCompatible(const Version&);
+
 	void ExecuteBlueprintFunction(std::variant<std::wstring, UObject*>, std::wstring, std::shared_ptr<void>);
 	void OnTick(UObject*);
 	void OnSceneLoad(UObject*);
@@ -38,7 +42,7 @@ namespace Engine {
 	void StartConnectHandshake(UObject*);
 	bool IsInConnectHandshake();
 	void UpdateConnectHandshakeStatus(std::wstring, bool);
-	void FinishConnect(std::wstring, std::wstring, std::wstring, std::wstring);
+	void FinishConnect(std::wstring, std::wstring, std::wstring, std::wstring, Version);
 	void FinishConnect();
 	void EndConnectHandshake();
 	void RecallBreaker();

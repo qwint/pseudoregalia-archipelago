@@ -489,6 +489,18 @@ namespace Engine {
 		return client_version[MINOR] >= apworld_version[MINOR];
 	}
 
+	void CheckVersionCompatibility(UnrealScriptFunctionCallableContext& context) {
+		struct CheckVersionCompatibilityParams {
+			int32_t major;
+			int32_t minor;
+			int32_t patch;
+		};
+		auto& params = context.GetParams<CheckVersionCompatibilityParams>();
+		Engine::Version apworld_version = { params.major, params.minor, params.patch };
+		auto* compatible = context.Context->GetValuePtrByPropertyName<bool>(L"VersionIsCompatible");
+		*compatible = Engine::IsAPWorldVersionCompatible(apworld_version);
+	}
+
 
 	// Private functions
 	namespace {

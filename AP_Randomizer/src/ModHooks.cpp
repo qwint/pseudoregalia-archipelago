@@ -134,6 +134,14 @@ namespace ModHooks {
 				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
 					Client::Disconnect();
 				}),
+			ModHook(L"AP_FileSelectMenuButton_C", L"CheckVersionCompatibility",
+				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
+					Engine::CheckVersionCompatibility(context);
+				}),
+			ModHook(L"AP_ExistingFileMenu_C", L"CheckVersionCompatibility",
+				[](UnrealScriptFunctionCallableContext& context, void* customdata) {
+					Engine::CheckVersionCompatibility(context);
+				}),
 		};
 
 		typedef function<void(AActor*)> ActorCallback;

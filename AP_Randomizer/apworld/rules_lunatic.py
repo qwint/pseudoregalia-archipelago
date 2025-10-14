@@ -1,5 +1,5 @@
 from .rules_expert import PseudoregaliaExpertRules
-from .constants.versions import FULL_GOLD
+from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
@@ -8,7 +8,7 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
 
         region_clauses = {
             "Tower Remains -> The Great Door": lambda state:
-                self.can_gold_ultra(state) and self.get_kicks(state, 1)
+                self.can_gold_ultra(state) and self.kick_or_plunge(state, 1)
                 or self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state)
                 or self.has_plunge(state) and self.get_kicks(state, 2),
             "Bailey Lower -> Bailey Upper": lambda state:
@@ -68,7 +68,10 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
         }
 
         # logic differences due to geometry changes between versions
-        if self.world.options.game_version == FULL_GOLD:
+        if self.world.options.game_version == MAP_PATCH:
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.can_slidejump(state) and self.has_plunge(state))
+        else:
             location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 1))
 

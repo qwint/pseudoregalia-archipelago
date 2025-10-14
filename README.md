@@ -45,5 +45,26 @@ Note: If you are installing on Steam Deck, please read [the Steam Deck installat
 5. A zip file will be added to Archipelago/output, which can [hosted on the website](https://archipelago.gg/uploads) or hosted locally by clicking Host.
 
 
+# Version Compatibility
+
+Starting in version `0.10.0`, the client automatically checks the APWorld version when connecting to make sure it's compatible. Since `0.10.0` also introduced save management, upgrading your client might make it incompatible with existing saves. If you need to figure out which client version is compatible with the APWorld version in an existing save, the rest of this section should give you the info you need.
+
+Version numbers are in the format `major.minor.patch` and a bump in each number has a different meaning:
+
+* A major version bump (e.g. `1.3.2` to `2.0.0`) means a breaking change. This happens when changes are significant enough that the client is not expected to work with previous APWorld versions. In terms of compatibility, major versions must always match exactly.
+
+  A major version of 0 means it's a pre-release version.
+
+* A minor version bump (e.g. `1.3.2` to `1.4.0`) means there is something new in the APWorld that requires an updated client. Normally, clients on a higher minor version are compatible with APWorlds on a lower version. For example, client `1.3.2` is compatible with APWorlds `1.3.2` and `1.2.3`, but it isn't compatible with APWorld `1.4.0`.
+
+  However in pre-release, minor version bumps may also include breaking changes, so the minor version also has to match exactly. For example, client `0.10.2` is compatible with APWorld `0.10.0`, but client `0.11.0` is not.
+
+* A patch version bump (e.g. `1.3.2` to `1.3.3`) means a change to either the client or the APWorld that doesn't require updating the other. For example, a bug fix in the client or a small logic update in the APWorld. Patch versions don't matter for compatibility. All that matters is that the major and minor versions are compatible.
+
+  However, this means that the latest versions of the client and the APWorld might be different. If the client gets a patch update in release `1.3.1`, that release will still have APWorld `1.3.0` to indicate that the APWorld is exactly the same as the previous release. The latest client and APWorld will always be compatible with each other.
+
+In summary, if an existing save has APWorld version `a.b.c`, a client with version `a.y.z` is compatible as long as `a > 0` and `y >= b`. If a save has APWorld version `0.b.c` (i.e. is pre-release), a client with version `0.b.z` is compatible.
+
+
 # Known Issues
 - The mod will not always fully load before starting the game, especially the first time. If the `pseudoregalia-archipelago [version]` text doesn't appear in the top right corner of the main menu, try restarting the game.

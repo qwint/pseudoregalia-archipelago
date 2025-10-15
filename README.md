@@ -47,23 +47,28 @@ Note: If you are installing on Steam Deck, please read [the Steam Deck installat
 
 # Version Compatibility
 
-Starting in version `0.10.0`, the client automatically checks the APWorld version when connecting to make sure it's compatible. Since `0.10.0` also introduced save management, upgrading your client might make it incompatible with existing saves. If you need to figure out which client version is compatible with the APWorld version in an existing save, the rest of this section should give you the info you need.
+Starting in version `0.10.0`, the mod automatically checks the APWorld version used in generation to make sure it's compatible. Version `0.10.0` also introduced save management, so upgrading the mod might make it incompatible with existing saves. If you need to figure out which mod versions are compatible with a particular APWorld version, the rest of this section should give you the info you need.
+
+In game, the mod version appears in the top right corner on the main menu. The APWorld version for an existing save file is shown on screen when the file is selected.
 
 Version numbers are in the format `major.minor.patch` and a bump in each number has a different meaning:
 
-* A major version bump (e.g. `1.3.2` to `2.0.0`) means a breaking change. This happens when changes are significant enough that the client is not expected to work with previous APWorld versions. In terms of compatibility, major versions must always match exactly.
+* A major version bump (e.g. `1.3.2` to `2.0.0`) means a breaking change. This happens when changes are significant enough that the mod will not work with previous APWorld versions. In terms of compatibility, major versions must always match exactly.
 
-  A major version of 0 means it's a pre-release version.
+  Major version `0` indicates a prerelease version. For example, version `0.10.0` is prerelease but version `1.0.0` is not.
 
-* A minor version bump (e.g. `1.3.2` to `1.4.0`) means there is something new in the APWorld that requires an updated client. Normally, clients on a higher minor version are compatible with APWorlds on a lower version. For example, client `1.3.2` is compatible with APWorlds `1.3.2` and `1.2.3`, but it isn't compatible with APWorld `1.4.0`.
+* A minor version bump (e.g. `1.3.2` to `1.4.0`) means there is something new in the APWorld that requires an update in the mod. For non-prerelease versions, a mod is also compatible with an APWorld that has a lower minor version. For example, mod `1.3.2` is compatible with APWorlds `1.3.2` and `1.2.3`, but it isn't compatible with APWorld `1.4.0`.
 
-  However in pre-release, minor version bumps may also include breaking changes, so the minor version also has to match exactly. For example, client `0.10.2` is compatible with APWorld `0.10.0`, but client `0.11.0` is not.
+  For prerelease versions, minor version bumps may also include breaking changes, so the minor version also has to match exactly. For example, mod `0.10.2` is compatible with APWorld `0.10.0`, but mod `0.11.0` is not.
 
-* A patch version bump (e.g. `1.3.2` to `1.3.3`) means a change to either the client or the APWorld that doesn't require updating the other. For example, a bug fix in the client or a small logic update in the APWorld. Patch versions don't matter for compatibility. All that matters is that the major and minor versions are compatible.
+* A patch version bump (e.g. `1.3.2` to `1.3.3`) means a change to either the mod or the APWorld that doesn't require updating the other. Examples include a bug fix in the mod or a small logic update in the APWorld. Patch versions don't matter for compatibility. All that matters is that the major and minor versions are compatible.
 
-  However, this means that the latest versions of the client and the APWorld might be different. If the client gets a patch update in release `1.3.1`, that release will still have APWorld `1.3.0` to indicate that the APWorld is exactly the same as the previous release. The latest client and APWorld will always be compatible with each other.
+  Note: this means that the latest versions of the mod and the APWorld might be different. If the mod gets a patch update in release `1.3.1` but the APWorld is unchanged, that release will still have APWorld `1.3.0` to indicate that the APWorld is exactly the same as the previous release. The latest mod and APWorld will always be compatible with each other.
 
-In summary, if an existing save has APWorld version `a.b.c`, a client with version `a.y.z` is compatible as long as `a > 0` and `y >= b`. If a save has APWorld version `0.b.c` (i.e. is pre-release), a client with version `0.b.z` is compatible.
+In summary:
+
+* If an existing save file has APWorld version `a.b.c` where `a > 0`, only mod versions `a.y.z` where `y >= b` are compatible.
+* If an existing save file has APWorld version `0.b.c` (i.e. is prerelease), only mod versions `0.b.z` are compatible.
 
 
 # Known Issues

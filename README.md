@@ -45,9 +45,17 @@ Note: If you are installing on Steam Deck, please read [the Steam Deck installat
 5. A zip file will be added to Archipelago/output, which can [hosted on the website](https://archipelago.gg/uploads) or hosted locally by clicking Host.
 
 
-# Version Compatibility
+# Compatibility
 
-Starting in version `0.10.0`, the mod automatically checks the APWorld version used in generation to make sure it's compatible. Version `0.10.0` also introduced save management, so upgrading the mod might make it incompatible with existing saves. If you need to figure out which mod versions are compatible with a particular APWorld version, the rest of this section should give you the info you need.
+## Other Mods
+
+`pseudoregalia-archipelago` touches many parts of the game in a way that might make it incompatible with other mods. (This is part of the reason why the installation guide recommends installing into a new folder.) Notably, it is NOT compatible with PseudoMenuMod because of the way they both modify the main menu. However, it does seem to be compatible with the Attire UI Overhaul Mod (custom outfits).
+
+If you want to use other mods with this one, the safest thing to do is to install this mod first and add others one at a time, making sure they work as you go.
+
+## Mod and APWorld
+
+Starting in version `0.10.0`, the mod automatically checks the APWorld version used in generation to make sure it's compatible with the mod. Version `0.10.0` also introduced save management, so upgrading the mod might make it incompatible with existing saves. If you need to figure out which mod versions are compatible with a particular APWorld version, the rest of this section should give you the info you need.
 
 In game, the mod version appears in the top right corner on the main menu. The APWorld version for an existing save file is shown on screen when the file is selected.
 
@@ -67,8 +75,8 @@ Version numbers are in the format `major.minor.patch` and a bump in each number 
 
 In summary:
 
-* If an existing save file has APWorld version `a.b.c` where `a > 0`, only mod versions `a.y.z` where `y >= b` are compatible.
-* If an existing save file has APWorld version `0.b.c` (i.e. is prerelease), only mod versions `0.b.z` are compatible.
+* If a save file has APWorld version `a.b.c` where `a > 0`, only mod versions `a.y.z` where `y >= b` are compatible.
+* If a save file has APWorld version `0.b.c` (i.e. is prerelease), only mod versions `0.b.z` are compatible.
 
 
 # Known Issues

@@ -47,7 +47,7 @@ class PseudoregaliaRulesHelpers:
 
         spawn_point = world.options.spawn_point
         dungeon_start = spawn_point == spawn_point.option_dungeon_mirror
-        self.knows_dungeon_escape = bool(world.options.obscure_logic) or dungeon_start
+        self.knows_dungeon_escape = dungeon_start or bool(world.options.obscure_logic)
 
         logic_level = world.options.logic_level.value
         if logic_level in (EXPERT, LUNATIC):

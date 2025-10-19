@@ -39,7 +39,7 @@ class SpawnPoint(Choice):
     castle_gazebo: The save point in the gazebo in the Castle Sansa courtyard.
     dungeon_mirror: The vanilla starting point in Dilapidated Dungeon. If this option is selected, start_with_breaker
         will be forced on and you will most likely be expected to leave through the dark rooms to The Underbelly. See
-        this video for a guide on how to do that: TODO link
+        this video for a guide on how to do that: https://youtu.be/Z_a9l2wzd8c
     library: The save point at the start of Listless Library. If this option is selected, either start_with_breaker or
         randomize_books must also be turned on. If both options are off at the start of generation, start_with_breaker
         will be forced on. If just randomize_books is turned on, your sphere one will have a lot of checks but will be

@@ -56,6 +56,12 @@ namespace GameData {
 		std::vector<MultiworldLocation> locations;
 	};
 
+	struct PlayerStart {
+		std::wstring zone;
+		std::wstring player_start;
+		std::wstring spawn_name;
+	};
+
 	// encodes the location id and spawn position of a time trial collectible
 	typedef std::pair<int64_t, FVector> TimeTrial;
 	// encodes the location id and actor class name of an interactable location
@@ -75,6 +81,7 @@ namespace GameData {
 	void SetPseudoItemClassification(int64_t, int64_t);
 	void SetOffWorldItemClassification(int64_t, Classification);
 	Classification GetClassification(int64_t);
+	void ResetItems();
 	ItemType ReceiveItem(int64_t);
 	Map MapNameToEnum(std::wstring);
 	bool ToggleSlideJump();
@@ -89,4 +96,5 @@ namespace GameData {
 	bool IsInteractable(int64_t);
 	void AddMajorKeyHint(int, MultiworldLocation);
 	std::optional<MajorKeyInfo> GetMajorKeyInfo(std::wstring);
+	const PlayerStart& GetSpawnInfo();
 }

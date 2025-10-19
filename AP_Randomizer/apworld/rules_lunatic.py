@@ -1,5 +1,5 @@
 from .rules_expert import PseudoregaliaExpertRules
-from .constants.versions import FULL_GOLD
+from .constants.versions import MAP_PATCH
 
 
 class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
@@ -9,7 +9,8 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
         region_clauses = {
             "Tower Remains -> The Great Door": lambda state:
                 self.can_gold_ultra(state) and self.get_kicks(state, 1)
-                or self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state),
+                or self.has_slide(state) and self.get_kicks(state, 1) and self.has_plunge(state)
+                or self.has_plunge(state) and self.get_kicks(state, 2),
             "Bailey Lower -> Bailey Upper": lambda state:
                 self.can_bounce(state),
             "Theatre Pillar -> Theatre Main": lambda state:
@@ -25,12 +26,13 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
             "Castle => Theatre (Front) -> Castle By Scythe Corridor": lambda state:
                 self.can_slidejump(state),
             "Library Main -> Library Top": lambda state:
-                self.get_kicks(state, 1),
+                self.get_kicks(state, 1)
+                or self.get_clings(state, 2),
             "Library Top -> Library Back": lambda state:
                 self.can_bounce(state) and self.get_kicks(state, 1) and self.has_plunge(state),
             "Keep Main -> Keep Throne Room": lambda state:
                 self.has_breaker(state) and self.has_slide(state) and self.kick_or_plunge(state, 3)
-                or self.get_clings(state, 2)
+                or self.has_breaker(state) and self.get_clings(state, 2)
                 or (
                     self.can_gold_ultra(state)
                     and self.can_bounce(state)
@@ -48,7 +50,8 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
                 self.get_kicks(state, 1) and self.has_plunge(state)
                 or self.has_breaker(state) and self.has_plunge(state) and self.has_slide(state),
             "Dilapidated Dungeon - Rafters": lambda state:
-                self.can_gold_ultra(state),
+                self.can_gold_ultra(state)
+                or self.has_slide(state) and self.has_plunge(state),
             "Castle Sansa - Floater In Courtyard": lambda state:
                 self.has_slide(state) and self.get_kicks(state, 1),
             "Castle Sansa - Platform In Main Halls": lambda state:
@@ -65,7 +68,10 @@ class PseudoregaliaLunaticRules(PseudoregaliaExpertRules):
         }
 
         # logic differences due to geometry changes between versions
-        if self.world.options.game_version == FULL_GOLD:
+        if self.world.options.game_version == MAP_PATCH:
+            region_clauses["Bailey Upper -> Tower Remains"] = (lambda state:
+                self.can_slidejump(state) and self.has_plunge(state))
+        else:
             location_clauses["Dilapidated Dungeon - Strong Eyes"] = (lambda state:
                 self.has_slide(state) and self.kick_or_plunge(state, 1))
 

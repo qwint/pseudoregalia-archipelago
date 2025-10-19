@@ -36,3 +36,12 @@ initial_state = "show_with_sound"
 
 # Whether to use a simpler font for the item text in item popups.
 simplify_item_font = false
+
+[settings.console.filters]
+
+# Which ItemSend messages to print to the console.
+#
+# "all": All ItemSend messages are printed.
+# "relevant": Only ItemSend messages that involve you sending or receiving an item are printed.
+# "none": No ItemSend messages are printed. Can be nice for solo games.
+item_send = "all"

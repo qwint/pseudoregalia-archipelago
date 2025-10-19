@@ -21,6 +21,7 @@ class PseudoregaliaRulesHelpers:
     # add_rule applies them backwards meaning harder rules will shortcircuit easier rules
 
     required_small_keys: int = 6  # Set to 7 for Normal logic.
+    knows_dungeon_escape: bool
 
     def __init__(self, world: PseudoregaliaWorld) -> None:
         self.world = world
@@ -36,18 +37,24 @@ class PseudoregaliaRulesHelpers:
             self.can_gold_ultra = self.has_slide
             self.can_gold_slide_ultra = self.has_slide
 
-        logic_level = world.options.logic_level.value
-        if logic_level in (EXPERT, LUNATIC):
+        # TODO convert knows_obscure to just a bool?
+        if world.options.obscure_logic:
             self.knows_obscure = lambda state: True
             self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
-            self.navigate_darkrooms = lambda state: True
-        elif bool(world.options.obscure_logic):
-            self.knows_obscure = lambda state: True
-            self.can_attack = lambda state: self.has_breaker(state) or self.has_plunge(state)
-            self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player) or self.has_breaker(state)
         else:
             self.knows_obscure = lambda state: False
             self.can_attack = self.has_breaker
+
+        spawn_point = world.options.spawn_point
+        dungeon_start = spawn_point == spawn_point.option_dungeon_mirror
+        self.knows_dungeon_escape = dungeon_start or bool(world.options.obscure_logic)
+
+        logic_level = world.options.logic_level.value
+        if logic_level in (EXPERT, LUNATIC):
+            self.navigate_darkrooms = lambda state: True
+        elif self.knows_dungeon_escape:
+            self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player) or self.has_breaker(state)
+        else:
             self.navigate_darkrooms = lambda state: state.has("Ascendant Light", self.player)
 
         if logic_level == NORMAL:

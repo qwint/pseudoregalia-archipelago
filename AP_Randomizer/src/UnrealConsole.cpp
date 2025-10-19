@@ -28,6 +28,8 @@ namespace UnrealConsole {
 		constexpr size_t popups = HashWstring(L"popups");
 		constexpr size_t countdown = HashWstring(L"countdown");
 		constexpr size_t spawn = HashWstring(L"spawn");
+		constexpr size_t breaker = HashWstring(L"breaker");
+		constexpr size_t help = HashWstring(L"help");
 	}
 
 	// Private members
@@ -67,15 +69,16 @@ namespace UnrealConsole {
 		size_t hashed_command = Hashes::HashWstring(command);
 		switch (hashed_command) {
 		case Hashes::connect:
-			Logger::PrintToConsole(L"/" + input);
-			TryConnect(args);
+			Engine::PrintToConsole(L"/" + input);
+			// TODO double check ap connection?
+			Log("You are already connected!", LogType::System);
 			break;
 		case Hashes::disconnect:
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			Log(L"To disconnect from the server, return to the main menu.", LogType::System);
 			break;
 		case Hashes::popups: {
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			wstring popup_args = L"";
 			for (const wchar_t c : args) {
 				if (c != L' ') {
@@ -85,10 +88,10 @@ namespace UnrealConsole {
 			std::transform(popup_args.begin(), popup_args.end(), popup_args.begin(), tolower);
 
 			if (popup_args == L"hide" || popup_args == L"unhide" || popup_args == L"show") {
-				Logger::ToggleMessageHide();
+				Engine::TogglePopupsHide();
 			}
 			else if (popup_args == L"mute" || popup_args == L"unmute") {
-				Logger::ToggleMessageMute();
+				Engine::TogglePopupsMute();
 			}
 			else {
 				Log(L"Please input either \"/popups mute\" or \"/popups hide\".", LogType::System);
@@ -107,14 +110,28 @@ namespace UnrealConsole {
 		case Hashes::checked:
 		case Hashes::getitem:
 		case Hashes::countdown:
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			Log(L"This command is not supported using /. Use ! instead:", LogType::System);
 			Log(L"!" + input, LogType::System);
 			break;
+		case Hashes::breaker:
+			Engine::PrintToConsole(L"/" + input);
+			Engine::RecallBreaker();
+			break;
+		case Hashes::help:
+			Engine::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(
+				L"<System>/spawn</>\n"
+				L"    <System>Save game and warp to spawn.</>\n"
+				L"<System>/breaker</>\n"
+				L"    <System>Recall Dream Breaker. Only works if you have obtained it.</>\n"
+				L"<System>/popups [hide|mute]</>\n"
+				L"    <System>Hide/show or mute/unmute item and deathlink popups.</>");
+			break;
 		default:
-			Logger::PrintToConsole(L"/" + input);
+			Engine::PrintToConsole(L"/" + input);
 			Log(L"Command not recognized: " + input, LogType::System);
-			Log(L"Known commands: connect, popups, spawn", LogType::System);
+			Log(L"Known commands: help, spawn, breaker, popups", LogType::System);
 			break;
 		}
 	}
@@ -127,14 +144,15 @@ namespace UnrealConsole {
 		transform(first_word.begin(), first_word.end(), first_word.begin(), tolower); // Convert the first word in the command to lowercase
 		Log("AP console command: " + command);
 
-		if (first_word == "connect") {
+		// TODO can just we get rid of this whole function?
+		/*if (first_word == "connect") {
 			if (command.find(DELIM) == string::npos) {
 				Log(L"Please provide an ip address, slot name, and (if necessary) password.", LogType::System);
 				return;
 			}
 			command.erase(0, command.find(DELIM) + 1);
 			UnrealConsole::ParseConnect(command);
-		}
+		}*/
 
 		if (first_word == "disconnect") {
 			Client::Disconnect();
@@ -153,75 +171,6 @@ namespace UnrealConsole {
 
 	// Private functions
 	namespace {
-		void TryConnect(wstring args) {
-			using std::optional;
-
-			auto next_token = [&args](wstring::iterator& iter) -> optional<wstring> {
-				// Skip whitespace.
-				while (*iter == L' ' && iter != args.end()) {
-					iter++;
-				};
-				if (iter == args.end()) {
-					return {};
-				}
-
-				wstring token;
-				wchar_t delim;
-				bool arg_in_quotes = (*iter == L'"');
-				if (arg_in_quotes) {
-					delim = L'"';
-					iter++;
-				}
-				else {
-					delim = L' ';
-				}
-				while (*iter != delim && iter != args.end()) {
-					token += *iter;
-					iter++;
-				}
-				// Don't leave the iterator on the last character of the previous token
-				if (iter != args.end()) {
-					iter++;
-				}
-				return token;
-				};
-
-			wstring::iterator char_iter = args.begin();
-			optional<wstring> token;
-
-			wstring uri;
-			token = next_token(char_iter);
-			if (!token) {
-				Log(L"Please provide an ip address, slot name, and (if necessary) password.", LogType::System);
-				return;
-			}
-			uri = token.value();
-
-			wstring slot_name;
-			token = next_token(char_iter);
-			if (!token) {
-				Log(L"Please provide a slot name and (if necessary) password.", LogType::System);
-				return;
-			}
-			slot_name = token.value();
-
-			wstring password;
-			token = next_token(char_iter);
-			if (!token) {
-				password = L"";
-			}
-			else {
-				password = token.value();
-			}
-
-			Log(L"Uri:" + uri + L"//Slot name:" + slot_name + L"//Password:" + password);
-			Client::Connect(
-				StringOps::ToNarrow(uri),
-				StringOps::ToNarrow(slot_name),
-				StringOps::ToNarrow(password)
-			);
-		}
-
 		string ConvertTcharToString(const TCHAR* tchars) {
 			// Handling strings instead of wstrings here because they need to be narrow eventually to pass to APCpp.
 			// There's no character set conversion so if nonlatin unicode characters are entered this will break completely.
@@ -230,33 +179,16 @@ namespace UnrealConsole {
 			return narrow;
 		}
 
-		void ParseConnect(string args) {
-			string ip = GetNextToken(args);
-			if (ip.empty()) {
-				Log("Please provide an ip address, slot name, and (if necessary) password.", LogType::System);
-				return;
-			}
-
-			string slot_name = GetNextToken(args);
-			if (slot_name.empty()) {
-				Log("Please provide a slot name and (if necessary) password.", LogType::System);
-				return;
-			}
-
-			string password = GetNextToken(args);
-			Client::Connect(ip, slot_name, password);
-		}
-
 		void ParseMessageOption(string option) {
 			if (option.empty()) {
 				Log("Please input an option, such as \"mute\" or \"hide\".", LogType::System);
 				return;
 			}
 			if (option == "hide" || option == "unhide" || option == "show") {
-				Logger::ToggleMessageHide();
+				Engine::TogglePopupsHide();
 			}
 			if (option == "mute" || option == "unmute") {
-				Logger::ToggleMessageMute();
+				Engine::TogglePopupsMute();
 			}
 		}
 

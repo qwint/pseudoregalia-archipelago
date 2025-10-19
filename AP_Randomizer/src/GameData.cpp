@@ -4,7 +4,6 @@
 #include "Settings.hpp"
 #include "Client.hpp"
 #include "Engine.hpp"
-#include "StringOps.hpp"
 
 namespace GameData {
     using std::unordered_map;
@@ -34,6 +33,70 @@ namespace GameData {
         unordered_map<string, int> options;
         bool slidejump_owned;
         bool slidejump_disabled;
+
+        const vector<PlayerStart> player_starts = {
+            { L"ZONE_Dungeon", L"gameStart", L"Dungeon Mirror" },
+            { L"ZONE_Dungeon", L"dungeonlowestSave", L"Dungeon Mirror Save" },
+            { L"ZONE_Dungeon", L"dungeonWestSave", L"Dungeon Slide Save" },
+            { L"ZONE_Dungeon", L"dungeonSaveNearBoss", L"Dungeon Strong Eyes Save" },
+            { L"ZONE_Dungeon", L"lower1", L"Dungeon Strong Eyes Exit" },
+            { L"ZONE_Dungeon", L"dungeonWest", L"Dungeon Escape Lower Exit" },
+            { L"ZONE_Dungeon", L"dungeonNorth", L"Dungeon Escape Upper Exit" },
+
+            { L"ZONE_LowerCastle", L"lowerWestSave", L"Castle West Save" },
+            { L"ZONE_LowerCastle", L"startGazebo", L"Castle Gazebo Save" },
+            { L"ZONE_LowerCastle", L"lowerEastSave", L"Castle East Save" },
+            { L"ZONE_LowerCastle", L"lowerNorthWestTheatre", L"Castle Northwest Save" },
+            { L"ZONE_LowerCastle", L"dungeon1", L"Castle West Lower Exit" },
+            { L"ZONE_LowerCastle", L"lowerWest", L"Castle West Upper Exit" },
+            { L"ZONE_LowerCastle", L"exterior1", L"Castle South Lower Exit" },
+            { L"ZONE_LowerCastle", L"lowerSouthHigh", L"Castle South Upper Exit" },
+            { L"ZONE_LowerCastle", L"lowerMiddle", L"Castle Locked Exit" },
+            { L"ZONE_LowerCastle", L"lowerEast", L"Castle East Exit" },
+            { L"ZONE_LowerCastle", L"lowerNorth", L"Castle North Exit" },
+            { L"ZONE_LowerCastle", L"lowerNorthNorthWest", L"Castle Northwest Exit" },
+
+            { L"Zone_Upper", L"saveUpperMid", L"Keep Central Save" },
+            { L"Zone_Upper", L"upperNorthSave", L"Keep North Save" },
+            { L"Zone_Upper", L"upperSouth", L"Keep South Exit" },
+            { L"Zone_Upper", L"upperSouthWest", L"Keep Southwest Exit" },
+            { L"Zone_Upper", L"upperMiddle", L"Keep Locked Exit" },
+            { L"Zone_Upper", L"upperNorthEast", L"Keep Northeast Exit" },
+            { L"Zone_Upper", L"upperNorth", L"Keep North Exit" },
+
+            { L"Zone_Library", L"librarySave", L"Library Main Save" },
+            { L"Zone_Library", L"saveLibraryWest", L"Library Back Save" },
+            { L"Zone_Library", L"libraryWest", L"Library Exit" },
+
+            { L"Zone_Theatre", L"theatreSaveMain", L"Theatre Save" },
+            { L"Zone_Theatre", L"theatreSouthWest", L"Theatre Pillar West Exit" },
+            { L"Zone_Theatre", L"theatreSouthEast", L"Theatre Pillar East Exit" },
+            { L"Zone_Theatre", L"theatreEast", L"Theatre Front Exit" },
+            { L"Zone_Theatre", L"theatreNorthEastLower", L"Theatre Scythes North Exit" },
+            { L"Zone_Theatre", L"theatreNorthEastUpper", L"Theatre Scythes South Exit" },
+
+            { L"ZONE_Exterior", L"exteriorSouthSave", L"Bailey Save" },
+            { L"ZONE_Exterior", L"lower1", L"Bailey North Exit" },
+            { L"ZONE_Exterior", L"exteriorWest", L"Bailey West Exit" },
+            { L"ZONE_Exterior", L"exteriorEast", L"Bailey Shack Exit" },
+            { L"ZONE_Exterior", L"exteriorSouthEast", L"Bailey East Exit" },
+
+            { L"Zone_Caves", L"cavesSouthSave", L"Underbelly South Save" },
+            { L"Zone_Caves", L"cavesBigMiddleStart", L"Underbelly Central Save" },
+            { L"Zone_Caves", L"cavesBigSideStart", L"Underbelly East Save" },
+            { L"Zone_Caves", L"cavesWestSave", L"Underbelly Pre Light Save" },
+            { L"Zone_Caves", L"postLightSave", L"Underbelly Post Light Save" },
+            { L"Zone_Caves", L"cavesSouth", L"Underbelly South Exit" },
+            { L"Zone_Caves", L"cavesEast", L"Underbelly Hole Exit" },
+            { L"Zone_Caves", L"cavesWest", L"Underbelly Light Pillar Exit" },
+
+            { L"Zone_Tower", L"towerSave", L"Tower Save" },
+            { L"Zone_Tower", L"towerSouth", L"Tower South Exit" },
+            { L"Zone_Tower", L"towerTop", L"Tower Top Exit" },
+
+            { L"Zone_PrincessChambers", L"chambersStart", L"Chambers Exit" },
+        };
+        const size_t default_spawn_index = 7; // Castle West Save
 
         // map -> actor name -> location id + actor class name
         unordered_map<Map, unordered_map<wstring, Interactable>> interactable_table = {
@@ -191,15 +254,22 @@ namespace GameData {
             {2365810039, ItemType::Filler},
         };
 
+        // Upgrades starting with ~ don't actually exist in the game but are used to track AP items and are handled by
+        // AP_SetUpgrades.
         const unordered_map<int64_t, wstring> lookup_item_id_to_upgrade = {
             {2365810001, L"attack"},
             {2365810002, L"powerBoost"},
             {2365810003, L"airKick"},
             {2365810004, L"slide"},
-            {2365810005, L"SlideJump"},
+            // Maps to SlideJump. The set upgrades function may set SlideJump to 0 if solar wind is toggled off. By
+            // tracking it separately, we can properly display whether solar wind has been obtained on file select.
+            {2365810005, L"~solar"},
             {2365810006, L"plunge"},
             {2365810007, L"chargeAttack"},
-            {2365810008, L"clingGem"}, // game actually uses wallRide, but this is handled in AP_SetUpgrades
+            // Maps to wallRide. The wallRide upgrade grants the ability to cling, but the max number of clings is
+            // stored in a separate variable, wallRideClingLimit. The set upgrades function will set wallRide to 1 if
+            // any clings have been obtained, so we need to track cling gem separately.
+            {2365810008, L"~cling6"},
             {2365810009, L"Light"},
             {2365810010, L"projectile"},
             {2365810011, L"extraKick"},
@@ -210,9 +280,11 @@ namespace GameData {
             {2365810016, L"damageBoost"},
             {2365810017, L"magicPiece"},
             {2365810018, L"outfitPro"},
-            {2365810026, L"progressiveSlide"},
-            {2365810027, L"extraKick"}, // Used for split kicks, just treats them like heliacal
-            {2365810028, L"progressiveBreaker"},
+            // Maps to slide and SlideJump based on the value of ~progressiveSlide. 
+            {2365810026, L"~progressiveSlide"},
+            {2365810027, L"extraKick"},
+            // Maps to attack, chargeAttack, and projectile based on the value of ~progressiveBreaker.
+            {2365810028, L"~progressiveBreaker"},
             {2365810029, L"outfitFaith"},
             {2365810030, L"outfitShoujo"},
             {2365810031, L"outfitSweater"},
@@ -221,7 +293,8 @@ namespace GameData {
             {2365810034, L"outfitJam"},
             {2365810035, L"outfitPast"},
             {2365810036, L"map"},
-            {2365810037, L"clingShard"},
+            // Maps to wallRide. See note about ~cling6 above.
+            {2365810037, L"~cling2"},
         };
     } // End private members
 
@@ -336,8 +409,7 @@ namespace GameData {
     }
 
     void GameData::Initialize() {
-        using std::vector;
-        using std::pair;
+        Close();
 
         collectible_table = {
             {Map::Dungeon, unordered_map<int64_t, Collectible>{
@@ -499,90 +571,26 @@ namespace GameData {
                 {L"BP_TimeTrial_C_3", {2365810061, FVector(10750, 3050, 4000)}},
             }},
         };
-
-
-        upgrade_table = {
-            {L"attack", 0},
-            {L"powerBoost", 0},
-            {L"airKick", 0},
-            {L"slide", 0},
-            {L"SlideJump", 0},
-            {L"plunge", 0},
-            {L"chargeAttack", 0},
-            {L"clingGem", 0},
-            {L"Light", 0},
-            {L"projectile", 0},
-            {L"extraKick", 0},
-            {L"airRecovery", 0},
-            {L"mobileHeal", 0},
-            {L"magicHaste", 0},
-            {L"healBoost", 0},
-            {L"damageBoost", 0},
-            {L"magicPiece", 0},
-            {L"outfitPro", 0},
-            {L"outfitFaith", 0},
-            {L"outfitShoujo", 0},
-            {L"outfitSweater", 0},
-            {L"outfitClassy", 0},
-            {L"outfitKnight", 0},
-            {L"outfitJam", 0},
-            {L"outfitPast", 0},
-            {L"map", 0},
-            {L"clingShard", 0},
-        };
-
-        slidejump_owned = false;
-        slidejump_disabled = false;
-        small_keys = 0;
-        for (bool &k : major_keys) {
-            k = false;
-        }
-        for (auto& hints : major_key_hints) {
-            hints.clear();
-        }
     }
 
     void GameData::Close() {
         collectible_table = {};
         time_trial_table = {};
-        slidejump_owned = false;
-        slidejump_disabled = false;
-        small_keys = 0;
-        for (bool &k : major_keys) {
-            k = false;
-        }
+        ResetItems();
         for (auto& hints : major_key_hints) {
             hints.clear();
         }
-        upgrade_table = {
-            {L"attack", 0},
-            {L"powerBoost", 0},
-            {L"airKick", 0},
-            {L"slide", 0},
-            {L"SlideJump", 0},
-            {L"plunge", 0},
-            {L"chargeAttack", 0},
-            {L"clingGem", 0},
-            {L"Light", 0},
-            {L"projectile", 0},
-            {L"extraKick", 0},
-            {L"airRecovery", 0},
-            {L"mobileHeal", 0},
-            {L"magicHaste", 0},
-            {L"healBoost", 0},
-            {L"damageBoost", 0},
-            {L"magicPiece", 0},
-            {L"outfitPro", 0},
-            {L"outfitFaith", 0},
-            {L"outfitShoujo", 0},
-            {L"outfitSweater", 0},
-            {L"outfitClassy", 0},
-            {L"outfitKnight", 0},
-            {L"outfitJam", 0},
-            {L"outfitPast", 0},
-            {L"map", 0},
-            {L"clingShard", 0},
-        };
+    }
+
+    void ResetItems() {
+        slidejump_owned = false;
+        slidejump_disabled = false;
+        small_keys = 0;
+        health_pieces = 0;
+        for (bool &k : major_keys) {
+            k = false;
+        }
+        upgrade_table = {};
     }
 
     ItemType GameData::ReceiveItem(int64_t id) {
@@ -591,11 +599,9 @@ namespace GameData {
         case ItemType::MajorAbility:
         case ItemType::MinorAbility:
             upgrade_table[lookup_item_id_to_upgrade.at(id)]++;
-            if (!slidejump_owned) {
-                if (upgrade_table[L"slide"] && upgrade_table[L"SlideJump"]
-                    || upgrade_table[L"progressiveSlide"] >= 2) {
-                    slidejump_owned = true;
-                }
+            if (!slidejump_owned && (upgrade_table[L"slide"] && upgrade_table[L"~solar"]
+                                     || upgrade_table[L"~progressiveSlide"] >= 2)) {
+                slidejump_owned = true;
             }
             break;
         case ItemType::HealthPiece:
@@ -745,6 +751,19 @@ namespace GameData {
         bool found = major_keys[index];
         vector<MultiworldLocation> hints = major_key_hints[index];
         return MajorKeyInfo{ item_id, found, hints };
+    }
+
+    const PlayerStart& GetSpawnInfo() {
+        if (!options.contains("spawn_point")) {
+            return player_starts.at(default_spawn_index);
+        }
+
+        const int& spawn_point = options.at("spawn_point");
+        if (spawn_point < 0 || spawn_point >= player_starts.size()) {
+            return player_starts.at(default_spawn_index);
+        }
+
+        return player_starts.at(spawn_point);
     }
 
 

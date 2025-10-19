@@ -40,13 +40,17 @@ namespace Client {
         typedef nlohmann::json json;
         typedef APClient::State ConnectionStatus;
         void ReceiveItems(const list<APClient::NetworkItem>&);
+        bool ShouldPrintToConsole(const APClient::PrintJSONArgs&);
         string ProcessMessageText(const APClient::PrintJSONArgs&);
-        optional<Logger::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs&);
+        optional<Engine::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs&);
         void ReceiveDeathLink(const json&);
         void ReceiveItemOnce(const APClient::PrintJSONArgs&);
         void Despawn(int64_t);
         void ParseKeyHints(const json&);
         void PrintHintsToConsole(int64_t, int, list<int64_t>);
+        void PrintErrorAndDisconnect(string);
+        void PrintErrorAndDisconnect(wstring);
+        Engine::Version ParseAPWorldVersion(const json&);
 
         // I don't think a mutex is required here because apclientpp locks the instance during poll().
         // If people report random crashes, especially when disconnecting, I'll revisit it.
@@ -54,92 +58,129 @@ namespace Client {
         const string game_name("Pseudoregalia");
         const string uuid(ap_get_uuid("Mods/AP_Randomizer/dlls/uuid"));
         const string cert_store("Mods/AP_Randomizer/dlls/cacert.pem");
-        const int max_connection_retries = 3;
+        const int max_connection_retries = 2;
         int connection_retries = 0;
         bool death_link_locked;
         const float death_link_timer_seconds(4.0f);
+        bool disconnect_queued = false;
+        optional<string> active_seed = {};
+        optional<Engine::Version> apworld_version = {};
     } // End private members
 
-    void Client::Connect(const string uri, const string slot_name, const string password) {
+    void Client::Connect(wstring domain, wstring port, wstring slot_name, wstring password, optional<wstring> seed) {
         // Nuke any existing client in case uri needs to change.
         if (ap != nullptr) {
             delete ap;
         }
         ap = nullptr;
         GameData::Initialize();
-        ap = new APClient(uuid, game_name, uri, cert_store);
+        wstring uri = domain + L":" + port;
+        ap = new APClient(uuid, game_name, StringOps::ToNarrow(uri), cert_store);
         connection_retries = 0;
-        string connect_message(
-            "Attempting to connect to " + uri
-            + " with name " + slot_name + "...");
-        Log(connect_message, LogType::System);
+        active_seed = {};
+        apworld_version.reset();
+        Log(L"Attempting to connect to " + uri + L" with name " + slot_name);
 
         // The Great Wall Of Callbacks
         {
             // Executes when the server sends room info; attempts to connect the player.
-            ap->set_room_info_handler([slot_name, password]() {
+            ap->set_room_info_handler([slot_name, password, seed]() {
                 Log("Received room info");
+                if (active_seed && *active_seed != ap->get_seed()) {
+                    // active_seed should be set only when connected in-game, so the console should be visible
+                    Log("Seed mismatch detected. Return to the main menu and reconnect.", LogType::Error);
+                    Disconnect();
+                    return;
+                }
+                if (seed && StringOps::ToNarrow(*seed) != ap->get_seed()) {
+                    Log("Seed mismatch on connect");
+                    PrintErrorAndDisconnect("Seed mismatch detected: " + ap->get_seed());
+                    return;
+                }
+
                 int items_handling = 0b111;
                 list<string> tags;
                 if (Settings::GetDeathLink()) {
                     tags.push_back("DeathLink");
                 }
                 APClient::Version version{ 0, 7, 0 };
-                ap->ConnectSlot(slot_name, password, items_handling, tags, version);
+                string slotn = StringOps::ToNarrow(slot_name);
+                string passw = StringOps::ToNarrow(password);
+                ap->ConnectSlot(slotn, passw, items_handling, tags, version);
                 });
 
             // Executes on successful connection to slot.
-            ap->set_slot_connected_handler([](const json& slot_data) {
+            ap->set_slot_connected_handler([seed](const json& slot_data) {
                 Log("Connected to slot");
+
+                if (Engine::IsInConnectHandshake() && !seed) {
+                    // we should only need to validate version on the initial connection
+                    if (!slot_data.contains("apworld_version")) {
+                        PrintErrorAndDisconnect("Incompatible APWorld version: pre 0.10.0");
+                        return;
+                    }
+                    apworld_version = ParseAPWorldVersion(slot_data["apworld_version"]);
+                    if (!Engine::IsAPWorldVersionCompatible(*apworld_version)) {
+                        auto version_text = Engine::VersionToWString(*apworld_version);
+                        PrintErrorAndDisconnect(L"Incompatible APWorld version: " + version_text);
+                        return;
+                    }
+                }
+
                 for (json::const_iterator iter = slot_data.begin(); iter != slot_data.end(); iter++) {
                     string key = iter.key();
                     if (key == "key_hints") {
                         ParseKeyHints(iter.value());
                     }
+                    else if (key == "apworld_version") {
+                        continue;
+                    }
                     else {
                         GameData::SetOption(key, iter.value());
                     }
                 }
-                SetZoneData();
-                ap->LocationScouts(GameData::GetMissingSpawnableLocations());
-                // Delay spawning collectibles so that we have time to receive checked locations and scouts.
-                Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::SpawnCollectibles);
-                // Delay verifying version so that it shows up as the last message after connecting
-                Timer::RunTimerRealTime(std::chrono::milliseconds(500), Engine::VerifyVersion);
+                if (Engine::IsInConnectHandshake()) {
+                    Engine::UpdateConnectHandshakeStatus(L"Scouting...", false);
+                    ap->LocationScouts(GameData::GetMissingSpawnableLocations());
+                }
                 connection_retries = 0;
                 });
 
             // Executes whenever a socket error is detected.
             // We want to only print an error after exactly X attempts.
             ap->set_socket_error_handler([](const string& error) {
-                Log("Socket error: " + error);
-                if (connection_retries == max_connection_retries) {
-                    if (ap->get_player_number() >= 0) { // Seed is already in progress
-                        Log(L"Lost connection with the server. Attempting to reconnect...", LogType::System);
-                    }
-                    else { // Attempting to connect to a new room
-                        Log(L"Could not connect to the server. Please double-check the address and ensure the server is active.", LogType::System);
-                    }
-                }
                 connection_retries++;
+                Log("Socket error: " + error);
+                if (Engine::IsInConnectHandshake() && connection_retries == max_connection_retries) {
+                    PrintErrorAndDisconnect("Could not connect to the server. "
+                        "Double-check the address and make sure the server is active.");
+                }
                 });
 
             // Executes when the server refuses slot connection.
             ap->set_slot_refused_handler([](const list<string>& reasons) {
-                string advice;
+                if (active_seed) {
+                    Log("Reconnection to the server was refused. Return to the main menu and reconnect.");
+                    Disconnect();
+                    return;
+                }
+                string details;
                 if (std::find(reasons.begin(), reasons.end(), "InvalidSlot") != reasons.end()
                     || std::find(reasons.begin(), reasons.end(), "InvalidPassword") != reasons.end()) {
-                    advice = "Please double-check your slot name and password.";
+                    details = ": Invalid slot name or password";
                 }
-                // Intentionally overwriting advice because slot name doesn't matter if the version is wrong.
+                // Intentionally overwriting message because slot name doesn't matter if the version is wrong.
                 if (std::find(reasons.begin(), reasons.end(), "IncompatibleVersion") != reasons.end()) {
-                    advice = "Please double-check your client version.";
+                    details = ": Incompatible version";
                 }
-                Log("Could not connect to the server. " + advice, LogType::System);
+                PrintErrorAndDisconnect("Connection refused" + details + ".");
                 });
 
             // Executes as a response to LocationScouts.
-            ap->set_location_info_handler([](const list<APClient::NetworkItem>& items) {
+            ap->set_location_info_handler([seed](const list<APClient::NetworkItem>& items) {
+                Log("Scouted locations");
+                if (!Engine::IsInConnectHandshake()) return;
+
                 for (const auto& item : items) {
                     if (ap->get_player_game(item.player) == ap->get_game() && !GameData::IsInteractable(item.location)) {
                         // interactable locations should have classification set by item classification only
@@ -155,12 +196,28 @@ namespace Client {
                         GameData::SetOffWorldItemClassification(item.location, GameData::Classification::GenericFiller);
                     }
                 }
+
+                Engine::UpdateConnectHandshakeStatus(L"Loading game...", false);
+                active_seed = ap->get_seed();
+                if (seed) {
+                    Engine::FinishConnect();
+                }
+                else {
+                    const auto& spawn_info = GameData::GetSpawnInfo();
+                    wstring wseed = StringOps::ToWide(*active_seed);
+                    Engine::FinishConnect(spawn_info.zone, spawn_info.player_start, wseed, spawn_info.spawn_name,
+                        *apworld_version);
+                }
+                Engine::EndConnectHandshake();
                 });
 
             // Executes whenever items are received from the server.
             ap->set_items_received_handler([](const list<APClient::NetworkItem>& items) {
                 for (const auto& item : items) {
                     Log(L"Receiving item with id " + std::to_wstring(item.item));
+                    if (item.index == 0) {
+                        GameData::ResetItems();
+                    }
                     GameData::ReceiveItem(item.item);
                     Engine::SyncItems();
                 }
@@ -169,24 +226,20 @@ namespace Client {
             // Executes whenever a chat message is received.
             ap->set_print_json_handler([](const APClient::PrintJSONArgs& args) {
                 string plain_text = ap->render_json(args.data);
-                string markdown_text = ProcessMessageText(args);
-                Logger::PrintToConsole(
-                    StringOps::ToWide(markdown_text),
-                    StringOps::ToWide(plain_text)
-                );
+                if (ShouldPrintToConsole(args)) {
+                    string markdown_text = ProcessMessageText(args);
+                    Engine::PrintToConsole(StringOps::ToWide(markdown_text), StringOps::ToWide(plain_text));
+                }
+                else {
+                    Log("Filtered: " + plain_text);
+                }
 
                 if (args.type == "ItemSend") {
                     ReceiveItemOnce(args);
-                    optional<Logger::ItemPopup> item_popup = BuildItemPopup(args);
+                    optional<Engine::ItemPopup> item_popup = BuildItemPopup(args);
                     if (item_popup) {
-                        Logger::ShowPopup(*item_popup);
+                        Engine::ShowPopup(*item_popup);
                     }
-                    else {
-                        Log(plain_text, LogType::Console);
-                    }
-                }
-                else {
-                    Log(plain_text, LogType::Console);
                 }
                 });
 
@@ -216,16 +269,12 @@ namespace Client {
     }
 
     void Client::Disconnect() {
-        if (ap == nullptr) {
-            return;
-        }
-        GameData::Close();
-        delete ap;
-        ap = nullptr;
-        Log("Disconnected from Archipelago.", LogType::System);
+        disconnect_queued = true;
     }
 
     void Client::SendCheck(int64_t id) {
+        if (ap == nullptr) return;
+
         // TODO: Consider refactoring to queue location ids as an actual list
         list<int64_t> id_list{ id };
         Log(L"Sending check with id " + std::to_wstring(id));
@@ -236,7 +285,7 @@ namespace Client {
     }
     
     // Sets the data storage Zone value based on the player's current zone.
-    void Client::SetZoneData() {
+    void Client::SetZoneData(GameData::Map map) {
         if (ap == nullptr) {
             return;
         }
@@ -245,7 +294,7 @@ namespace Client {
             "Pseudoregalia - Team " + std::to_string(ap->get_team_number())
             + " - Player " + std::to_string(ap->get_player_number())
             + " - Zone";
-        int32_t zone = static_cast<int32_t>(Engine::GetCurrentMap());
+        int32_t zone = static_cast<int32_t>(map);
         list<APClient::DataStorageOperation> operations{ { "replace", zone } };
         ap->Set(key, 0, false, operations);
     }
@@ -268,11 +317,19 @@ namespace Client {
         ap->Set(key, default_value, true, filler_operations);
     }
 
-    void Client::PollServer() {
-        if (ap == nullptr) {
-            return;
+    void Client::OnTick() {
+        if (disconnect_queued) {
+            disconnect_queued = false;
+            if (ap == nullptr) return;
+            delete ap;
+            ap = nullptr;
+            GameData::Close();
+            Engine::EndConnectHandshake();
+            Log("Disconnected from Archipelago.");
         }
-        ap->poll();
+        else if (ap != nullptr) {
+            ap->poll();
+        }
     }
 
     void Client::SendDeathLink() {
@@ -291,7 +348,7 @@ namespace Client {
             {"source", ap->get_slot()},
         };
         ap->Bounce(data, {}, {}, { "DeathLink" });
-        Logger::ShowPopup(RandomOwnDeathlink());
+        Engine::ShowPopup(RandomOwnDeathlink());
         Log("Sending bounce: " + data.dump());
         Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
     }
@@ -374,6 +431,29 @@ namespace Client {
 
     // Private functions
     namespace {
+        bool ShouldPrintToConsole(const APClient::PrintJSONArgs& args) {
+            using namespace Settings::Filters;
+
+            if (args.type == "ItemSend") {
+                switch (Settings::GetItemSendFilter()) {
+                case ItemSend::All:
+                    return true;
+                case ItemSend::Relevant:
+                    if (args.receiving == nullptr || args.item == nullptr) {
+                        // don't filter out ill-formed messages just in case
+                        return true;
+                    }
+                    return ap->slot_concerns_self(*args.receiving) || ap->slot_concerns_self(args.item->player);
+                default:
+                    // ItemSend::None
+                    return false;
+                }
+            }
+            else {
+                return true;
+            }
+        }
+
         string ProcessMessageText(const APClient::PrintJSONArgs& args) {
             string console_text;
 
@@ -384,7 +464,7 @@ namespace Client {
                 case Hashes::player_id: {
                     int id = std::stoi(node.text);
                     string player_name = ap->get_player_alias(id);
-                    if (id == ap->get_player_number()) {
+                    if (ap->slot_concerns_self(id)) {
                         console_text += "<Self>" + player_name + "</>";
                     }
                     else {
@@ -425,7 +505,9 @@ namespace Client {
             return console_text;
         }
 
-        optional<Logger::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs& args) {
+        optional<Engine::ItemPopup> BuildItemPopup(const APClient::PrintJSONArgs& args) {
+            using StringOps::ToWide;
+
             if (args.receiving == nullptr || args.item == nullptr) {
                 // I don't think this is reachable because of the way apclientpp validates packets, but it felt weird
                 // not to check just in case
@@ -435,28 +517,25 @@ namespace Client {
 
             int32_t receiver = *args.receiving;
             int32_t finder = args.item->player;
-            int32_t player = ap->get_player_number();
-            if (finder != player && receiver != player) {
+            if (!ap->slot_concerns_self(finder) && !ap->slot_concerns_self(receiver)) {
                 return {};
             }
 
-            Logger::ItemPopup item_popup = {
-                .item = StringOps::ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver))),
+            Engine::ItemPopup item_popup = {
+                .item = ToWide(ap->get_item_name(args.item->item, ap->get_player_game(receiver))),
+                .info = L"at " + ToWide(ap->get_location_name(args.item->location, ap->get_player_game(finder))),
             };
-            wstring location = StringOps::ToWide(ap->get_location_name(args.item->location, ap->get_player_game(finder)));
-            if (finder == player && receiver == player) {
-                item_popup.preamble = L"Found ";
-                item_popup.info = L"at " + location;
+            wstring preamble;
+            if (ap->slot_concerns_self(finder) && ap->slot_concerns_self(receiver)) {
+                item_popup.preamble = L"You found your ";
             }
-            else if (finder == player) {
-                item_popup.preamble = L"Sent ";
+            else if (ap->slot_concerns_self(finder)) {
                 wstring receiver_name = StringOps::ToWide(ap->get_player_alias(receiver));
-                item_popup.info = L"to " + receiver_name + L" (" + location + L")";
+                item_popup.preamble = L"You found " + receiver_name + L"'s ";
             }
             else {
-                item_popup.preamble = L"Received ";
                 wstring finder_name = StringOps::ToWide(ap->get_player_alias(finder));
-                item_popup.info = L"from " + finder_name + L" (" + location + L")";
+                item_popup.preamble = finder_name + L" found your ";
             }
             return item_popup;
         }
@@ -466,7 +545,7 @@ namespace Client {
                 return;
             }
 
-            if (*args.receiving != ap->get_player_number()) {
+            if (!ap->slot_concerns_self(*args.receiving)) {
                 return;
             }
 
@@ -482,26 +561,27 @@ namespace Client {
 
             if (!data.contains("data")) {
                 // Should only execute if the received death link data was not properly filled out.
-                Logger::ShowPopup(L"You were assassinated by a mysterious villain...");
+                Engine::ShowPopup(L"You were assassinated by a mysterious villain...");
                 Engine::VaporizeGoat();
                 Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
                 return;
             }
             json details = data["data"];
-            string funny_message;
+            wstring funny_message;
 
             if (details.contains("cause")) {
-                string cause(details["cause"]);
-                Logger::ShowPopup(cause);
+                funny_message = StringOps::ToWide(details["cause"]);
             }
             else if (details.contains("source")) {
                 string source(details["source"]);
-                Logger::ShowPopup("You were brutally murdered by " + source + ".");
+                funny_message = L"You were brutally murdered by " + StringOps::ToWide(source) + L".";
             }
             else {
                 // Should only execute if the received death link data was not properly filled out.
-                Logger::ShowPopup("You were assassinated by a mysterious villain...");
+                funny_message = L"You were assassinated by a mysterious villain...";
             }
+            Engine::ShowPopup(funny_message);
+            Engine::PrintToConsole(funny_message);
             Engine::VaporizeGoat();
             Timer::RunTimerInGame(death_link_timer_seconds, &death_link_locked);
         }
@@ -538,8 +618,27 @@ namespace Client {
                                    L"</> in <Player>" + player_name + L"</>'s world";
                 wstring plain = key_name + L" is at " + location_name + L" in " + player_name + L"'s world";
 
-                Logger::PrintToConsole(markdown, plain);
+                Engine::PrintToConsole(markdown, plain);
             }
         }
+
+        void PrintErrorAndDisconnect(string message) {
+            PrintErrorAndDisconnect(StringOps::ToWide(message));
+        }
+
+        void PrintErrorAndDisconnect(wstring message) {
+            Engine::UpdateConnectHandshakeStatus(L"ERROR: " + message, true);
+            Disconnect();
+        }
+
+        Engine::Version ParseAPWorldVersion(const json& version) {
+            // TODO could check for proper format, i.e. is_array, 3 items, each item is a number
+            return {
+                version[0].template get<int32_t>(),
+                version[1].template get<int32_t>(),
+                version[2].template get<int32_t>(),
+            };
+        }
+
     } // End private functions
 }

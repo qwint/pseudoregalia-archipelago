@@ -16,6 +16,18 @@ class PseudoregaliaItemData(NamedTuple):
     can_create: Callable[[PseudoregaliaOptions], bool] = lambda options: True
 
 
+def precollect_if_theatre_start(precollect_if_normal: bool) -> Callable[[PseudoregaliaOptions], int]:
+    def precollect(options: PseudoregaliaOptions) -> int:
+        is_theatre_start = options.spawn_point == options.spawn_point.option_theatre_main
+        is_normal = options.logic_level == options.logic_level.option_normal
+        matches_difficulty = precollect_if_normal == is_normal
+        return 1 if is_theatre_start and matches_difficulty else 0
+    return precollect
+
+precollect_if_theatre_start_normal = precollect_if_theatre_start(True)
+precollect_if_theatre_start_hard_plus = precollect_if_theatre_start(False)
+
+
 item_table: Dict[str, PseudoregaliaItemData] = {
     "Dream Breaker": PseudoregaliaItemData(
         code=2365810001,
@@ -47,6 +59,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Cling Gem": PseudoregaliaItemData(
         code=2365810008,
         classification=ItemClassification.progression,
+        precollect=precollect_if_theatre_start_normal,
         can_create=lambda options: not options.split_cling_gem),
     "Ascendant Light": PseudoregaliaItemData(
         code=2365810009,
@@ -59,6 +72,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
     "Heliacal Power": PseudoregaliaItemData(
         code=2365810011,
         classification=ItemClassification.progression,
+        precollect=precollect_if_theatre_start_hard_plus,
         can_create=lambda options: not bool(options.split_sun_greaves)),
     "Aerial Finesse": PseudoregaliaItemData(
         code=2365810012,
@@ -120,6 +134,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         code=2365810027,
         frequency=4,
         classification=ItemClassification.progression,
+        precollect=precollect_if_theatre_start_hard_plus,
         can_create=lambda options: bool(options.split_sun_greaves)),
     "Progressive Dream Breaker": PseudoregaliaItemData(
         code=2365810028,
@@ -174,6 +189,7 @@ item_table: Dict[str, PseudoregaliaItemData] = {
         code=2365810037,
         classification=ItemClassification.progression,
         frequency=3,
+        precollect=precollect_if_theatre_start_normal,
         can_create=lambda options: bool(options.split_cling_gem),
     ),
 

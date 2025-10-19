@@ -67,7 +67,7 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Dungeon Slide -> Dungeon Strong Eyes": lambda state:
                 self.has_slide(state),
             "Dungeon Slide -> Dungeon Escape Lower": lambda state:
-                self.knows_obscure(state) and self.can_attack(state) and self.navigate_darkrooms(state),
+                self.knows_dungeon_escape and self.can_attack(state) and self.navigate_darkrooms(state),
             "Dungeon Strong Eyes -> Dungeon Slide": lambda state:
                 self.has_slide(state),
             # "Dungeon => Castle -> Dungeon Mirror": lambda state: True,
@@ -126,6 +126,8 @@ class PseudoregaliaNormalRules(PseudoregaliaRulesHelpers):
             "Castle => Theatre (Front) -> Theatre Main": lambda state:
                 self.has_plunge(state) and self.get_kicks(state, 1)
                 or self.get_kicks(state, 2),
+            "Library Main -> Castle Main": lambda state:
+                self.can_attack(state),
             "Library Main -> Library Locked": lambda state:
                 self.has_small_keys(state),
             "Library Main -> Library Greaves": lambda state:

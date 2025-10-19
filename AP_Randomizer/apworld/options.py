@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from Options import Toggle, Choice, DefaultOnToggle, PerGameCommonOptions
 from .constants.difficulties import NORMAL, HARD, EXPERT, LUNATIC
 from .constants.versions import MAP_PATCH, FULL_GOLD
+from .constants.player_starts import PlayerStarts
 
 
 class LogicLevel(Choice):
@@ -28,6 +29,42 @@ class ObscureLogic(Toggle):
     This option is forced on if logic level is set to Expert or Lunatic.
     """
     display_name = "Obscure Logic"
+
+
+class SpawnPoint(Choice):
+    """
+    Determines where you will spawn into the game when creating a new file.
+
+    castle_main: The save point near Memento in Castle Sansa.
+    castle_gazebo: The save point in the gazebo in the Castle Sansa courtyard.
+    dungeon_mirror: The vanilla starting point in Dilapidated Dungeon. If this option is selected, start_with_breaker
+        will be forced on and you will most likely be expected to leave through the dark rooms to The Underbelly. See
+        this video for a guide on how to do that: https://youtu.be/Z_a9l2wzd8c
+    library: The save point at the start of Listless Library. If this option is selected, either start_with_breaker or
+        randomize_books must also be turned on. If both options are off at the start of generation, start_with_breaker
+        will be forced on. If just randomize_books is turned on, your sphere one will have a lot of checks but will be
+        very short, so keep that in mind if you are playing in a multiworld with other people.
+    underbelly_south: The save point near the building at the south of The Underbelly.
+    underbelly_big_room: The save point in the big room in the middle of The Underbelly.
+    bailey_main: The save point in Empty Bailey.
+    keep_main: The save point in the main hallway in Sansa Keep.
+    keep_north: The north save point in Sansa Keep.
+    theatre_main: The save point in the auditorium in Twilight Theatre. If this option is selected, your starting
+        inventory will include Cling Gem/one Cling Shard on normal, or Heliacal Power/one Air Kick on hard+. You will be
+        able to leave Twilight Theatre through the big pillar room to the south.
+    """
+    display_name = "Spawn Point"
+    option_castle_main = PlayerStarts.CastleWestSave.value
+    option_castle_gazebo = PlayerStarts.CastleGazeboSave.value
+    option_dungeon_mirror = PlayerStarts.DungeonMirror.value
+    option_library = PlayerStarts.LibraryMainSave.value
+    option_underbelly_south = PlayerStarts.UnderbellySouthSave.value
+    option_underbelly_big_room = PlayerStarts.UnderbellyCentralSave.value
+    option_bailey_main = PlayerStarts.BaileySave.value
+    option_keep_main = PlayerStarts.KeepCentralSave.value
+    option_keep_north = PlayerStarts.KeepNorthSave.value
+    option_theatre_main = PlayerStarts.TheatreSave.value
+    default = PlayerStarts.CastleWestSave.value
 
 
 class SafeSmallKeys(DefaultOnToggle):
@@ -158,6 +195,7 @@ class PseudoregaliaOptions(PerGameCommonOptions):
     game_version: GameVersion
     logic_level: LogicLevel
     obscure_logic: ObscureLogic
+    spawn_point: SpawnPoint
     progressive_breaker: ProgressiveBreaker
     progressive_slide: ProgressiveSlide
     split_sun_greaves: SplitSunGreaves

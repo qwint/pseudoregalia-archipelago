@@ -1,5 +1,6 @@
 from typing import NamedTuple, Callable, Dict, List
 from BaseClasses import CollectionState
+from .options import SpawnPoint
 
 
 class RegionExit(NamedTuple):
@@ -8,10 +9,21 @@ class RegionExit(NamedTuple):
     breakable_wall: bool = False
 
 
-region_table: Dict[str, List[str]] = {
-    "Menu":
-        ["Castle Main"],
+origin_region_names: dict[int, str] = {
+    SpawnPoint.option_castle_main: "Castle Main",
+    SpawnPoint.option_castle_gazebo: "Castle Main",
+    SpawnPoint.option_dungeon_mirror: "Dungeon Mirror",
+    SpawnPoint.option_library: "Library Main",
+    SpawnPoint.option_underbelly_south: "Underbelly => Bailey",
+    SpawnPoint.option_underbelly_big_room: "Underbelly Main Upper",
+    SpawnPoint.option_bailey_main: "Bailey Lower",
+    SpawnPoint.option_keep_main: "Keep Main",
+    SpawnPoint.option_keep_north: "Keep Main",
+    SpawnPoint.option_theatre_main: "Theatre Main",
+}
 
+
+region_table: Dict[str, List[str]] = {
     "Dungeon Mirror":
         ["Dungeon Slide"],
     "Dungeon Slide":
@@ -61,7 +73,8 @@ region_table: Dict[str, List[str]] = {
     "Library Main":
         ["Library Locked",
          "Library Greaves",
-         "Library Top"],
+         "Library Top",
+         "Castle Main"],
     "Library Locked":
         [],
     "Library Greaves":
@@ -78,7 +91,8 @@ region_table: Dict[str, List[str]] = {
          "Keep Throne Room",
          "Keep => Underbelly",
          "Theatre Outside Scythe Corridor",
-         "Keep (Northeast) => Castle"],
+         "Keep (Northeast) => Castle",
+         "Castle Main"],
     "Keep Locked Room":
         ["Keep Sunsetter"],
     "Keep Sunsetter":

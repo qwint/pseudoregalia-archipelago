@@ -45,7 +45,7 @@ namespace Engine {
 		const size_t MINOR = 1;
 		const size_t PATCH = 2;
 		const int32_t PRE_RELEASE = 0;
-		const Version client_version = { 0, 10, 0 };
+		const Version client_version = { 0, 10, 1 };
 		const wstring client_version_text = VersionToWString(client_version);
 
 		// keeps track of collectibles spawned since the last time SpawnCollectibles was called. this is necessary because
